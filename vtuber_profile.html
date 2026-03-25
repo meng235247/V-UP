@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="V-Up! | 星野夢彩 VTuber 專頁 - 支持她達成夢想！">
+    <title>V-Up! | 星野夢彩 (VTuber專頁)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ---- Banner: CSS gradient instead of stock photo ---- */
+        .v-banner {
+            height: 280px;
+            background: linear-gradient(135deg, #0f0a28 0%, #3b0764 30%, #7c3aed 60%, #ec4899 85%, #f97316 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .v-banner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 15% 60%, rgba(236,72,153,0.35) 0%, transparent 45%),
+                radial-gradient(ellipse at 85% 40%, rgba(139,92,246,0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(249,115,22,0.25) 0%, transparent 40%);
+        }
+        /* Floating star particles */
+        .v-banner::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                radial-gradient(1px 1px at 5% 20%, white 0%, transparent 100%),
+                radial-gradient(2px 2px at 15% 70%, rgba(255,255,255,0.7) 0%, transparent 100%),
+                radial-gradient(1px 1px at 30% 15%, white 0%, transparent 100%),
+                radial-gradient(1px 1px at 45% 55%, rgba(255,255,255,0.5) 0%, transparent 100%),
+                radial-gradient(2px 2px at 60% 30%, white 0%, transparent 100%),
+                radial-gradient(1px 1px at 70% 75%, rgba(255,255,255,0.6) 0%, transparent 100%),
+                radial-gradient(1px 1px at 85% 20%, white 0%, transparent 100%),
+                radial-gradient(2px 2px at 95% 60%, rgba(255,255,255,0.7) 0%, transparent 100%);
+        }
+        .banner-text-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, rgba(248,250,252,0.5));
+        }
+
+        /* ---- Live Tag on banner ---- */
+        .banner-badges {
+            position: absolute;
+            top: 16px; left: 20px;
+            display: flex; gap: 8px;
+        }
+        .banner-live {
+            background: #ef4444;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 5px 12px;
+            border-radius: 99px;
+            display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 4px 12px rgba(239,68,68,0.4);
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+        .banner-live .dot { width: 7px; height: 7px; background: white; border-radius: 50%; }
+        @keyframes livePulse { 0%,100%{opacity:1} 50%{opacity:0.7} }
+
+        .banner-verified {
+            background: rgba(255,255,255,0.18);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 5px 12px;
+            border-radius: 99px;
+        }
+
+        /* ---- Profile Header Area ---- */
+        .profile-header-zone {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .profile-info-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 1.5rem;
+            margin-top: -55px;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .profile-avatar-wrap {
+            position: relative;
+            flex-shrink: 0;
+        }
+        .profile-avatar-img {
+            width: 130px; height: 130px;
+            border-radius: 50%;
+            border: 5px solid white;
+            box-shadow: 0 8px 30px rgba(236,72,153,0.25);
+            object-fit: cover;
+            background: linear-gradient(135deg, #f0e6ff, #fce7f3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+            color: var(--secondary);
+        }
+        .profile-avatar-img img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+
+        .profile-name-block { flex: 1; min-width: 0; padding-bottom: 0.5rem; }
+        .profile-name-block h1 {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .v-verified { color: var(--accent); font-size: 1.2rem; }
+        .v-tags { display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap; }
+        .v-tag {
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: var(--primary-light);
+            color: var(--primary);
+        }
+        .v-tag.t-purple { background: var(--secondary-light); color: var(--secondary); }
+        .v-tag.t-blue   { background: var(--accent-light);    color: var(--accent); }
+
+        .profile-action-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding-bottom: 0.5rem;
+        }
+
+        /* ---- Stats Strip ---- */
+        .profile-stats-strip {
+            display: flex;
+            gap: 0;
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            overflow: hidden;
+            background: white;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+        .pstat {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border-right: 1px solid var(--border-color);
+        }
+        .pstat:last-child { border: none; }
+        .pstat-val { font-size: 1.5rem; font-weight: 900; color: var(--primary); font-family: 'Baloo 2', sans-serif; display: block; }
+        .pstat-key { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; }
+
+        /* ---- Main Layout ---- */
+        .vprofile-layout {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 5rem;
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        /* ---- Milestone Panel ---- */
+        .v-panel {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid rgba(236,72,153,0.1);
+            box-shadow: 0 4px 20px rgba(139,92,246,0.05);
+            overflow: hidden;
+        }
+        .v-panel-header {
+            padding: 20px 24px 0;
+            margin-bottom: 18px;
+        }
+        .v-panel-body { padding: 0 24px 24px; }
+
+        /* ---- Milestone Item ---- */
+        .milestone-card {
+            border: 1.5px solid rgba(236,72,153,0.15);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, rgba(236,72,153,0.02), white 60%);
+            transition: all 0.25s;
+        }
+        .milestone-card:hover { border-color: var(--primary); box-shadow: 0 6px 20px rgba(236,72,153,0.1); }
+        .milestone-card:last-child { margin-bottom: 0; }
+
+        .milestone-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        .milestone-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 99px;
+            display: flex; align-items: center; gap: 5px;
+        }
+        .milestone-pct { font-size: 1.1rem; font-weight: 900; color: var(--secondary); }
+
+        .milestone-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: var(--text-main); }
+        .milestone-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; }
+
+        .milestone-progress-bar { height: 10px; background: #f0e6ff; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+        .milestone-progress-fill { height: 100%; background: var(--gradient-primary); border-radius: 5px; animation: progressFill 1.2s ease both; }
+
+        .milestone-amounts { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; }
+        .milestone-amounts .raised { color: var(--primary); }
+        .milestone-amounts .target { color: var(--text-muted); }
+
+        /* ---- Ranking ---- */
+        .ranking-panel { margin-top: 16px; background: #fafafa; border-radius: 14px; padding: 16px; border: 1px solid rgba(236,72,153,0.08); }
+        .ranking-title { font-size: 1rem; font-weight: 800; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .ranking-subtitle { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 14px; }
+
+        .rank-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            transition: background 0.2s;
+        }
+        .rank-row:hover { background: var(--primary-light); }
+        .rank-row + .rank-row { border-top: 1px solid rgba(236,72,153,0.06); }
+
+        .rank-pos { width: 36px; text-align: center; font-weight: 900; font-size: 1.1rem; }
+        .rank-1 { color: #eab308; text-shadow: 0 0 8px rgba(234,179,8,0.3); }
+        .rank-2 { color: #94a3b8; }
+        .rank-3 { color: #d97706; }
+
+        .rank-avatar-sm { width: 32px; height: 32px; border-radius: 50%; background: var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: 0.9rem; }
+        .rank-name { flex: 1; font-weight: 700; font-size: 0.9rem; }
+        .rank-pts { font-weight: 800; color: var(--primary); font-family: 'Baloo 2', monospace; font-size: 0.95rem; }
+
+        /* ---- Right Side Panel ---- */
+        .vprofile-side { display: flex; flex-direction: column; gap: 14px; }
+
+        /* About card */
+        .bio-card {
+            background: white;
+            border-radius: 20px;
+            border: 1px solid rgba(236,72,153,0.1);
+            box-shadow: 0 4px 20px rgba(139,92,246,0.05);
+            padding: 22px;
+        }
+        .bio-card h3 { font-size: 1rem; font-weight: 800; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .bio-text { font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+
+        /* Social Links */
+        .social-links { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+        .social-link {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            border: 1.5px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+            color: var(--text-muted);
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .social-link:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); transform: translateY(-2px); }
+
+        /* Milestone list side */
+        .side-goals { display: flex; flex-direction: column; gap: 10px; }
+        .side-goal-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background: white;
+            transition: all 0.2s;
+        }
+        .side-goal-item:hover { border-color: var(--primary); background: var(--primary-light); }
+        .side-goal-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 0.95rem; flex-shrink: 0; }
+        .side-goal-info { flex: 1; }
+        .side-goal-name { font-size: 0.88rem; font-weight: 700; color: var(--text-main); margin-bottom: 4px; }
+        .side-goal-bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
+        .side-goal-fill { height: 100%; background: var(--gradient-primary); border-radius: 2px; }
+        .side-goal-pct { font-size: 0.78rem; font-weight: 800; color: var(--secondary); white-space: nowrap; }
+
+        @media (max-width: 900px) {
+            .vprofile-layout { grid-template-columns: 1fr; }
+            .profile-info-row { flex-direction: column; align-items: flex-start; }
+            .profile-stats-strip { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="brand-logo">V-Up!</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-item">探索 VTuber</a>
+                <a href="fan_profile.html" class="nav-item">粉絲個人頁</a>
+                <a href="auth.html" class="nav-item" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> 登出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- CSS Marquee Announcement -->
+    <div class="announcement-bar">
+        <div class="announcement-inner">
+            <span>🌟 歡迎來到 V-Up! 綻放計畫！&nbsp;&nbsp;🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！&nbsp;&nbsp;感謝「星空騎士_阿龍」成為本週最大貢獻者！&nbsp;&nbsp;🎉 加入我們，一起創造傳奇！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+            <span>🌟 歡迎來到 V-Up! 綻放計畫！&nbsp;&nbsp;🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！&nbsp;&nbsp;感謝「星空騎士_阿龍」成為本週最大貢獻者！&nbsp;&nbsp;🎉 加入我們，一起創造傳奇！&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+
+    <!-- Gradient Banner -->
+    <div class="v-banner">
+        <div class="banner-badges">
+            <div class="banner-live"><span class="dot"></span> LIVE</div>
+            <div class="banner-verified"><i class="fas fa-check-circle"></i> 已認證創作者</div>
+        </div>
+        <div class="banner-text-overlay"></div>
+    </div>
+
+    <!-- Profile Header -->
+    <div class="profile-header-zone">
+        <div class="profile-info-row">
+            <div class="profile-avatar-wrap">
+                <div class="profile-avatar-img">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume&backgroundColor=b6e3f4,c0aede,ffd5dc" alt="星野夢彩">
+                </div>
+            </div>
+            <div class="profile-name-block">
+                <h1>星野夢彩 <i class="fas fa-check-circle v-verified"></i></h1>
+                <p style="color:var(--text-muted); font-size:0.95rem; margin: 4px 0 8px;">你的星空，由我來點亮 ✨ 目標是舉辦 3D 演唱會！</p>
+                <div class="v-tags">
+                    <span class="v-tag"><i class="fas fa-music"></i> 歌姬</span>
+                    <span class="v-tag t-purple">ASMR</span>
+                    <span class="v-tag t-blue">直播主</span>
+                    <span class="v-tag">新人 VTuber</span>
+                </div>
+            </div>
+            <div class="profile-action-row">
+                <button class="btn btn-primary" style="padding: 0.75rem 1.75rem;">
+                    <i class="fas fa-heart"></i> 成為粉絲
+                </button>
+                <button class="btn btn-outline" style="padding: 0.75rem 1.25rem;">
+                    <i class="fas fa-share-alt"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Stats Strip -->
+        <div class="profile-stats-strip">
+            <div class="pstat">
+                <span class="pstat-val">12.5K</span>
+                <span class="pstat-key">粉絲</span>
+            </div>
+            <div class="pstat">
+                <span class="pstat-val">8</span>
+                <span class="pstat-key">完成里程碑</span>
+            </div>
+            <div class="pstat">
+                <span class="pstat-val">42,500</span>
+                <span class="pstat-key">總募資點數</span>
+            </div>
+            <div class="pstat">
+                <span class="pstat-val">320</span>
+                <span class="pstat-key">發放貢獻證明</span>
+            </div>
+            <div class="pstat">
+                <span class="pstat-val">98%</span>
+                <span class="pstat-key">粉絲滿意度</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="vprofile-layout">
+        <!-- Left: Milestones -->
+        <div>
+            <div class="v-panel">
+                <div class="v-panel-header">
+                    <div class="tabs" style="margin-bottom:0;">
+                        <button class="tab-item active" onclick="switchVTab('milestones')">進行中募資項目 (里程碑)</button>
+                        <button class="tab-item" onclick="switchVTab('posts')">專屬限定貼文區</button>
+                    </div>
+                </div>
+                <div class="v-panel-body" id="tab-content-milestones">
+
+                    <!-- Milestone 1 -->
+                    <div class="milestone-card">
+                        <div class="milestone-top">
+                            <span class="milestone-badge"><i class="fas fa-fire"></i> 熱烈進行中</span>
+                            <span class="milestone-pct">75%</span>
+                        </div>
+                        <div class="milestone-title"><i class="fas fa-microphone" style="color:var(--primary);"></i> 錄音室級別麥克風設備！</div>
+                        <div class="milestone-desc">為了給大家帶來 ASMR 和頂級歌回體驗，需要升級專業麥克風設備！</div>
+                        <div class="milestone-progress-bar">
+                            <div class="milestone-progress-fill" style="width:75%;"></div>
+                        </div>
+                        <div class="milestone-amounts">
+                            <span class="raised"><i class="fas fa-coins"></i> 15,000 點</span>
+                            <span class="target">目標：20,000 點</span>
+                        </div>
+                        <button class="btn btn-primary btn-full" style="margin-bottom: 0;" onclick="openPaymentModal('錄音室級別麥克風設備！', 2500)">
+                            贊助此項目 <i class="fas fa-coins"></i>
+                        </button>
+
+                        <!-- Ranking -->
+                        <div class="ranking-panel">
+                            <div class="ranking-title"><i class="fas fa-trophy text-secondary"></i> 貢獻排行榜 (Top 10)</div>
+                            <div class="ranking-subtitle">本項目結束後，前 10 名將獲得「永久貢獻證明」徽章！</div>
+
+                            <div class="rank-row">
+                                <div class="rank-pos rank-1"><i class="fas fa-crown"></i></div>
+                                <div class="rank-avatar-sm" style="background:rgba(234,179,8,0.12); color:#eab308;"><i class="fas fa-user-astronaut"></i></div>
+                                <span class="rank-name">星空騎士_阿龍</span>
+                                <span class="rank-pts">5,000</span>
+                            </div>
+                            <div class="rank-row">
+                                <div class="rank-pos rank-2">2</div>
+                                <div class="rank-avatar-sm"><i class="fas fa-user-ninja"></i></div>
+                                <span class="rank-name">深海的貓</span>
+                                <span class="rank-pts">3,200</span>
+                            </div>
+                            <div class="rank-row">
+                                <div class="rank-pos rank-3">3</div>
+                                <div class="rank-avatar-sm"><i class="fas fa-user-secret"></i></div>
+                                <span class="rank-name">Mystic_K</span>
+                                <span class="rank-pts">2,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Milestone 2 -->
+                    <div class="milestone-card">
+                        <div class="milestone-top">
+                            <span class="milestone-badge" style="background:var(--secondary-light); color:var(--secondary);"><i class="fas fa-clock"></i> 準備中</span>
+                            <span class="milestone-pct" style="color:var(--text-muted);">0%</span>
+                        </div>
+                        <div class="milestone-title" id="vt-display-ms-title"><i class="fas fa-vr-cardboard" style="color:var(--secondary);"></i> 超美麗 3D 化模型製作</div>
+                        <div class="milestone-desc">達成夢想的第一步！讓夢彩在 3D 空間中自由活動，打造沉浸式演出體驗！</div>
+                        <div class="milestone-progress-bar">
+                            <div class="milestone-progress-fill" style="width:0%; background: linear-gradient(90deg, var(--secondary), #a855f7);"></div>
+                        </div>
+                        <div class="milestone-amounts">
+                            <span class="raised" style="color:var(--secondary);">0 點</span>
+                            <span class="target" id="vt-display-ms-target">目標：100,000 點</span>
+                        </div>
+                        <button class="btn btn-outline btn-full" style="border-color:var(--secondary); color:var(--secondary);">
+                            <i class="fas fa-bell"></i> 訂閱開始通知
+                        </button>
+                    </div>
+
+                </div>
+                <div class="v-panel-body" id="tab-content-posts" style="display:none; padding-top:20px;">
+                    <!-- JS rendering posts here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: Sidebar -->
+        <div class="vprofile-side">
+            <!-- About -->
+            <div class="bio-card">
+                <h3><i class="fas fa-info-circle" style="color:var(--primary);"></i> 關於 夢彩</h3>
+                <p class="bio-text">
+                    你好！我是星野夢彩 ✨<br>
+                    喜歡唱歌、做 ASMR 和與大家聊天的新人 VTuber！<br>
+                    夢想是有朝一日在舞台上為所有人演唱，請多多支持！
+                </p>
+                <div class="social-links">
+                    <a href="#" class="social-link" title="YouTube" id="v-yt-link" style="display:none;" target="_blank"><i class="fab fa-youtube" style="color:#ef4444;"></i></a>
+                    <a href="#" class="social-link" title="Twitter/X" id="v-tw-link" style="display:none;" target="_blank"><i class="fab fa-twitter" style="color:#1da1f2;"></i></a>
+                    <a href="#" class="social-link" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link" title="Instagram"><i class="fab fa-instagram"></i></a>
+                </div>
+            </div>
+
+            <!-- Next Targets -->
+            <div class="bio-card">
+                <h3><i class="fas fa-bullseye" style="color:var(--secondary);"></i> 里程碑總覽</h3>
+                <div class="side-goals">
+                    <div class="side-goal-item">
+                        <div class="side-goal-icon"><i class="fas fa-microphone"></i></div>
+                        <div class="side-goal-info">
+                            <div class="side-goal-name">錄音室麥克風升級</div>
+                            <div class="side-goal-bar">
+                                <div class="side-goal-fill" style="width:75%;"></div>
+                            </div>
+                        </div>
+                        <span class="side-goal-pct">75%</span>
+                    </div>
+                    <div class="side-goal-item">
+                        <div class="side-goal-icon" style="background:var(--secondary-light); color:var(--secondary);"><i class="fas fa-vr-cardboard"></i></div>
+                        <div class="side-goal-info">
+                            <div class="side-goal-name" id="vt-side-ms-title">3D 化模型製作</div>
+                            <div class="side-goal-bar">
+                                <div class="side-goal-fill" style="width:0%; background: linear-gradient(90deg, var(--secondary), #a855f7);"></div>
+                            </div>
+                        </div>
+                        <span class="side-goal-pct" style="color:var(--text-muted);">0%</span>
+                    </div>
+                    <div class="side-goal-item" style="opacity:0.6;">
+                        <div class="side-goal-icon" style="background:#f1f5f9; color:#94a3b8;"><i class="fas fa-lock"></i></div>
+                        <div class="side-goal-info">
+                            <div class="side-goal-name">首場線上演唱會</div>
+                            <div class="side-goal-bar">
+                                <div class="side-goal-fill" style="width:0%; background:#e2e8f0;"></div>
+                            </div>
+                        </div>
+                        <span class="side-goal-pct" style="color:var(--text-muted);">鎖定</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 V-Up! 平台 - 專屬於您的偶像贊助平台 ✨</p>
+    </footer>
+
+    <!-- Payment Gateway Integration Modal -->
+    <style>
+        .payment-modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px);
+            display: flex; align-items: center; justify-content: center; z-index: 2000;
+            opacity: 0; pointer-events: none; transition: opacity 0.25s;
+        }
+        .payment-modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .payment-modal {
+            background: white; border-radius: 20px; width: 440px; max-width: 90vw;
+            padding: 32px; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            transform: translateY(20px) scale(0.95); transition: transform 0.25s;
+        }
+        .payment-modal-overlay.open .payment-modal { transform: translateY(0) scale(1); }
+        .pm-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; color: var(--primary); }
+        .pm-header h2 { font-size: 1.3rem; font-weight: 800; color: var(--text-main); }
+        .pm-item { font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 10px; border: 1px dashed var(--border-color); }
+        .pm-label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 8px; }
+        .pm-input { width: 100%; padding: 12px; border: 1.5px solid var(--border-color); border-radius: 10px; font-family: inherit; font-size: 1rem; margin-bottom: 20px; font-weight: 600; transition: border-color 0.2s; }
+        .pm-input:focus { outline: none; border-color: var(--primary); }
+        .pm-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 24px; }
+        .pm-method-btn { padding: 12px; border: 1.5px solid var(--border-color); border-radius: 10px; background: white; cursor: pointer; font-weight: 700; color: var(--text-main); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: all 0.2s; font-family: inherit; }
+        .pm-method-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        .pm-method-btn i { font-size: 1.4rem; }
+        .pm-actions { display: flex; gap: 12px; }
+        .pm-btn { flex: 1; padding: 14px; border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer; border: none; font-family: inherit; transition: all 0.2s; }
+        .pm-btn-cancel { background: #f1f5f9; color: var(--text-muted); }
+        .pm-btn-cancel:hover { background: #e2e8f0; color: var(--text-main); }
+        .pm-btn-pay { background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; box-shadow: 0 4px 15px rgba(236,72,153,0.3); }
+        .pm-btn-pay:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .pm-api-notice { margin-top: 16px; font-size: 0.75rem; color: var(--text-muted); text-align: center; }
+    </style>
+
+    <div class="payment-modal-overlay" id="payment-modal">
+        <div class="payment-modal">
+            <div class="pm-header">
+                <i class="fas fa-credit-card" style="font-size: 1.8rem;"></i>
+                <h2>支持 VTuber 夢想</h2>
+            </div>
+            
+            <div class="pm-item" id="pm-item-name">
+                項目：錄音室設備升級
+            </div>
+
+            <label class="pm-label">贊助點數 (1點 = 1 NTD)</label>
+            <input type="number" class="pm-input" id="pm-amount" value="500" min="100" step="100">
+
+            <label class="pm-label">選擇付款方式</label>
+            <div class="pm-methods">
+                <button class="pm-method-btn active" onclick="selectMethod(this, 'credit')">
+                    <i class="far fa-credit-card"></i> 信用卡 / 金融卡
+                </button>
+                <button class="pm-method-btn" onclick="selectMethod(this, 'linepay')">
+                    <i class="fab fa-line" style="color:#06C755;"></i> LINE Pay
+                </button>
+                <button class="pm-method-btn" onclick="selectMethod(this, 'atm')">
+                    <i class="fas fa-university"></i> 虛擬帳號 ATM
+                </button>
+                <button class="pm-method-btn" onclick="selectMethod(this, 'cvs')">
+                    <i class="fas fa-store"></i> 超商條碼 / 代碼
+                </button>
+            </div>
+
+            <div class="pm-actions">
+                <button class="pm-btn pm-btn-cancel" onclick="closePaymentModal()">取消</button>
+                <button class="pm-btn pm-btn-pay" onclick="simulatePaymentAPI()">
+                    確認贊助 <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            
+            <div class="pm-api-notice">
+                <i class="fas fa-code"></i> 將產生準備發送給後端的 API Payload
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedMethod = 'credit';
+        let currentItem = '';
+
+        function openPaymentModal(itemName, defaultAmount) {
+            currentItem = itemName;
+            document.getElementById('pm-item-name').textContent = `項目：${itemName}`;
+            document.getElementById('pm-amount').value = defaultAmount || 500;
+            document.getElementById('payment-modal').classList.add('open');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.remove('open');
+        }
+
+        function selectMethod(btn, method) {
+            document.querySelectorAll('.pm-method-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedMethod = method;
+        }
+
+        function simulatePaymentAPI() {
+            const amount = document.getElementById('pm-amount').value;
+            if(!amount || amount < 100) {
+                alert('最低贊助金額為 100 點');
+                return;
+            }
+
+            // This payload format is what you will send to your backend
+            // The backend then forwards this to ECPay / NewebPay etc.
+            const apiPayload = {
+                MerchantTradeNo: "VUP_" + Date.now(),
+                ItemName: currentItem,
+                TotalAmount: parseInt(amount),
+                TradeDesc: "V-Up! 粉絲里程碑贊助",
+                ChoosePayment: selectedMethod.toUpperCase(),
+                ClientBackURL: window.location.href, // Where they return after payment
+                ReturnURL: "https://api.vup.tw/webhook/payment" // Where the gateway sends the silent background POST
+            };
+
+            console.log("=== Sending Payload to Backend backend/api/v1/checkout ===", JSON.stringify(apiPayload, null, 2));
+            
+            alert(`已準備好 API Payload！請打開 F12 Console 檢查資料格式。\n\n實務上這將向後端呼叫：\nPOST /api/v1/checkout\n帶有 { TotalAmount: ${amount}, ChoosePayment: '${selectedMethod}' } 等參數。\n後端收到後會回傳藍新/綠界的付款頁面連結，前端再根據連結跳轉。`);
+            
+            closePaymentModal();
+        }
+
+        // ── CMS Dynamic Load & Profile Data ──
+        function switchVTab(tab) {
+            document.querySelectorAll('.tab-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.tab-item[onclick="switchVTab('${tab}')"]`).classList.add('active');
+            
+            document.getElementById('tab-content-milestones').style.display = tab === 'milestones' ? 'block' : 'none';
+            document.getElementById('tab-content-posts').style.display = tab === 'posts' ? 'block' : 'none';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const marquee = localStorage.getItem('vup-cms-marquee');
+            if (marquee) {
+                const mqSpans = document.querySelectorAll('.announcement-inner span');
+                mqSpans.forEach(span => span.innerText = marquee + '      ');
+            }
+
+            // Load Customized VTuber Data from Dashboard Settings
+            const saved = localStorage.getItem('vt-profile-data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    // 1. Update Theme Color dynamically
+                    if (data.color) {
+                        document.documentElement.style.setProperty('--primary', data.color);
+                        document.documentElement.style.setProperty('--secondary', data.color);
+                        // Add a subtle tint to the background so the theme change is very obvious
+                        document.body.style.backgroundColor = data.color;
+                        document.body.style.backgroundImage = 'linear-gradient(rgba(248,250,252,0.96), rgba(248,250,252,0.98))';
+                    }
+                    // 2. Update Banner Image
+                    if (data.banner && data.banner.trim() !== '') {
+                        const bannerEl = document.querySelector('.v-banner');
+                        bannerEl.style.background = `url('${data.banner}') center/cover`;
+                        bannerEl.style.backgroundPosition = 'center';
+                        // Keep text-overlay visible
+                        if (!bannerEl.querySelector('.banner-text-overlay')) {
+                            bannerEl.innerHTML += '<div class="banner-text-overlay" style="position: absolute; bottom: 0; left: 0; right: 0; height: 80px; background: linear-gradient(to bottom, transparent, rgba(248,250,252,0.5));"></div>';
+                        }
+                    }
+                    // 3. Update V Name
+                    if (data.name) {
+                        const nameEl = document.querySelector('.profile-name-block h1');
+                        if (nameEl) nameEl.innerHTML = `${data.name} <i class="fas fa-check-circle v-verified"></i>`;
+                        document.title = `V-Up! | ${data.name} (VTuber專頁)`;
+                    }
+                    // 4. Update Catchphrase
+                    if (data.catchphrase) {
+                        const catchphraseEl = document.querySelector('.profile-name-block p');
+                        if (catchphraseEl) catchphraseEl.innerText = data.catchphrase;
+                    }
+                    // 5. Update Bio Text
+                    if (data.bio) {
+                        const bioEl = document.querySelector('.bio-text');
+                        if (bioEl) bioEl.innerText = data.bio;
+                    }
+                    // 6. Update YT/Twitter
+                    if (data.youtube && data.youtube.trim() !== '') {
+                        const ytEl = document.getElementById('v-yt-link');
+                        if(ytEl) { ytEl.href = data.youtube; ytEl.style.display = 'flex'; }
+                    }
+                    if (data.twitter && data.twitter.trim() !== '') {
+                        const twEl = document.getElementById('v-tw-link');
+                        if(twEl) { twEl.href = data.twitter; twEl.style.display = 'flex'; }
+                    }
+                    // 7. Update Milestone target
+                    if (data.msTitle && data.msTitle.trim() !== '') {
+                        const titleEls = [document.getElementById('vt-display-ms-title'), document.getElementById('vt-side-ms-title')];
+                        titleEls.forEach(el => { if(el) el.innerHTML = `<i class="fas fa-star" style="color:var(--secondary);"></i> 夢想：${data.msTitle}`; });
+                    }
+                    if (data.msTarget && data.msTarget.trim() !== '') {
+                        const targetEl = document.getElementById('vt-display-ms-target');
+                        if(targetEl) targetEl.innerText = `目標：${parseInt(data.msTarget).toLocaleString()} 點`;
+                    }
+                } catch(e) { console.error("Error parsing VT profile data", e); }
+            }
+
+            // Load Exclusive Posts from Dashboard
+            const postsList = document.getElementById('tab-content-posts');
+            if (postsList) {
+                const posts = JSON.parse(localStorage.getItem('vt-posts') || '[]');
+                if (posts.length === 0) {
+                    postsList.innerHTML = `
+                        <div style="text-align:center; padding: 50px 20px;">
+                            <i class="fas fa-box-open" style="font-size:3.5rem; color:var(--text-light); margin-bottom:15px; display:block;"></i>
+                            <p class="text-muted" style="font-size:1.05rem;">目前尚未發表任何限定貼文，敬請期待 VTuber 的最新消息！</p>
+                        </div>
+                    `;
+                } else {
+                    postsList.innerHTML = posts.map(p => `
+                        <div class="milestone-card" style="margin-bottom:20px; text-align:left; background:var(--bg-surface);">
+                            <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:12px; display:flex; gap:8px; align-items:center;">
+                                <i class="fas fa-clock"></i> ${p.date} 
+                                <span class="v-tag t-purple" style="font-size:0.7rem; padding: 2px 8px;">粉絲限定</span>
+                            </div>
+                            <div style="font-size:1.05rem; color:var(--text-main); white-space:pre-wrap; line-height:1.7;">${p.content}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! 粉絲個人頁面</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="fan_profile.css">
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="glass-nav">
+        <div class="nav-brand">
+            <a href="index.html" style="text-decoration: none;"><span class="brand-v">V-Up!</span></a>
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-item">探索 VTuber</a>
+            <a href="fan_profile.html" class="nav-item active">我的個人頁</a>
+            <a href="auth.html" class="nav-item" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> 登出</a>
+            <div class="user-menu-nav" style="margin-left: 1rem;">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar"
+                    style="width: 30px; height: 30px; border-radius: 50%;">
+            </div>
+        </div>
+    </nav>
+
+    <div class="fan-container">
+
+        <!-- Left Sidebar: Profile & Wallet -->
+        <aside class="fan-sidebar glass-card">
+            <div class="fan-avatar-large">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar">
+                <button class="edit-avatar-btn"><i class="fas fa-camera"></i></button>
+            </div>
+
+            <h2 class="fan-name">匿名蟑螂</h2>
+            <p class="fan-tagline">"為了守護光芒而戰！"</p>
+
+            <div class="wallet-card">
+                <p class="wallet-label">目前持有星能點數</p>
+                <div class="wallet-balance">
+                    <i class="fas fa-gem text-primary"></i> 4,250
+                </div>
+                <button class="btn-primary full-width" style="margin-top: 15px;">儲值點數</button>
+            </div>
+
+            <div class="fan-stats">
+                <div class="f-stat">
+                    <span class="f-val">3</span>
+                    <span class="f-lbl">支持的 VTuber</span>
+                </div>
+                <div class="f-stat">
+                    <span class="f-val">12</span>
+                    <span class="f-lbl">解鎖證明</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Content: Achievements & Supported VTubers -->
+        <main class="fan-main">
+
+            <section class="fan-section glass-card">
+                <div class="section-title">
+                    <h3><i class="fas fa-medal text-warning"></i> 我的永久貢獻證明庫</h3>
+                    <p>您在募資里程碑中進入前 10 名的專屬榮耀與限定證明，將永久展示於此！</p>
+                </div>
+
+                <div class="proofs-grid">
+                    <!-- Proof Item -->
+                    <div class="proof-badge-item rank-gold">
+                        <div class="pb-icon"><i class="fas fa-trophy"></i></div>
+                        <div class="pb-info">
+                            <h4>第一套 Live2D 募資</h4>
+                            <p class="pb-vtuber">星野夢彩</p>
+                            <span class="pb-rank">Top 1 貢獻者</span>
+                        </div>
+                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
+                    </div>
+
+                    <div class="proof-badge-item rank-silver">
+                        <div class="pb-icon"><i class="fas fa-microphone-alt"></i></div>
+                        <div class="pb-info">
+                            <h4>錄音室級設備升級</h4>
+                            <p class="pb-vtuber">星野夢彩</p>
+                            <span class="pb-rank">Top 2 貢獻者</span>
+                        </div>
+                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
+                    </div>
+
+                    <div class="proof-badge-item rank-bronze">
+                        <div class="pb-icon"><i class="fas fa-gamepad"></i></div>
+                        <div class="pb-info">
+                            <h4>3D 總決賽特別企劃</h4>
+                            <p class="pb-vtuber">電玩少女_小葵</p>
+                            <span class="pb-rank">Top 3 貢獻者</span>
+                        </div>
+                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
+                    </div>
+
+                    <div class="proof-badge-item locked">
+                        <div class="pb-icon"><i class="fas fa-lock"></i></div>
+                        <div class="pb-info">
+                            <h4>參與下一次募資來解鎖</h4>
+                            <p class="pb-vtuber">???</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="fan-section glass-card" style="margin-top: 30px;">
+                <div class="section-title">
+                    <h3><i class="fas fa-receipt text-success"></i> 近期贊助與點數異動明細</h3>
+                    <p>您最近 30 天內的星能點數使用紀錄與贊助目標。</p>
+                </div>
+
+                <div style="overflow-x: auto;">
+                    <table
+                        style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted);">
+                                <th style="padding: 12px 8px;">日期時間</th>
+                                <th style="padding: 12px 8px;">交易類型</th>
+                                <th style="padding: 12px 8px;">對象 / 項目</th>
+                                <th style="padding: 12px 8px;">點數變更</th>
+                                <th style="padding: 12px 8px;">狀態</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px dashed var(--border-color);">
+                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
+                                    2026-03-24 14:30</td>
+                                <td style="padding: 12px 8px;">里程碑贊助</td>
+                                <td style="padding: 12px 8px; font-weight: bold;">星野夢彩 (3D化募資)</td>
+                                <td style="padding: 12px 8px; color: #ef4444; font-weight: bold;">- 500</td>
+                                <td style="padding: 12px 8px;"><span
+                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
+                                            class="fas fa-check"></i> 成功扣款</span></td>
+                            </tr>
+                            <tr style="border-bottom: 1px dashed var(--border-color);">
+                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
+                                    2026-03-22 09:15</td>
+                                <td style="padding: 12px 8px;">點數儲值</td>
+                                <td style="padding: 12px 8px;">線上刷卡 (Visa *4321)</td>
+                                <td style="padding: 12px 8px; color: #10b981; font-weight: bold;">+ 3,000</td>
+                                <td style="padding: 12px 8px;"><span
+                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
+                                            class="fas fa-check"></i> 已入帳</span></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
+                                    2026-03-15 20:00</td>
+                                <td style="padding: 12px 8px;">加入後援會</td>
+                                <td style="padding: 12px 8px; font-weight: bold;">電玩少女_小葵 (鐵粉方案)</td>
+                                <td style="padding: 12px 8px; color: #ef4444; font-weight: bold;">- 150</td>
+                                <td style="padding: 12px 8px;"><span
+                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
+                                            class="fas fa-check"></i> 成功扣款</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="fan-section glass-card" style="margin-top: 30px;">
+                <div class="section-title">
+                    <h3><i class="fas fa-heart text-primary"></i> 陪伴成長的 VTuber 們</h3>
+                    <p>您目前正在贊助與追隨的創作者名單。</p>
+                </div>
+
+                <div class="supported-v-list">
+                    <div class="v-card">
+                        <img src="https://images.unsplash.com/photo-1622288019310-914b1ba1d8dd?auto=format&fit=crop&w=150&q=80"
+                            alt="V" class="v-avatar">
+                        <div class="v-details">
+                            <h4>星野夢彩 <i class="fas fa-check-circle text-info"></i></h4>
+                            <p>累計貢獻: <strong>12,500</strong> 點</p>
+                        </div>
+                        <a href="index.html" class="btn-outline">前往專頁</a>
+                    </div>
+
+                    <div class="v-card">
+                        <div class="v-avatar placeholder-v"><i class="fas fa-headset"></i></div>
+                        <div class="v-details">
+                            <h4>電玩少女_小葵</h4>
+                            <p>累計貢獻: <strong>3,200</strong> 點</p>
+                        </div>
+                        <a href="#" class="btn-outline">前往專頁</a>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+</body>
+
+</html>

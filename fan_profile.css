@@ -1,0 +1,431 @@
+/* ===========================
+   Fan Profile Styles - Enhanced
+   =========================== */
+
+.fan-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 30px;
+    animation: fadeInUp 0.6s ease both;
+}
+
+/* ---- Sidebar ---- */
+.fan-sidebar {
+    padding: 30px;
+    text-align: center;
+    border-radius: 25px;
+    background: white;
+    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.07);
+    border: 1px solid rgba(236, 72, 153, 0.08);
+    position: sticky;
+    top: 90px;
+    height: max-content;
+}
+
+/* Avatar with gradient ring */
+.fan-avatar-large {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 20px;
+    position: relative;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #ec4899, #8b5cf6, #0ea5e9);
+    padding: 4px;
+    box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.3);
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.fan-avatar-large img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    display: block;
+}
+
+.edit-avatar-btn {
+    position: absolute;
+    bottom: 4px; right: 4px;
+    width: 36px; height: 36px;
+    background: white;
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: all 0.2s;
+    font-size: 0.9rem;
+    border: 2px solid var(--border-color);
+}
+.edit-avatar-btn:hover {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    transform: scale(1.1);
+}
+
+.fan-name {
+    font-size: 1.6rem;
+    color: var(--text-main);
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+
+.fan-tagline {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+    font-weight: 500;
+    font-style: italic;
+}
+
+/* Wallet Card */
+.wallet-card {
+    background: linear-gradient(135deg, rgba(236,72,153,0.06), rgba(139,92,246,0.06));
+    border: 1.5px solid rgba(139, 92, 246, 0.15);
+    padding: 20px;
+    border-radius: 18px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.3s;
+}
+.wallet-card:hover {
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.12);
+}
+
+.wallet-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.wallet-balance {
+    font-size: 2.2rem;
+    font-weight: 900;
+    color: var(--text-main);
+    font-family: 'Baloo 2', monospace;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.wallet-balance .fa-gem {
+    font-size: 1.6rem;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Fan Stats */
+.fan-stats {
+    display: flex;
+    justify-content: space-around;
+    padding-top: 18px;
+    margin-top: 4px;
+    border-top: 1.5px dashed rgba(139, 92, 246, 0.18);
+}
+.f-stat { display: flex; flex-direction: column; align-items: center; }
+.f-val {
+    font-size: 1.5rem;
+    font-weight: 900;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.f-lbl { font-size: 0.78rem; color: var(--text-muted); font-weight: 700; margin-top: 2px; }
+
+/* ---- Main Content ---- */
+.fan-main { display: flex; flex-direction: column; gap: 28px; }
+
+.fan-section {
+    padding: 30px;
+    border-radius: 25px;
+    background: white;
+    box-shadow: 0 10px 40px rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(236, 72, 153, 0.07);
+    transition: box-shadow 0.3s;
+}
+.fan-section:hover {
+    box-shadow: 0 15px 50px rgba(139, 92, 246, 0.09);
+}
+
+.section-title {
+    margin-bottom: 25px;
+    border-bottom: 2px solid;
+    border-image: linear-gradient(90deg, var(--primary), var(--secondary), transparent) 1;
+    padding-bottom: 15px;
+}
+.section-title h3 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+    margin-top: 6px;
+    font-weight: 500;
+}
+
+/* ---- Proof Badges Grid ---- */
+.proofs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 18px;
+}
+
+.proof-badge-item {
+    background: #fcfcfc;
+    border: 2px solid #e9ecef;
+    border-radius: 18px;
+    padding: 22px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.proof-badge-item::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+}
+.proof-badge-item:hover {
+    transform: translateY(-5px);
+}
+
+/* Gold - glowing border */
+.rank-gold {
+    border-color: #ffd700;
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.06) 0%, white 100%);
+}
+.rank-gold:hover {
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+    border-color: #f5c400;
+}
+
+/* Silver */
+.rank-silver {
+    border-color: #c0c0c0;
+    background: linear-gradient(135deg, rgba(192, 192, 192, 0.06) 0%, white 100%);
+}
+.rank-silver:hover {
+    box-shadow: 0 10px 30px rgba(100, 116, 139, 0.2);
+}
+
+/* Bronze */
+.rank-bronze {
+    border-color: #cd7f32;
+    background: linear-gradient(135deg, rgba(205, 127, 50, 0.06) 0%, white 100%);
+}
+.rank-bronze:hover {
+    box-shadow: 0 10px 30px rgba(205, 127, 50, 0.25);
+}
+
+.locked {
+    filter: grayscale(1);
+    opacity: 0.55;
+}
+.locked:hover {
+    box-shadow: none;
+    transform: none;
+}
+
+.pb-icon {
+    font-size: 2.8rem;
+    margin-bottom: 12px;
+    display: block;
+}
+.rank-gold .pb-icon { color: #f39c12; filter: drop-shadow(0 2px 8px rgba(243, 156, 18, 0.4)); }
+.rank-silver .pb-icon { color: #95a5a6; }
+.rank-bronze .pb-icon { color: #d35400; }
+
+.pb-info h4 {
+    font-size: 1.05rem;
+    color: var(--text-main);
+    font-weight: 800;
+    margin-bottom: 4px;
+}
+.pb-vtuber {
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.pb-rank {
+    display: inline-block;
+    background: var(--text-main);
+    color: white;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    letter-spacing: 0.3px;
+}
+.rank-gold .pb-rank { background: linear-gradient(135deg, #f39c12, #e67e22); }
+.rank-silver .pb-rank { background: linear-gradient(135deg, #95a5a6, #7f8c8d); }
+.rank-bronze .pb-rank { background: linear-gradient(135deg, #d35400, #a04000); }
+
+.btn-share {
+    position: absolute;
+    top: 14px; right: 14px;
+    background: white;
+    border: 1px solid #e9ecef;
+    color: var(--text-muted);
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-share:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: scale(1.05);
+}
+
+/* ---- Supported VTubers ---- */
+.supported-v-list { display: flex; flex-direction: column; gap: 14px; }
+
+.v-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 18px 20px;
+    border: 1.5px solid rgba(139, 92, 246, 0.1);
+    border-radius: 16px;
+    background: #fafafa;
+    transition: all 0.25s;
+}
+.v-card:hover {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 6px 20px rgba(236, 72, 153, 0.1);
+    transform: translateX(4px);
+}
+
+.v-avatar {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.placeholder-v {
+    width: 68px; height: 68px;
+    border-radius: 50%;
+    background: var(--secondary-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--secondary);
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.v-details { flex: 1; }
+.v-details h4 {
+    font-size: 1.1rem;
+    color: var(--text-main);
+    font-weight: 800;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.v-details p { color: var(--text-muted); font-size: 0.9rem; }
+.v-details p strong {
+    color: var(--primary);
+    font-family: 'Baloo 2', monospace;
+    font-size: 1rem;
+}
+
+/* ---- Navbar avatar customization ---- */
+.user-menu-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: 16px;
+    padding: 4px 14px 4px 4px;
+    background: rgba(139, 92, 246, 0.06);
+    border-radius: 30px;
+    border: 1px solid rgba(139, 92, 246, 0.12);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.user-menu-nav:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+}
+.nav-avatar { width: 32px; height: 32px; border-radius: 50%; }
+
+/* Buttons reused from global */
+.btn-primary {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 12px 24px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(236, 72, 153, 0.28);
+    transition: all 0.2s;
+}
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(236, 72, 153, 0.38);
+}
+
+.btn-outline {
+    background: white;
+    border: 1.5px solid var(--primary);
+    color: var(--primary);
+    padding: 9px 18px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+.btn-outline:hover {
+    background: var(--primary-light);
+    transform: translateY(-1px);
+}
+
+.full-width { width: 100%; }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px) {
+    .fan-container { grid-template-columns: 1fr; }
+    .fan-sidebar { position: static; }
+}

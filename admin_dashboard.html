@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="zh-TW" data-theme="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! 平台營運後台</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-sidebar-active: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --primary-blue: #2563eb;
+            --primary-blue-hover: #1d4ed8;
+            --danger-red: #ef4444;
+            --success-green: #10b981;
+            --warning-amber: #f59e0b;
+            --font-family: 'Noto Sans TC', sans-serif;
+            --sidebar-width: 250px;
+        }
+
+        [data-theme="dark"] {
+            --bg-body: #0f172a;
+            --bg-sidebar: #1e293b;
+            --bg-sidebar-active: #334155;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #334155;
+            --primary-blue: #3b82f6;
+            --primary-blue-hover: #60a5fa;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-body);
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== Topbar ===== */
+        .topbar {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 60px;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            z-index: 50;
+        }
+
+        .topbar-brand {
+            font-size: 1.2rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: var(--sidebar-width);
+            color: var(--text-main);
+            text-decoration: none;
+        }
+        
+        .topbar-brand span {
+            color: var(--danger-red);
+        }
+
+        .topbar-right {
+            margin-left: auto;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            position: fixed;
+            top: 60px; left: 0; bottom: 0;
+            width: var(--sidebar-width);
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            z-index: 40;
+            padding-top: 16px;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 12px;
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 4px;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+            font-family: var(--font-family);
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+            background: var(--bg-sidebar-active);
+        }
+        
+        .nav-item.active {
+            color: var(--primary-blue);
+            background: rgba(37,99,235,0.08);
+        }
+
+        .nav-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .nav-item i { width: 18px; text-align: center; }
+
+        .nav-badge {
+            background: var(--danger-red);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 99px;
+        }
+
+        /* ===== Main Content ===== */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            margin-top: 60px;
+            padding: 32px 40px;
+            max-width: 1300px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .page-meta {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            font-family: var(--font-family);
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .btn-outline {
+            background: var(--bg-card);
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover { background: var(--bg-body); border-color: var(--text-muted); }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover { background: var(--primary-blue-hover); box-shadow: 0 4px 12px rgba(37,99,235,0.2); }
+
+        .btn-danger { background: var(--danger-red); color: white; }
+        .btn-danger:hover { background: #dc2626; }
+        
+        .btn-success { background: var(--success-green); color: white; }
+        .btn-success:hover { background: #059669; }
+
+        /* Panel Visibility */
+        .admin-panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .admin-panel.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Generic Card */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.04);
+        }
+
+        .card-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* KPI Specific */
+        .kpi-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: 'JetBrains Mono', monospace;
+            margin: 12px 0 8px;
+            color: var(--text-main);
+        }
+        .kpi-trend {
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Alerts */
+        .alert-banner {
+            background: rgba(239,68,68,0.08);
+            border: 1px solid rgba(239,68,68,0.2);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            color: var(--text-main);
+        }
+        [data-theme="dark"] .alert-banner { background: rgba(239,68,68,0.15); }
+
+        /* Tables */
+        .data-table-wrapper {
+            overflow-x: auto;
+            margin: 0 -24px;
+            padding: 0 24px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 600px;
+        }
+        .data-table th {
+            text-align: left;
+            padding: 14px 12px;
+            color: var(--text-muted);
+            font-weight: 700;
+            border-bottom: 2px solid var(--border-color);
+            background: rgba(0,0,0,0.02);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+        [data-theme="dark"] .data-table th { background: rgba(255,255,255,0.02); }
+        .data-table td {
+            padding: 16px 12px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+            color: var(--text-main);
+        }
+        .data-table tr:hover td { background: rgba(0,0,0,0.01); }
+        [data-theme="dark"] .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+        .data-table tr:last-child td { border-bottom: none; }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .status-success { background: rgba(16,185,129,0.1); color: var(--success-green); border: 1px solid rgba(16,185,129,0.2); }
+        .status-warning { background: rgba(245,158,11,0.1); color: var(--warning-amber); border: 1px solid rgba(245,158,11,0.2); }
+        .status-danger { background: rgba(239,68,68,0.1); color: var(--danger-red); border: 1px solid rgba(239,68,68,0.2); }
+
+        /* User Identity row (KYC) */
+        .user-id-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-avatar {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            background: var(--border-color);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+        .user-info { display: flex; flex-direction: column; }
+        .user-name { font-weight: 700; font-size: 0.95rem; }
+        .user-sub { font-size: 0.8rem; color: var(--text-muted); }
+
+        /* Form elements for CMS */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--text-main); }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .form-textarea { resize: vertical; min-height: 100px; }
+
+        /* Security Log Styles */
+        .sec-log-list { list-style: none; }
+        .sec-log-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+        .sec-log-item:last-child { border: none; padding-bottom: 0; }
+        .sl-time { color: var(--text-muted); white-space: nowrap; }
+        .sl-msg { color: var(--text-main); flex: 1; line-height: 1.5; }
+        .sl-high { color: var(--danger-red); font-weight: 700; }
+        .sl-warn { color: var(--warning-amber); font-weight: 700; }
+        .sl-info { color: var(--success-green); font-weight: 700; }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px); z-index: 1000;
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.2s;
+        }
+        .modal-overlay.open { opacity: 1; pointer-events: auto; }
+        .modal-box {
+            background: var(--bg-card); border-radius: 16px;
+            padding: 32px; width: 500px; max-width: 90vw;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+            transform: translateY(20px); transition: transform 0.2s;
+            border: 1px solid var(--border-color);
+        }
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+        .modal-header { margin-bottom: 24px; }
+        .modal-title { font-size: 1.3rem; font-weight: 800; color: var(--text-main); margin-bottom: 4px; }
+        .modal-sub { font-size: 0.9rem; color: var(--text-muted); }
+        
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed; bottom: 32px; right: 32px; z-index: 2000;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .toast {
+            background: var(--bg-card); color: var(--text-main);
+            padding: 16px 20px; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-left: 4px solid var(--primary-blue);
+            display: flex; align-items: center; gap: 12px;
+            min-width: 280px;
+            transform: translateX(100%); opacity: 0;
+            animation: slideIn 0.3s forwards;
+            border: 1px solid var(--border-color);
+        }
+        @keyframes slideIn {
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .toast.fadeOut {
+            animation: slideOut 0.3s forwards;
+        }
+        @keyframes slideOut {
+            to { transform: translateX(100%); opacity: 0; }
+        }
+        .toast.success { border-left-color: var(--success-green); }
+        .toast.error { border-left-color: var(--danger-red); }
+
+        @media (max-width: 900px) {
+            .sidebar { transform: translateX(-100%); transition: 0.3s; }
+            .sidebar.show { transform: translateX(0); }
+            .main-content { margin-left: 0; padding: 20px; }
+            .topbar-brand { width: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Topbar -->
+    <header class="topbar">
+        <a href="#" class="topbar-brand">V-Up! <span>Admin</span></a>
+        
+        <div class="topbar-right">
+            <button class="btn btn-outline" style="padding: 8px;" onclick="toggleTheme()" title="切換深淺色">
+                <i class="fas fa-moon" id="theme-icon"></i>
+            </button>
+            <a href="index.html" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> 檢視前台</a>
+            <a href="admin_login.html" class="btn btn-outline" style="border-color: var(--danger-red); color: var(--danger-red);">
+                <i class="fas fa-sign-out-alt"></i> 登出
+            </a>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div style="padding: 0 16px 12px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+            Core Operations
+        </div>
+        <ul class="nav-menu">
+            <button class="nav-item active" onclick="switchNav('overview', this)">
+                <div class="nav-item-left"><i class="fas fa-chart-pie"></i> 營運總覽 Overview</div>
+            </button>
+            <button class="nav-item" onclick="switchNav('kyc', this)">
+                <div class="nav-item-left"><i class="fas fa-id-card"></i> KYC 與身份審查</div>
+                <span class="nav-badge">3</span>
+            </button>
+            <button class="nav-item" onclick="switchNav('finance', this)">
+                <div class="nav-item-left"><i class="fas fa-money-check-alt"></i> 金流與清算管理</div>
+            </button>
+            <button class="nav-item" onclick="switchNav('cms', this)">
+                <div class="nav-item-left"><i class="fas fa-edit"></i> 平台內容 (CMS)</div>
+            </button>
+        </ul>
+
+        <div style="padding: 16px 16px 12px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
+            System & Risk
+        </div>
+        <ul class="nav-menu">
+            <button class="nav-item" onclick="switchNav('security', this)">
+                <div class="nav-item-left"><i class="fas fa-shield-alt"></i> 資安與稽核日誌</div>
+                <span class="nav-badge" style="background:var(--warning-amber);">2</span>
+            </button>
+            <button class="nav-item" onclick="showToast('功能建置中...','error')">
+                <div class="nav-item-left"><i class="fas fa-server"></i> 伺服器狀態監控</div>
+            </button>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="page-title" id="page-title">平台營運總覽</h1>
+                <p class="page-meta"><i class="fas fa-circle" style="color: var(--success-green); font-size: 0.6rem;"></i> 系統正常運作中 &nbsp;·&nbsp; 最後更新：<span id="last-update">剛剛</span></p>
+            </div>
+            <button class="btn btn-primary" onclick="refreshData()">
+                <i class="fas fa-sync-alt" id="refresh-icon"></i> 刷新數據
+            </button>
+        </div>
+
+        <!-- ================= PANEL: OVERVIEW ================= -->
+        <div id="panel-overview" class="admin-panel active">
+            
+            <div class="alert-banner">
+                <i class="fas fa-exclamation-triangle" style="color: var(--danger-red); font-size: 1.5rem;"></i>
+                <div style="flex:1;">
+                    <div style="font-weight:700; margin-bottom:4px; font-size:1rem;">安全警報：發現異常登入行為</div>
+                    <div style="font-size:0.9rem; color:var(--text-muted);">系統在過去一小時內攔截了 50 次來自海外 IP 的登入嘗試，請至資安日誌確認。</div>
+                </div>
+                <button class="btn btn-outline" style="border-color:var(--danger-red); color:var(--danger-red);" onclick="switchNav('security', document.querySelector('.nav-item:nth-child(5)'))">前往調查</button>
+            </div>
+
+            <div class="card-row">
+                <div class="card" style="border-top: 4px solid var(--primary-blue);">
+                    <div class="card-title"><i class="fas fa-dollar-sign text-muted"></i> 本月累計金流</div>
+                    <div class="kpi-value">$4,250,500</div>
+                    <div class="kpi-trend" style="color: var(--success-green);"><i class="fas fa-arrow-up"></i> +15.2% vs 上月</div>
+                </div>
+                <div class="card" style="border-top: 4px solid var(--success-green);">
+                    <div class="card-title"><i class="fas fa-users text-muted"></i> 活躍 VTuber 數</div>
+                    <div class="kpi-value">128</div>
+                    <div class="kpi-trend" style="color: var(--primary-blue);"><i class="fas fa-user-plus"></i> 本月新增 12 人</div>
+                </div>
+                <div class="card" style="border-top: 4px solid var(--danger-red);">
+                    <div class="card-title"><i class="fas fa-id-card text-muted"></i> 待審核 KYC</div>
+                    <div class="kpi-value" style="color: var(--danger-red);">3</div>
+                    <div class="kpi-trend" style="color: var(--warning-amber);"><i class="fas fa-clock"></i> 需盡速處理</div>
+                </div>
+            </div>
+
+            <div class="card-row" style="grid-template-columns: 2fr 1fr;">
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-list"></i> 近期註冊預覽</div>
+                    </div>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>使用者</th>
+                                    <th>身分</th>
+                                    <th>註冊時間</th>
+                                    <th>信箱驗證</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="user-id-row">
+                                            <div class="user-avatar"><i class="fas fa-user"></i></div>
+                                            <div class="user-info">
+                                                <span class="user-name">林*明</span>
+                                                <span class="user-sub">VTuber 申請中</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-warning">審核中</span></td>
+                                    <td style="font-family:'JetBrains Mono'; color:var(--text-muted);">2026-03-24 08:30</td>
+                                    <td><span class="status-badge status-success">已驗證</span></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="user-id-row">
+                                            <div class="user-avatar" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-user"></i></div>
+                                            <div class="user-info">
+                                                <span class="user-name">王*傑</span>
+                                                <span class="user-sub">粉絲</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="status-badge status-success" style="background:transparent; border:1px solid #e2e8f0; color:var(--text-muted);">粉絲</span></td>
+                                    <td style="font-family:'JetBrains Mono'; color:var(--text-muted);">2026-03-24 07:12</td>
+                                    <td><span class="status-badge status-success">已驗證</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fas fa-shield-alt"></i> 系統健康度</div>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.85rem; font-weight:700;">
+                            <span>API 伺服器狀態</span>
+                            <span style="color:var(--success-green);">正常 (99.9%)</span>
+                        </div>
+                        <div style="height:6px; background:var(--bg-body); border-radius:3px; overflow:hidden;">
+                            <div style="height:100%; width:100%; background:var(--success-green);"></div>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 24px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:6px; font-size:0.85rem; font-weight:700;">
+                            <span>資料庫負載</span>
+                            <span style="color:var(--warning-amber);">中等 (45%)</span>
+                        </div>
+                        <div style="height:6px; background:var(--bg-body); border-radius:3px; overflow:hidden;">
+                            <div style="height:100%; width:45%; background:var(--warning-amber);"></div>
+                        </div>
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.5;">系統資源充足，第三方的金流 Callback Webhook 皆在 200ms 內回應。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL: KYC ================= -->
+        <div id="panel-kyc" class="admin-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">創作者 KYC 信託實名審查</div>
+                        <div class="card-desc">依據金管會防洗錢法規，所有具備提現功能的 VTuber 必須完成實名認證。</div>
+                    </div>
+                </div>
+                
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>申請人/VTuber名稱</th>
+                                <th>提交文件類型</th>
+                                <th>申請時間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div class="user-id-row">
+                                        <div class="user-avatar"><i class="fas fa-id-card"></i></div>
+                                        <div class="user-info">
+                                            <span class="user-name">林*明</span>
+                                            <span class="user-sub">VT 宣稱名：幻影_Phantom</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>雙證件正本、銀行存摺封面</td>
+                                <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">2026-03-24 08:30</td>
+                                <td><span class="status-badge status-warning"><i class="fas fa-circle" style="font-size:0.4rem;"></i> 待審核</span></td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openKYCModal('林*明','幻影_Phantom','2026-03-24 08:30')">審查資料</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div class="user-id-row">
+                                        <div class="user-avatar"><i class="fas fa-id-card"></i></div>
+                                        <div class="user-info">
+                                            <span class="user-name">陳*華</span>
+                                            <span class="user-sub">VT 宣稱名：貓又_Nekomata</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>身分證、直播設備照片佐證</td>
+                                <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">2026-03-24 09:15</td>
+                                <td><span class="status-badge status-warning"><i class="fas fa-circle" style="font-size:0.4rem;"></i> 待審核</span></td>
+                                <td>
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openKYCModal('陳*華','貓又_Nekomata','2026-03-24 09:15')">審查資料</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL: FINANCE ================= -->
+        <div id="panel-finance" class="admin-panel">
+            <div class="card-row">
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">本月已清算 (NTD)</div>
+                    <div class="kpi-value text-success" style="color:var(--success-green);">$3,820,000</div>
+                    <div class="kpi-trend">已撥款至 VTuber 實名帳戶</div>
+                </div>
+                <div class="card" style="margin-bottom:0;">
+                    <div class="card-title">待清算在途資金 (NTD)</div>
+                    <div class="kpi-value" style="color:var(--warning-amber);">$430,500</div>
+                    <div class="kpi-trend">第三方金流信託處理中</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title">即時交易日誌</div>
+                        <div class="card-desc">顯示粉絲贊助與金流閘道的回傳狀態。</div>
+                    </div>
+                    <button class="btn btn-outline"><i class="fas fa-download"></i> 匯出 CSV</button>
+                </div>
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>交易序號 (TXID)</th>
+                                <th>付款方 (粉絲)</th>
+                                <th>收款方 (VTuber)</th>
+                                <th>金額 (NTD)</th>
+                                <th>金流狀態</th>
+                                <th>時間</th>
+                            </tr>
+                        </thead>
+                        <tbody id="finance-log-tbody">
+                            <!-- JS loaded transactions here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL: CMS ================= -->
+        <div id="panel-cms" class="admin-panel">
+            <div class="card-header">
+                <div>
+                    <h2 class="page-title" style="font-size:1.4rem;">平台內容管理 (CMS)</h2>
+                    <p class="page-meta">修改前台首頁與全站共用元件的文字內容。儲存後將即時更新至前台。</p>
+                </div>
+                <button class="btn btn-primary" onclick="saveCMS()"><i class="fas fa-save"></i> 發布變更</button>
+            </div>
+
+            <div class="card-row">
+                <!-- Hero Section Edit -->
+                <div class="card">
+                    <div class="card-title" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;">
+                        <i class="fas fa-heading"></i> 首頁首屏區 (Hero Section)
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">主標題 (H1)</label>
+                        <input type="text" id="cms-h1" class="form-input" value="V-Up! 綻放計畫">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">次標題 (Subtitle)</label>
+                        <input type="text" id="cms-sub" class="form-input" value="陪他成長，做他最初的傳奇">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">粉絲入口按鈕文字</label>
+                        <input type="text" id="cms-btn" class="form-input" value="我要支持 VTuber">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">首頁 Hero 輪播圖片 (每行一個 URL)</label>
+                        <textarea id="cms-img" class="form-input form-textarea" placeholder="在此貼上多張圖片網址，將自動於首頁輪播展示（留白則使用預設漸層色塊）"></textarea>
+                    </div>
+                </div>
+
+                <!-- Marquee Edit -->
+                <div class="card">
+                    <div class="card-title" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px; margin-bottom: 20px;">
+                        <i class="fas fa-bullhorn"></i> 全站置頂跑馬燈 (Announcements)
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">跑馬燈內容</label>
+                        <textarea id="cms-marquee" class="form-input form-textarea">🌟 歡迎來到 V-Up! 綻放計畫！  🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！  感謝「星空騎士_阿龍」成為本週最大貢獻者！</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">啟用狀態</label>
+                        <select class="form-input">
+                            <option value="1">顯示</option>
+                            <option value="0">隱藏</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= PANEL: SECURITY ================= -->
+        <div id="panel-security" class="admin-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title"><i class="fas fa-terminal"></i> 系統安全與存取稽核日誌 (Audit Logs)</div>
+                        <div class="card-desc">記錄所有管理員操作、系統異常與資安攔截事件。</div>
+                    </div>
+                </div>
+                
+                <div style="background: #0f172a; padding: 20px; border-radius: 12px; height: 400px; overflow-y: auto;">
+                    <ul class="sec-log-list">
+                        <li class="sec-log-item">
+                            <span class="sl-time">[2026-03-24 12:45:01]</span>
+                            <span class="sl-high">[ALERT]</span>
+                            <span class="sl-msg">IP 192.168.1.55 觸發 WAF 規則：異常高頻登入嘗試 (Failed auth > 50)。IP 已封鎖 24 小時。</span>
+                        </li>
+                        <li class="sec-log-item">
+                            <span class="sl-time">[2026-03-24 12:40:22]</span>
+                            <span class="sl-warn">[WARN]</span>
+                            <span class="sl-msg">Payment Gateway Webhook 延遲 > 2000ms，請留意網路波動。</span>
+                        </li>
+                        <li class="sec-log-item" style="opacity:0.8;">
+                            <span class="sl-time">[2026-03-24 12:30:00]</span>
+                            <span class="sl-info">[INFO]</span>
+                            <span class="sl-msg">管理員 (ADM-001) 已登入系統。</span>
+                        </li>
+                        <li class="sec-log-item" style="opacity:0.8;">
+                            <span class="sl-time">[2026-03-24 12:00:05]</span>
+                            <span class="sl-info">[INFO]</span>
+                            <span class="sl-msg">CRON 排程：每日金流批次結算已完成。處理筆數：420，失敗筆數：0。</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal for KYC -->
+    <div class="modal-overlay" id="kyc-modal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <div class="modal-title">KYC 證件審查</div>
+                <div class="modal-sub">請確認創作者提交的身分資訊是否真實有效。</div>
+            </div>
+
+            <div style="background: var(--bg-body); padding: 16px; border-radius: 8px; margin-bottom: 20px; border: 1px solid var(--border-color);">
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">真實姓名</div>
+                <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 12px;" id="kyc-modal-name">林某某</div>
+                
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 4px;">VTuber 宣稱名</div>
+                <div style="font-weight: 700; color: var(--primary-blue);" id="kyc-modal-vtuber">幻影_Phantom</div>
+            </div>
+
+            <div style="margin-bottom: 24px;">
+                <div style="font-size: 0.9rem; font-weight: 700; margin-bottom: 12px; color: var(--text-main);">📸 附加佐證文件 (機密)</div>
+                <div style="display: flex; gap: 12px;">
+                    <button class="btn btn-outline" style="flex:1;"><i class="fas fa-file-image"></i> 身分證正面.jpg</button>
+                    <button class="btn btn-outline" style="flex:1;"><i class="fas fa-file-invoice-dollar"></i> 存摺封面.pdf</button>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn btn-outline" style="flex:1;" onclick="closeKYCModal()">取消</button>
+                <button class="btn btn-danger" style="flex:1;" onclick="approveKYC(false)">未通過 (要求補件)</button>
+                <button class="btn btn-success" style="flex:2;" onclick="approveKYC(true)"><i class="fas fa-check"></i> 審核通過 (開通權限)</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script>
+        // ----------------- Theme Toggle ----------------- //
+        (function(){
+            const t = localStorage.getItem('vup-theme') || '';
+            document.documentElement.dataset.theme = t;
+            const icon = document.getElementById('theme-icon');
+            if (icon) icon.className = t === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        })();
+        
+        function toggleTheme() {
+            const root = document.documentElement;
+            const next = root.dataset.theme === 'dark' ? '' : 'dark';
+            root.dataset.theme = next;
+            localStorage.setItem('vup-theme', next);
+            document.getElementById('theme-icon').className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        // ----------------- Sidebar Navigation ----------------- //
+        function switchNav(panelId, btnEl) {
+            // Update Title
+            const titles = {
+                'overview': '平台營運總覽',
+                'kyc': 'KYC 與身份審查',
+                'finance': '金流與清算管理',
+                'cms': '平台內容管理 (CMS)',
+                'security': '系統安全與存取稽核'
+            };
+            document.getElementById('page-title').innerText = titles[panelId] || '平台營運總覽';
+
+            // Active State
+            if (btnEl) {
+                document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+                btnEl.classList.add('active');
+            }
+
+            // Show Panel
+            document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+            const targetPanel = document.getElementById('panel-' + panelId);
+            if(targetPanel) {
+                targetPanel.classList.add('active');
+            }
+        }
+
+        // ----------------- Fake Refresh Logic ----------------- //
+        function refreshData() {
+            const icon = document.getElementById('refresh-icon');
+            icon.classList.add('fa-spin');
+            setTimeout(() => {
+                icon.classList.remove('fa-spin');
+                
+                const now = new Date();
+                const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
+                                   now.getMinutes().toString().padStart(2, '0') + ':' + 
+                                   now.getSeconds().toString().padStart(2, '0');
+                                   
+                document.getElementById('last-update').innerText = '今日 ' + timeString;
+                showToast('API 數據已同步更新！', 'success');
+            }, 800);
+        }
+
+        // ----------------- Custom Toast Alert ----------------- //
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            
+            let iconClass = 'fas fa-info-circle';
+            if(type === 'success') iconClass = 'fas fa-check-circle';
+            if(type === 'error') iconClass = 'fas fa-exclamation-circle';
+            
+            toast.innerHTML = `<i class="${iconClass}"></i> <span>${msg}</span>`;
+            
+            container.appendChild(toast);
+            
+            // Remove after 3s
+            setTimeout(() => {
+                toast.classList.add('fadeOut');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ----------------- KYC Modal Logic ----------------- //
+        function openKYCModal(realName, vtName, time) {
+            document.getElementById('kyc-modal-name').innerText = realName;
+            document.getElementById('kyc-modal-vtuber').innerText = vtName;
+            document.getElementById('kyc-modal').classList.add('open');
+        }
+
+        function closeKYCModal() {
+            document.getElementById('kyc-modal').classList.remove('open');
+        }
+
+        function approveKYC(isApproved) {
+            closeKYCModal();
+            if(isApproved) {
+                showToast(`已核准！系統將自動開通 VTuber 專屬提現錢包。`, 'success');
+            } else {
+                showToast(`已退回，系統已發送補件通知信至申請者信箱。`, 'error');
+            }
+        }
+
+        // ----------------- CMS Dynamic Save ----------------- //
+        function saveCMS() {
+            localStorage.setItem('vup-cms-h1', document.getElementById('cms-h1').value);
+            localStorage.setItem('vup-cms-sub', document.getElementById('cms-sub').value);
+            localStorage.setItem('vup-cms-btn', document.getElementById('cms-btn').value);
+            localStorage.setItem('vup-cms-img', document.getElementById('cms-img').value);
+            localStorage.setItem('vup-cms-marquee', document.getElementById('cms-marquee').value);
+            showToast('內容已儲存並推播至 CDN！', 'success');
+        }
+
+        function renderFinanceTable() {
+            const defaultTxns = [
+                { id: 'TXN-109485', user: '星空騎士_阿龍', vtuber: '星野夢彩', amount: 5000, status: '成功', time: '12:30:45' },
+                { id: 'TXN-109484', user: '深海的貓', vtuber: '星野夢彩', amount: 3200, status: '成功', time: '12:15:10' },
+                { id: 'TXN-109483', user: 'Mystic_K', vtuber: '電玩少女_小葵', amount: 2800, status: '成功', time: '11:45:00' },
+                { id: 'TXN-109482', user: '(匿名訪客)', vtuber: '夜月_Nocturne', amount: 500, status: '處理中', time: '11:15:22' }
+            ];
+            
+            let txns = JSON.parse(localStorage.getItem('vup-transactions'));
+            if (!txns) {
+                txns = defaultTxns;
+                localStorage.setItem('vup-transactions', JSON.stringify(txns));
+            }
+            
+            const tbody = document.getElementById('finance-log-tbody');
+            if (tbody) {
+                tbody.innerHTML = txns.map(t => {
+                    let statusTag = t.status === '成功' ? '<span class="tag t-green">成功</span>' : '<span class="tag t-yellow">處理中</span>';
+                    return `
+                        <tr>
+                            <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">${t.id}</td>
+                            <td>${t.user}</td>
+                            <td>${t.vtuber}</td>
+                            <td class="text-primary font-mono">+ ${t.amount.toLocaleString()}</td>
+                            <td>${statusTag}</td>
+                            <td style="font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">${t.time}</td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('vup-cms-h1')) document.getElementById('cms-h1').value = localStorage.getItem('vup-cms-h1');
+            if (localStorage.getItem('vup-cms-sub')) document.getElementById('cms-sub').value = localStorage.getItem('vup-cms-sub');
+            if (localStorage.getItem('vup-cms-btn')) document.getElementById('cms-btn').value = localStorage.getItem('vup-cms-btn');
+            if (localStorage.getItem('vup-cms-img')) document.getElementById('cms-img').value = localStorage.getItem('vup-cms-img');
+            if (localStorage.getItem('vup-cms-marquee')) document.getElementById('cms-marquee').value = localStorage.getItem('vup-cms-marquee');
+            
+            renderFinanceTable();
+        });
+    </script>
+</body>
+</html>
