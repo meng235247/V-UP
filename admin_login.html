@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! 營運平台 - 身分驗證</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --surface-dark: #1e293b;
+            --border-dark: #334155;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --admin-red: #ef4444;
+            --admin-red-glow: rgba(239, 68, 68, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image:
+                radial-gradient(circle at 15% 50%, rgba(239, 68, 68, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(239, 68, 68, 0.05), transparent 25%);
+        }
+
+        .admin-auth-box {
+            background: var(--surface-dark);
+            border: 1px solid var(--border-dark);
+            border-radius: 16px;
+            padding: 40px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .shield-icon {
+            font-size: 2.5rem;
+            color: var(--admin-red);
+            margin-bottom: 16px;
+            filter: drop-shadow(0 0 12px var(--admin-red-glow));
+        }
+
+        .auth-header h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .auth-header p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field {
+            width: 100%;
+            background: #0b1120;
+            border: 1px solid var(--border-dark);
+            padding: 12px 16px;
+            border-radius: 8px;
+            color: white;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--admin-red);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-login {
+            width: 100%;
+            background: var(--admin-red);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .btn-login:hover {
+            background: #dc2626;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--admin-red-glow);
+        }
+
+        .system-notice {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-dark);
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .system-notice i {
+            color: #f59e0b;
+            margin-right: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="admin-auth-box">
+        <div class="auth-header">
+            <i class="fas fa-shield-alt shield-icon"></i>
+            <h1>V-Up! 營運平台</h1>
+            <p>AUTHORIZED PERSONNEL ONLY</p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); window.location.href='admin_dashboard.html';">
+            <div class="input-group">
+                <label>員工編號 / Employee ID</label>
+                <input type="text" class="input-field" placeholder="VUP-ADM-..." required autofocus>
+            </div>
+
+            <div class="input-group">
+                <label>存取密碼 / Access Key</label>
+                <input type="password" class="input-field" placeholder="••••••••" required>
+            </div>
+
+            <div class="input-group">
+                <label>2FA 驗證碼 / Auth Token</label>
+                <input type="text" class="input-field" placeholder="6-digit code" maxlength="6" required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i class="fas fa-fingerprint"></i> 驗證登入
+            </button>
+        </form>
+
+        <div class="system-notice">
+            <i class="fas fa-exclamation-triangle"></i> 此為內部營運系統，全程記錄登入 IP 與操作行為。未經授權之存取將面臨法律訴追。若需客服協助，請聯繫 IT 部門。
+        </div>
+    </div>
+
+</body>
+
+</html>
