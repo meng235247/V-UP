@@ -5,202 +5,246 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V-Up! 粉絲個人頁面</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
-        rel="stylesheet">
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="fan_profile.css">
 </head>
 
-<body>
+<body class="fan-body">
 
-    <!-- Navigation -->
-    <nav class="glass-nav">
+    <!-- Nav -->
+    <nav class="top-nav">
         <div class="nav-brand">
-            <a href="index.html" style="text-decoration: none;"><span class="brand-v">V-Up!</span></a>
+            <a href="index.html" style="text-decoration: none;"><span
+                    style="font-weight: 900; background: linear-gradient(90deg, #ec4899, #0ea5e9); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.5rem; letter-spacing: -1px;">V-UP!</span></a>
         </div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-item">探索 VTuber</a>
-            <a href="fan_profile.html" class="nav-item active">我的個人頁</a>
-            <a href="auth.html" class="nav-item" style="color: #ef4444;"><i class="fas fa-sign-out-alt"></i> 登出</a>
-            <div class="user-menu-nav" style="margin-left: 1rem;">
-                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar"
-                    style="width: 30px; height: 30px; border-radius: 50%;">
+        <div class="nav-links center-links">
+            <a href="#" class="nav-item">探索</a>
+            <a href="#" class="nav-item">藝人</a>
+        </div>
+        <div class="nav-actions right-actions">
+            <button class="icon-btn"><i class="fa-regular fa-heart"></i></button>
+            <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+            <div class="user-menu-nav">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar">
             </div>
         </div>
     </nav>
 
+    <!-- Background Gradient -->
+    <div class="bg-gradient"></div>
+
     <div class="fan-container">
 
-        <!-- Left Sidebar: Profile & Wallet -->
-        <aside class="fan-sidebar glass-card">
-            <div class="fan-avatar-large">
-                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar">
-                <button class="edit-avatar-btn"><i class="fas fa-camera"></i></button>
+        <!-- Card 1: Profile Main -->
+        <div class="fan-card profile-card">
+
+            <!-- Header Row -->
+            <div class="profile-header">
+                <div class="profile-info-wrap">
+                    <div class="avatar-wrapper">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Avatar">
+                    </div>
+                    <div class="info-content">
+                        <span class="supporter-tag"><i class="fa-solid fa-circle"
+                                style="color: #ec4899; font-size: 8px; margin-right: 6px;"></i> SUPPORTER</span>
+                        <h2 class="fan-name">快樂的盤子</h2>
+                        <div class="tagline-row">
+                            <p class="fan-tagline">感恩我推讚嘆我推</p>
+                            <button class="btn-edit-profile">編輯個人設定</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="profile-actions">
+                    <button class="btn-social black-btn"><i class="fa-brands fa-twitter"></i> Twitter</button>
+                    <button class="btn-social black-btn"><i class="fa-brands fa-line"></i> LINE</button>
+                </div>
             </div>
 
-            <h2 class="fan-name">匿名蟑螂</h2>
-            <p class="fan-tagline">"為了守護光芒而戰！"</p>
+            <!-- Details Grid -->
+            <div class="profile-details-grid">
 
-            <div class="wallet-card">
-                <p class="wallet-label">目前持有星能點數</p>
-                <div class="wallet-balance">
-                    <i class="fas fa-gem text-primary"></i> 4,250
+                <!-- Left: Badges & Titles -->
+                <div class="badges-section">
+                    <div class="section-top row-flex">
+                        <h3 class="section-title"><i class="fa-solid fa-shield-halved text-pink"></i> 收藏成就勳章</h3>
+                        <span class="date-badge">DECEMBER 2024</span>
+                    </div>
+                    <div class="badges-grid">
+                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-regular fa-gem"></i></div>
+                        <div class="badge-icon bg-blue-light text-blue"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="badge-icon bg-purple-light text-purple"><i class="fa-solid fa-star"></i></div>
+                        <div class="badge-icon bg-gray-light text-gray"><i class="fa-solid fa-lock"></i></div>
+                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <div class="badge-icon bg-blue-light text-blue"><i class="fa-solid fa-heart"></i></div>
+
+                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-solid fa-wine-glass"></i></div>
+                        <div class="badge-icon bg-purple-light text-purple"><i class="fa-solid fa-hands-clapping"></i>
+                        </div>
+                        <div class="badge-icon bg-gray-light text-gray"><i class="fa-solid fa-ellipsis"></i></div>
+                    </div>
+
+                    <h4 class="sub-title">獲得稱號</h4>
+                    <div class="titles-flex">
+                        <span class="title-tag"><i class="fa-solid fa-flag text-blue"></i> 為您的首位里程碑助力</span>
+                        <span class="title-tag"><i class="fa-solid fa-trophy text-purple"></i> sakura的全面應援</span>
+                        <span class="title-tag"><i class="fa-solid fa-flag text-blue"></i> 全部都是盤幣</span>
+                    </div>
                 </div>
-                <button class="btn-primary full-width" style="margin-top: 15px;">儲值點數</button>
+
+                <!-- Right: Stats panels -->
+                <div class="stats-section">
+                    <div class="stat-panel">
+                        <h4 class="panel-header">路徑回顧</h4>
+                        <ul class="stat-list">
+                            <li>
+                                <div class="icon-wrap bg-pink-light text-pink"><i class="fa-regular fa-clock"></i></div>
+                                <div class="stat-text">
+                                    <span class="lbl">最長應援時間</span>
+                                    <span class="val">1,240 <small>day</small></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon-wrap bg-blue-light text-blue"><i class="fa-solid fa-users"></i></div>
+                                <div class="stat-text">
+                                    <span class="lbl">支持VTuber人數</span>
+                                    <span class="val">42 <small>位</small></span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon-wrap bg-purple-light text-purple"><i class="fa-solid fa-rocket"></i>
+                                </div>
+                                <div class="stat-text">
+                                    <span class="lbl">里程碑達成率</span>
+                                    <span class="val">92%</span>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="icon-wrap bg-purple-light text-purple"><i class="fa-solid fa-medal"></i>
+                                </div>
+                                <div class="stat-text">
+                                    <span class="lbl">徽章獲得數</span>
+                                    <span class="val">14</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="stat-panel">
+                        <h4 class="panel-header">應援最多的對象</h4>
+                        <ul class="support-list">
+                            <li><span class="dot bg-pink"></span> sakura</li>
+                            <li><span class="dot bg-blue"></span> 繁</li>
+                            <li><span class="dot bg-purple"></span> あいうえお</li>
+                            <li><span class="dot bg-purple-light"></span> さしすせそ</li>
+                        </ul>
+                    </div>
+                </div>
+
             </div>
+        </div>
 
-            <div class="fan-stats">
-                <div class="f-stat">
-                    <span class="f-val">3</span>
-                    <span class="f-lbl">支持的 VTuber</span>
+        <!-- Card 2: Supported VTubers -->
+        <div class="fan-card">
+            <h3 class="section-title text-lg"><i class="fa-solid fa-heart text-pink"></i> 陪伴成長的 VTuber 們</h3>
+            <p class="section-sub">您目前正在贊助與追隨的創作者名單。</p>
+
+            <div class="vtuber-flex">
+                <div class="vtuber-circle-card">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Mori<br>Calliope</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
                 </div>
-                <div class="f-stat">
-                    <span class="f-val">12</span>
-                    <span class="f-lbl">解鎖證明</span>
+                <div class="vtuber-circle-card">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Houshou<br>Marine</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
+                </div>
+                <div class="vtuber-circle-card">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Gawr<br>Gura</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
+                </div>
+                <div class="vtuber-circle-card">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Kobo<br>Kanaeru</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
+                </div>
+                <div class="vtuber-circle-card">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Vox<br>Akuma</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
                 </div>
             </div>
-        </aside>
+            <button class="btn-view-more">查看更多 <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
 
-        <!-- Right Content: Achievements & Supported VTubers -->
-        <main class="fan-main">
+        <!-- Card 3: Transactions -->
+        <div class="fan-card">
+            <h3 class="section-title text-lg"><i class="fa-solid fa-receipt text-blue"></i> 近期贊助與點數異動明細</h3>
+            <p class="section-sub">您最近 30 天內的付費紀錄與贊助目標。</p>
 
-            <section class="fan-section glass-card">
-                <div class="section-title">
-                    <h3><i class="fas fa-medal text-warning"></i> 我的永久貢獻證明庫</h3>
-                    <p>您在募資里程碑中進入前 10 名的專屬榮耀與限定證明，將永久展示於此！</p>
-                </div>
+            <div style="overflow-x: auto;">
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>日期時間</th>
+                            <th>對象</th>
+                            <th>項目</th>
+                            <th>花費(NTD)</th>
+                            <th>狀態</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-date">2026-03-24 14:30</td>
+                            <td class="col-bold">星野夢彩</td>
+                            <td>3D化募資</td>
+                            <td class="col-red">- 500</td>
+                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                        </tr>
+                        <tr>
+                            <td class="col-date">2026-03-22 09:15</td>
+                            <td class="col-bold">sakura</td>
+                            <td>原創曲製作</td>
+                            <td class="col-red">- 3,000</td>
+                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                        </tr>
+                        <tr>
+                            <td class="col-date">2026-03-15 20:00</td>
+                            <td class="col-bold">電玩少女_小葵</td>
+                            <td>遊戲伺服器</td>
+                            <td class="col-red">- 150</td>
+                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button class="btn-view-more">查看更多 <i class="fa-solid fa-chevron-down"></i></button>
+        </div>
 
-                <div class="proofs-grid">
-                    <!-- Proof Item -->
-                    <div class="proof-badge-item rank-gold">
-                        <div class="pb-icon"><i class="fas fa-trophy"></i></div>
-                        <div class="pb-info">
-                            <h4>第一套 Live2D 募資</h4>
-                            <p class="pb-vtuber">星野夢彩</p>
-                            <span class="pb-rank">Top 1 貢獻者</span>
-                        </div>
-                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
-                    </div>
-
-                    <div class="proof-badge-item rank-silver">
-                        <div class="pb-icon"><i class="fas fa-microphone-alt"></i></div>
-                        <div class="pb-info">
-                            <h4>錄音室級設備升級</h4>
-                            <p class="pb-vtuber">星野夢彩</p>
-                            <span class="pb-rank">Top 2 貢獻者</span>
-                        </div>
-                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
-                    </div>
-
-                    <div class="proof-badge-item rank-bronze">
-                        <div class="pb-icon"><i class="fas fa-gamepad"></i></div>
-                        <div class="pb-info">
-                            <h4>3D 總決賽特別企劃</h4>
-                            <p class="pb-vtuber">電玩少女_爪日</p>
-                            <span class="pb-rank">Top 3 貢獻者</span>
-                        </div>
-                        <button class="btn-share"><i class="fas fa-share-alt"></i> 炫耀</button>
-                    </div>
-
-                    <div class="proof-badge-item locked">
-                        <div class="pb-icon"><i class="fas fa-lock"></i></div>
-                        <div class="pb-info">
-                            <h4>參與下一次募資來解鎖</h4>
-                            <p class="pb-vtuber">???</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="fan-section glass-card" style="margin-top: 30px;">
-                <div class="section-title">
-                    <h3><i class="fas fa-receipt text-success"></i> 近期贊助與點數異動明細</h3>
-                    <p>您最近 30 天內的星能點數使用紀錄與贊助目標。</p>
-                </div>
-
-                <div style="overflow-x: auto;">
-                    <table
-                        style="width: 100%; text-align: left; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem;">
-                        <thead>
-                            <tr style="border-bottom: 1px solid var(--border-color); color: var(--text-muted);">
-                                <th style="padding: 12px 8px;">日期時間</th>
-                                <th style="padding: 12px 8px;">交易類型</th>
-                                <th style="padding: 12px 8px;">對象 / 項目</th>
-                                <th style="padding: 12px 8px;">點數變更</th>
-                                <th style="padding: 12px 8px;">狀態</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr style="border-bottom: 1px dashed var(--border-color);">
-                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
-                                    2026-03-24 14:30</td>
-                                <td style="padding: 12px 8px;">里程碑贊助</td>
-                                <td style="padding: 12px 8px; font-weight: bold;">星野夢彩 (3D化募資)</td>
-                                <td style="padding: 12px 8px; color: #ef4444; font-weight: bold;">- 500</td>
-                                <td style="padding: 12px 8px;"><span
-                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
-                                            class="fas fa-check"></i> 成功扣款</span></td>
-                            </tr>
-                            <tr style="border-bottom: 1px dashed var(--border-color);">
-                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
-                                    2026-03-22 09:15</td>
-                                <td style="padding: 12px 8px;">點數儲值</td>
-                                <td style="padding: 12px 8px;">線上刷卡 (Visa *4321)</td>
-                                <td style="padding: 12px 8px; color: #10b981; font-weight: bold;">+ 3,000</td>
-                                <td style="padding: 12px 8px;"><span
-                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
-                                            class="fas fa-check"></i> 已入帳</span></td>
-                            </tr>
-                            <tr>
-                                <td style="padding: 12px 8px; color: var(--text-muted); font-family: monospace;">
-                                    2026-03-15 20:00</td>
-                                <td style="padding: 12px 8px;">加入後援會</td>
-                                <td style="padding: 12px 8px; font-weight: bold;">電玩少女_小葵 (鐵粉方案)</td>
-                                <td style="padding: 12px 8px; color: #ef4444; font-weight: bold;">- 150</td>
-                                <td style="padding: 12px 8px;"><span
-                                        style="background: rgba(16,185,129,0.1); color: #10b981; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem;"><i
-                                            class="fas fa-check"></i> 成功扣款</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <section class="fan-section glass-card" style="margin-top: 30px;">
-                <div class="section-title">
-                    <h3><i class="fas fa-heart text-primary"></i> 陪伴成長的 VTuber 們</h3>
-                    <p>您目前正在贊助與追隨的創作者名單。</p>
-                </div>
-
-                <div class="supported-v-list">
-                    <div class="v-card">
-                        <img src="https://images.unsplash.com/photo-1622288019310-914b1ba1d8dd?auto=format&fit=crop&w=150&q=80"
-                            alt="V" class="v-avatar">
-                        <div class="v-details">
-                            <h4>星野夢彩 <i class="fas fa-check-circle text-info"></i></h4>
-                            <p>累計貢獻: <strong>12,500</strong> 點</p>
-                        </div>
-                        <a href="index.html" class="btn-outline">前往專頁</a>
-                    </div>
-
-                    <div class="v-card">
-                        <div class="v-avatar placeholder-v"><i class="fas fa-headset"></i></div>
-                        <div class="v-details">
-                            <h4>電玩少女_小葵</h4>
-                            <p>累計貢獻: <strong>3,200</strong> 點</p>
-                        </div>
-                        <a href="#" class="btn-outline">前往專頁</a>
-                    </div>
-                </div>
-            </section>
-
-        </main>
     </div>
+
+    <!-- Footer -->
+    <footer class="fan-footer">
+        <div class="footer-left">
+            <h4 style="font-weight: 900; letter-spacing: -0.5px; opacity: 0.8;">V-UP!</h4>
+            <div class="footer-links">
+                <a href="#">服務條款</a>
+                <a href="#">隱私政策</a>
+                <a href="#">說明中心</a>
+                <a href="#">全球排名</a>
+            </div>
+        </div>
+        <div class="footer-center">
+            <p>© 2024 V-UP!. All Rights Reserved. Designed for the Digital Stage.</p>
+        </div>
+        <div class="footer-right">
+            <button class="circle-btn"><i class="fa-solid fa-globe"></i></button>
+            <button class="circle-btn"><i class="fa-solid fa-share-nodes"></i></button>
+        </div>
+    </footer>
 
 </body>
 
