@@ -30,6 +30,9 @@
                 <a href="#" class="nav-item" data-tab="posts">
                     <i class="fas fa-newspaper"></i> 限定內容發布 (Posts)
                 </a>
+                <a href="#" class="nav-item" data-tab="history">
+                    <i class="fas fa-history"></i> 歷史紀錄存檔 (History)
+                </a>
                 <a href="#" class="nav-item" data-tab="customization">
                     <i class="fas fa-palette"></i> 專屬頁面自訂
                 </a>
@@ -60,6 +63,9 @@
                     <p id="page-title-desc" class="text-muted">追蹤您的募資進度與粉絲互動狀況</p>
                 </div>
                 <div class="topbar-actions">
+                    <a href="vtuber_preview.html" target="_blank" class="btn-outline" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--primary-light); color:var(--primary); border:none;">
+                        <i class="fas fa-eye"></i> 檢視前台預覽
+                    </a>
                     <button class="theme-toggle" id="theme-btn" title="深淺色模式" onclick="toggleTheme()">
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </button>
@@ -75,144 +81,141 @@
 
             <!-- ===== TAB: Overview ===== -->
             <div class="tab-panel active" id="panel-overview">
-                <div class="dashboard-grid">
-                    <div class="data-card">
-                        <div class="data-icon bg-primary-light"><i class="fas fa-coins text-primary"></i></div>
-                        <div class="data-info">
-                            <span class="data-label">本月總斗內點數</span>
-                            <div class="data-value">42,500 <span class="trend positive"><i class="fas fa-arrow-up"></i> 12.5%</span></div>
+                <div class="dashboard-bento">
+                    <!-- High Impact Card: Main Growth Chart -->
+                    <div class="bento-card bento-hero">
+                        <div class="section-header">
+                            <div>
+                                <h2>數據趨勢分析 (Last 30 Days)</h2>
+                                <p class="text-muted" style="font-size:0.8rem;">贊助點數與粉絲增長情形</p>
+                            </div>
+                            <div class="header-actions">
+                                <span class="tag t-purple pulse-tag">Live Data</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="data-card">
-                        <div class="data-icon bg-success-light"><i class="fas fa-heart text-success"></i></div>
-                        <div class="data-info">
-                            <span class="data-label">活躍贊助粉絲</span>
-                            <div class="data-value">1,248 <span class="trend positive"><i class="fas fa-arrow-up"></i> 5.2%</span></div>
-                        </div>
-                    </div>
-                    <div class="data-card">
-                        <div class="data-icon bg-warning-light"><i class="fas fa-medal text-warning"></i></div>
-                        <div class="data-info">
-                            <span class="data-label">已發放限定證明</span>
-                            <div class="data-value">320 <span class="trend neutral">-</span></div>
-                        </div>
-                    </div>
-                    <div class="data-card">
-                        <div class="data-icon bg-info-light"><i class="fas fa-eye text-info"></i></div>
-                        <div class="data-info">
-                            <span class="data-label">公開頁面瀏覽人數</span>
-                            <div class="data-value">18.2K <span class="trend positive"><i class="fas fa-arrow-up"></i> 8.4%</span></div>
+                        <div class="chart-container" style="height: 300px; position:relative;">
+                            <canvas id="growthChart"></canvas>
                         </div>
                     </div>
 
-                    <!-- Active Milestones Table -->
-                    <section class="dashboard-section span-2">
-                        <div class="section-header">
-                            <h2>進行中的里程碑</h2>
-                            <a href="#" class="text-link" onclick="showToast('即將開放完整里程碑清單', 'info'); return false;">查看全部</a>
+                    <!-- Medium Card: Key Stats -->
+                    <div class="bento-card bento-stats">
+                        <div class="data-mini-grid">
+                            <div class="mini-data-card">
+                                <span class="data-label">本月總點數</span>
+                                <div class="data-value">42,500 <span class="trend pos">+12%</span></div>
+                            </div>
+                            <div class="mini-data-card">
+                                <span class="data-label">活躍粉絲</span>
+                                <div class="data-value">1,248 <span class="trend pos">+5%</span></div>
+                            </div>
+                            <div class="mini-data-card">
+                                <span class="data-label">頁面瀏覽</span>
+                                <div class="data-value">18.2K <span class="trend pos">+8%</span></div>
+                            </div>
+                            <div class="mini-data-card">
+                                <span class="data-label">里程碑進度</span>
+                                <div class="data-value">75% <span class="trend neu">穩定</span></div>
+                            </div>
                         </div>
-                        <div class="card-table-wrap">
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>項目名稱</th>
-                                        <th>進度</th>
-                                        <th>已籌得</th>
-                                        <th>目標</th>
-                                        <th>操作</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="table-item-title">
-                                                <div class="item-icon-small"><i class="fas fa-microphone"></i></div>
-                                                <span>錄音室級別麥克風升級！</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="table-progress">
-                                                <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:75%;"></div></div>
-                                                <span class="progress-percent">75%</span>
-                                            </div>
-                                        </td>
-                                        <td class="font-mono">15,000</td>
-                                        <td class="font-mono text-muted">20,000</td>
-                                        <td>
-                                            <button class="btn-table-action edit" title="編輯項目"><i class="fas fa-edit"></i></button>
-                                            <button class="btn-table-action rank" title="查看排行榜"><i class="fas fa-list-ol"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="table-item-title">
-                                                <div class="item-icon-small" style="background:var(--secondary-light); color:var(--secondary);"><i class="fas fa-vr-cardboard"></i></div>
-                                                <span>超美麗 3D 化模型製作</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="table-progress">
-                                                <div class="progress-bar-bg"><div class="progress-bar-fill bg-secondary" style="width:12%;"></div></div>
-                                                <span class="progress-percent">12%</span>
-                                            </div>
-                                        </td>
-                                        <td class="font-mono">12,000</td>
-                                        <td class="font-mono text-muted">100,000</td>
-                                        <td>
-                                            <button class="btn-table-action edit" title="編輯項目"><i class="fas fa-edit"></i></button>
-                                            <button class="btn-table-action rank" title="查看排行榜"><i class="fas fa-list-ol"></i></button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
+                    </div>
 
-                    <!-- Recent Top Fans -->
-                    <section class="dashboard-section">
-                        <div class="section-header">
-                            <h2>最近大額貢獻粉絲</h2>
+                    <!-- Small Card: Quick Actions -->
+                    <div class="bento-card bento-actions">
+                        <h3>快速操作 (Quick Actions)</h3>
+                        <div class="quick-btns">
+                            <button class="qb-item" onclick="switchTab('posts')">
+                                <i class="fas fa-edit"></i>
+                                <span>發布動態</span>
+                            </button>
+                            <button class="qb-item" onclick="openPhotoModal()">
+                                <i class="fas fa-camera"></i>
+                                <span>發布相片</span>
+                            </button>
+                            <button class="qb-item" onclick="openNewMilestoneModal()">
+                                <i class="fas fa-bullseye"></i>
+                                <span>建立里程碑</span>
+                            </button>
+                            <button class="qb-item" onclick="switchTab('customization')">
+                                <i class="fas fa-magic"></i>
+                                <span>頁面變更</span>
+                            </button>
                         </div>
-                        <div class="recent-fans-list">
-                            <div class="fan-list-item">
+                    </div>
+
+                    <!-- Medium Card: Top Fans (Redesigned) -->
+                    <div class="bento-card bento-list">
+                        <div class="section-header">
+                            <h2>最近大額貢獻 (Stock Style)</h2>
+                        </div>
+                        <div class="recent-fans-list" id="stock-style-fans">
+                            <!-- Stock-style dynamic items -->
+                            <div class="fan-list-item stock-mode">
                                 <div class="fan-avatar"><i class="fas fa-user-astronaut"></i></div>
                                 <div class="fan-details">
                                     <span class="fan-name">星空騎士_阿龍</span>
-                                    <span class="fan-time text-muted">10 分鐘前</span>
+                                    <span class="fan-status"><i class="fas fa-circle text-success"></i> 活躍贊助中</span>
                                 </div>
-                                <div class="fan-contribution text-primary">+ 5,000 點</div>
+                                <div class="fan-trend-mini">
+                                    <svg viewBox="0 0 100 30" width="60" height="20"><path d="M0 25 L10 20 L20 22 L30 15 L40 18 L50 10 L60 12 L70 5 L80 8 L90 2 L100 5" fill="none" stroke="var(--success)" stroke-width="2"></path></svg>
+                                </div>
+                                <div class="fan-contribution">
+                                    <span class="amt">+5,000</span>
+                                    <span class="pct pos">+2.4%</span>
+                                </div>
                             </div>
-                            <div class="fan-list-item">
+                            <div class="fan-list-item stock-mode">
                                 <div class="fan-avatar"><i class="fas fa-user-ninja"></i></div>
                                 <div class="fan-details">
                                     <span class="fan-name">深海的貓</span>
-                                    <span class="fan-time text-muted">1 小時前</span>
+                                    <span class="fan-status"><i class="fas fa-clock"></i> 1 小時前</span>
                                 </div>
-                                <div class="fan-contribution text-primary">+ 3,200 點</div>
-                            </div>
-                            <div class="fan-list-item">
-                                <div class="fan-avatar"><i class="fas fa-user-secret"></i></div>
-                                <div class="fan-details">
-                                    <span class="fan-name">Mystic_K</span>
-                                    <span class="fan-time text-muted">3 小時前</span>
+                                <div class="fan-trend-mini">
+                                    <svg viewBox="0 0 100 30" width="60" height="20"><path d="M0 10 L10 15 L20 12 L30 20 L40 22 L50 18 L60 25 L70 20 L80 22 L90 28 L100 25" fill="none" stroke="var(--primary)" stroke-width="2"></path></svg>
                                 </div>
-                                <div class="fan-contribution text-primary">+ 1,000 點</div>
+                                <div class="fan-contribution">
+                                    <span class="amt">+3,200</span>
+                                    <span class="pct neg">-1.2%</span>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn-outline full-width" id="send-thanks-btn" style="margin-top:15px;">
-                            <i class="fas fa-envelope"></i> 發送感謝信函 (批次)
+                        <button class="btn-outline full-width" style="margin-top:20px;" onclick="switchTab('crm')">
+                            <i class="fas fa-chart-line"></i> 查看詳細趨勢報表
                         </button>
-                    </section>
+                    </div>
+
+                    <!-- Platform Tips Card -->
+                    <div class="bento-card bento-tips">
+                        <h3><i class="fas fa-lightbulb text-warning"></i> 平台小撇步</h3>
+                        <p>上傳 2K 高畫質橫幅圖片，能提升粉絲 15% 的贊助意願喔！</p>
+                        <a href="#" class="text-link">瞭解更多技巧 &rarr;</a>
+                    </div>
                 </div>
             </div>
 
-            <!-- ===== TAB: Milestones (placeholder) ===== -->
+            <!-- ===== TAB: Milestones ===== -->
             <div class="tab-panel" id="panel-milestones">
-                <div class="dashboard-section" style="text-align:center; padding:60px 30px;">
-                    <div style="font-size:3rem; margin-bottom:16px;">🎯</div>
-                    <h2 style="margin-bottom:8px;">里程碑管理</h2>
-                    <p class="text-muted" style="margin-bottom:24px;">在這裡建立、編輯和追蹤您所有的募資里程碑項目</p>
-                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> 建立第一個里程碑</button>
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>🎯 里程碑企劃管理</h2>
+                        <div class="header-actions">
+                            <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> 發起新企劃</button>
+                        </div>
+                    </div>
+                    
+                    <div class="milestone-tabs" style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                        <button class="tab-btn active" data-filter="all">全部 (All)</button>
+                        <button class="tab-btn" data-filter="individual">個人 (Individual)</button>
+                        <button class="tab-btn" data-filter="collab">共同企劃 (Joint)</button>
+                    </div>
+
+                    <div id="milestone-list-container" class="milestone-grid">
+                        <!-- 動態渲染清單 -->
+                        <div class="empty-state" style="text-align:center; padding:40px;">
+                            <i class="fas fa-tasks" style="font-size:3rem; color:var(--border); margin-bottom:15px;"></i>
+                            <p class="text-muted">載入中或尚無企劃...</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -221,33 +224,91 @@
                 <div class="dashboard-section">
                     <div class="section-header">
                         <h2>👥 粉絲關係管理 (CRM)</h2>
+                        <div class="header-actions">
+                            <button class="btn-outline btn-sm"><i class="fas fa-filter"></i> 篩選</button>
+                            <button class="btn-outline btn-sm"><i class="fas fa-file-export"></i> 匯出名單</button>
+                        </div>
                     </div>
+                    
                     <div class="card">
                         <div class="card-table-wrap">
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>粉絲名稱</th>
-                                        <th>累計贊助點數</th>
-                                        <th>會員等級</th>
+                                        <th>粉絲名稱 / 勳章</th>
+                                        <th>累計贊助</th>
+                                        <th>追蹤時長</th>
+                                        <th>最後互動</th>
                                         <th>操作</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>星空騎士_阿龍</td>
+                                        <td>
+                                            <div style="display:flex; align-items:center; gap:10px;">
+                                                <div class="mini-avatar-ctx"><i class="fas fa-user-astronaut"></i></div>
+                                                <div>
+                                                    <div class="fan-name">星空騎士_阿龍</div>
+                                                    <span class="tag t-purple">鉑金推</span>
+                                                    <span class="tag t-blue">開台元老</span>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td class="text-primary font-mono">15,000</td>
-                                        <td><span class="tag t-purple" style="font-size:0.75rem;">鉑金推</span></td>
-                                        <td><button class="btn-outline" style="padding:4px 12px;" onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button></td>
+                                        <td style="font-size:0.85rem; font-weight:600;">520 天</td>
+                                        <td class="text-muted" style="font-size:0.8rem;">10 分鐘前 (斗內)</td>
+                                        <td>
+                                            <button class="btn-table-action" onclick="showFanInsight('阿龍')" title="查看洞察"><i class="fas fa-chart-pie"></i></button>
+                                            <button class="btn-table-action" onclick="alert('禮物已加入待發送清單')" title="贈送禮物"><i class="fas fa-gift"></i></button>
+                                        </td>
                                     </tr>
                                     <tr>
-                                        <td>深海的貓</td>
+                                        <td>
+                                            <div style="display:flex; align-items:center; gap:10px;">
+                                                <div class="mini-avatar-ctx"><i class="fas fa-user-ninja"></i></div>
+                                                <div>
+                                                    <div class="fan-name">深海的貓</div>
+                                                    <span class="tag t-blue">黃金推</span>
+                                                </div>
+                                            </div>
+                                        </td>
                                         <td class="text-primary font-mono">3,200</td>
-                                        <td><span class="tag t-blue" style="font-size:0.75rem;">黃金推</span></td>
-                                        <td><button class="btn-outline" style="padding:4px 12px;" onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button></td>
+                                        <td style="font-size:0.85rem; font-weight:600;">180 天</td>
+                                        <td class="text-muted" style="font-size:0.8rem;">1 小時前 (觀看)</td>
+                                        <td>
+                                            <button class="btn-table-action" onclick="showFanInsight('深海的貓')" title="查看洞察"><i class="fas fa-chart-pie"></i></button>
+                                            <button class="btn-table-action" onclick="alert('禮物已加入待發送清單')" title="贈送禮物"><i class="fas fa-gift"></i></button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
+                        </div>
+                    </div>
+
+                    <!-- Fan Insight Card (Hidden by default) -->
+                    <div id="fan-insight-card" class="fan-insight-card">
+                        <div class="insight-avatar"><i class="fas fa-user-circle"></i></div>
+                        <div class="insight-content">
+                            <h3 id="insight-fan-name">粉絲詳細洞察</h3>
+                            <p class="text-muted" style="font-size:0.85rem;">這裡顯示該粉絲與您的深度關係數據，而非直接私訊。</p>
+                            <div class="insight-grid">
+                                <div class="insight-stat">
+                                    <span class="val" id="insight-days">365</span>
+                                    <span class="lbl">追蹤天數</span>
+                                </div>
+                                <div class="insight-stat">
+                                    <span class="val" id="insight-total">25,000</span>
+                                    <span class="lbl">總貢獻度</span>
+                                </div>
+                                <div class="insight-stat">
+                                    <span class="val" id="insight-rank">Top 1%</span>
+                                    <span class="lbl">粉絲階級</span>
+                                </div>
+                            </div>
+                            <div style="margin-top:15px; display:flex; gap:10px;">
+                                <button class="btn-primary btn-sm" onclick="alert('已標記為 VIP 粉絲')"><i class="fas fa-star"></i> 設為 VIP</button>
+                                <button class="btn-outline btn-sm" onclick="document.getElementById('fan-insight-card').classList.remove('show')">關閉</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -275,58 +336,166 @@
                 </div>
             </div>
 
-            <!-- ===== TAB: Customization ===== -->
+            <!-- ===== TAB: Customization (Live Editor) ===== -->
             <div class="tab-panel" id="panel-customization">
+                <div class="customization-wrapper">
+                    <!-- Left: Settings Panel -->
+                        <div class="settings-panel">
+                            <!-- Group 1: Brand & Style -->
+                            <div class="settings-group">
+                                <div class="group-header">
+                                    <i class="fas fa-palette"></i> 品牌風格套裝
+                                </div>
+                                <div class="card editor-card">
+                                    <div class="style-pack-grid-mini">
+                                        <div class="style-pack-item active" data-style="v-up" onclick="applyProfileStyle('v-up')">
+                                            <div class="color-preview" style="background: linear-gradient(135deg, #FF85C0, #58CCF5);"></div>
+                                            <span>Official</span>
+                                        </div>
+                                        <div class="style-pack-item" data-style="cyberpunk" onclick="applyProfileStyle('cyberpunk')">
+                                            <div class="color-preview" style="background:#00ffcc;"></div>
+                                            <span>Cyber</span>
+                                        </div>
+                                        <div class="style-pack-item" data-style="kawaii" onclick="applyProfileStyle('kawaii')">
+                                            <div class="color-preview" style="background:#ff85a2;"></div>
+                                            <span>Kawaii</span>
+                                        </div>
+                                        <div class="style-pack-item" data-style="minimal" onclick="applyProfileStyle('minimal')">
+                                            <div class="color-preview" style="background:#1e293b;"></div>
+                                            <span>Minimal</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="margin-top:15px;">
+                                        <label><i class="fas fa-eye-dropper"></i> 主題色設定</label>
+                                        <input type="color" id="vt-color" value="#FF85C0" oninput="syncPreview()" style="height:44px; padding:4px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 2: Identity -->
+                            <div class="settings-group">
+                                <div class="group-header">
+                                    <i class="fas fa-id-card"></i> 基本身分訊息
+                                </div>
+                                <div class="card editor-card">
+                                    <div class="form-grid">
+                                        <div class="form-group" id="group-name">
+                                            <label><i class="fas fa-user-tag"></i> 顯示名稱 *</label>
+                                            <input type="text" id="vt-name" placeholder="星野夢彩" oninput="syncPreview()">
+                                        </div>
+                                        <div class="form-group" id="group-handle">
+                                            <label><i class="fas fa-at"></i> 專屬 ID *</label>
+                                            <input type="text" id="vt-handle" placeholder="@Yume_Official" oninput="syncPreview()">
+                                        </div>
+                                    </div>
+                                    <div class="form-group" id="group-catchphrase">
+                                        <label><i class="fas fa-bullhorn"></i> 頻道招呼語</label>
+                                        <input type="text" id="vt-catchphrase" placeholder="你的星空，由我來點亮 ✨" oninput="syncPreview()">
+                                    </div>
+                                    <div class="form-group" id="group-bio">
+                                        <label><i class="fas fa-quote-left"></i> 個人簡介 (Bio)</label>
+                                        <textarea id="vt-bio" rows="4" placeholder="詳細介紹..." oninput="syncPreview()"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 3: Visuals -->
+                            <div class="settings-group">
+                                <div class="group-header">
+                                    <i class="fas fa-image"></i> 視覺素材設定
+                                </div>
+                                <div class="card editor-card">
+                                    <div class="form-grid">
+                                        <div class="form-group" id="group-avatar">
+                                            <label><i class="fas fa-circle-user"></i> 頭像圖片網址</label>
+                                            <input type="text" id="vt-avatar" placeholder="https://..." oninput="syncPreview()">
+                                        </div>
+                                        <div class="form-group" id="group-banner">
+                                            <label><i class="fas fa-panorama"></i> 橫幅圖片網址</label>
+                                            <input type="text" id="vt-banner" placeholder="https://..." oninput="syncPreview()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 4: Milestone Summary -->
+                            <div class="settings-group">
+                                <div class="group-header">
+                                    <i class="fas fa-trophy"></i> 里程碑概覽文字
+                                </div>
+                                <div class="card editor-card">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>目前里程碑標題</label>
+                                            <input type="text" id="vt-ms-title" placeholder="例如：新服裝製作" oninput="syncPreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>目標點數</label>
+                                            <input type="number" id="vt-ms-target" placeholder="10000" oninput="syncPreview()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Group 5: Socials -->
+                            <div class="settings-group">
+                                <div class="group-header">
+                                    <i class="fas fa-share-nodes"></i> 社群連結綁定
+                                </div>
+                                <div class="card editor-card">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label><i class="fab fa-youtube"></i> YouTube URL</label>
+                                            <input type="text" id="vt-youtube" placeholder="https://youtube.com/..." oninput="syncPreview()">
+                                        </div>
+                                        <div class="form-group">
+                                            <label><i class="fab fa-twitter"></i> Twitter (X) URL</label>
+                                            <input type="text" id="vt-twitter" placeholder="https://twitter.com/..." oninput="syncPreview()">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="save-toast" style="display:none; background:var(--success); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-top:15px;">設定已成功儲存！</div>
+                            <button class="btn-primary full-width" style="margin-top:20px;" onclick="saveVProfile()">
+                                <i class="fas fa-cloud-upload-alt"></i> 確認發布至前台 (組員功能保留)
+                            </button>
+                        </div>
+
+                    <!-- Right: Live Preview -->
+                    <div class="preview-panel">
+                        <div class="preview-header">
+                            <div class="preview-title"><i class="fas fa-desktop"></i> 公開頁面預覽 (粉絲視角)</div>
+                            <div class="preview-controls">
+                                <button class="p-btn active" id="p-light-btn" onclick="setPreviewTheme('light')"><i class="fas fa-sun"></i> 亮色</button>
+                                <button class="p-btn" id="p-dark-btn" onclick="setPreviewTheme('dark')"><i class="fas fa-moon"></i> 暗色</button>
+                            </div>
+                        </div>
+                        <div class="preview-viewport-container">
+                            <div class="preview-viewport" id="profile-preview-container">
+                                <!-- The profile will be injected here via JS -->
+                                <div class="preview-placeholder">正在產生預覽...</div>
+                            </div>
+                            <div class="preview-overlay">
+                                <!-- Clickable regions will be positioned here to trigger focus in settings -->
+                            </div>
+                        </div>
+                        <p class="preview-hint"><i class="fas fa-info-circle"></i> 提示：預覽畫面不可點選跳轉。點擊區塊可快速跳至左側對應設定欄位。</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== TAB: History ===== -->
+            <div class="tab-panel" id="panel-history">
                 <div class="dashboard-section">
                     <div class="section-header">
-                        <h2>🎨 專屬頁面自訂</h2>
-                        <button class="btn-primary" onclick="saveVProfile()"><i class="fas fa-save"></i> 儲存設定</button>
+                        <h2>📜 活動歷史紀錄 (History Logs)</h2>
+                        <button class="btn-outline btn-sm" onclick="clearHistory()"><i class="fas fa-trash-alt"></i> 清除紀錄</button>
                     </div>
-                    <div class="card">
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">頁面主視覺色調 (Primary Theme Color)</label>
-                            <input type="color" id="vt-color" style="width:100px;height:50px;padding:2px;cursor:pointer;border-radius:8px;" value="#a78bfa">
+                    <div class="card p-0" style="max-height: 500px; overflow-y: auto;">
+                        <div id="history-container" class="history-list">
+                            <!-- Logs here -->
                         </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片網址 (Banner Image URL)</label>
-                            <input type="text" id="vt-banner" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="例如: https://example.com/banner.jpg">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">VTuber 展示名稱</label>
-                            <input type="text" id="vt-name" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" value="星野夢彩">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">頻道招呼語 (Catchphrase)</label>
-                            <input type="text" id="vt-catchphrase" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="輸入一句代表您的特色短語">
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom: 20px;">
-                            <div class="form-group">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">YouTube 頻道網址</label>
-                                <input type="text" id="vt-youtube" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="https://youtube.com/...">
-                            </div>
-                            <div class="form-group">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">Twitter (X) 網址</label>
-                                <input type="text" id="vt-twitter" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="https://twitter.com/...">
-                            </div>
-                        </div>
-                        <div style="background:var(--bg-subtle); padding:1.5rem; border-radius:12px; margin-bottom: 20px;">
-                            <h4 style="margin-bottom:12px;"><i class="fas fa-flag-checkered"></i> 最新里程碑目標設定</h4>
-                            <div class="form-group" style="margin-bottom:15px;">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">目標名稱</label>
-                                <input type="text" id="vt-ms-title" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="例如：新服裝製作！">
-                            </div>
-                            <div class="form-group">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">募資目標金額 (點數)</label>
-                                <input type="number" id="vt-ms-target" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;" placeholder="100000">
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">詳細自我介紹 (Bio)</label>
-                            <textarea id="vt-bio" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;min-height:100px;" placeholder="詳細介紹您的頻道特色..."></textarea>
-                        </div>
-                        
-                        <div id="save-toast" style="display:none; background:#10b981; color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-bottom:15px;">設定已成功儲存並同步至前台！</div>
-                        <button class="btn-primary full-width" onclick="saveVProfile()"><i class="fas fa-check"></i> 儲存並更新到前台</button>
                     </div>
                 </div>
             </div>
@@ -367,19 +536,43 @@
                 <button class="btn-close" onclick="closeNewMilestoneModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body form-group">
-                <label>里程碑標題</label>
+                <div class="type-toggle-container" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+                    <button class="type-btn active" id="type-indie" onclick="setProjectType('individual')">個人項目</button>
+                    <button class="type-btn" id="type-collab" onclick="setProjectType('collab')">共同企劃</button>
+                    <input type="hidden" id="ms-type" value="individual">
+                </div>
+
+                <label>企劃/里程碑標題</label>
                 <input type="text" id="ms-title" placeholder="例如：新服裝製作！" class="form-control">
 
-                <label>目標點數</label>
-                <input type="number" id="ms-goal" placeholder="10000" class="form-control">
+                <div id="collab-fields" style="display:none; background:var(--bg-subtle); padding:15px; border-radius:12px; margin-bottom:15px; border:1px dashed var(--primary);">
+                    <label>搜尋並加入合作 VTuber</label>
+                    <div style="position:relative;">
+                        <input type="text" id="collab-search" placeholder="輸入名字搜尋..." class="form-control" oninput="searchCollaborators(this.value)">
+                        <div id="search-results" class="search-dropdown"></div>
+                    </div>
+                    <div id="selected-collabs" class="tag-container" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+                        <!-- 已選合作者 -->
+                    </div>
+                </div>
 
-                <label>項目描述</label>
-                <textarea rows="3" class="form-control" placeholder="向粉絲說明這項目的目的..."></textarea>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
+                    <div>
+                        <label>目標點數</label>
+                        <input type="number" id="ms-goal" placeholder="10000" class="form-control">
+                    </div>
+                    <div>
+                        <label>封面圖片網址</label>
+                        <input type="text" id="ms-banner" placeholder="https://..." class="form-control">
+                    </div>
+                </div>
 
-                <label>限定證明設定</label>
+                <label>企劃介紹</label>
+                <textarea id="ms-desc" rows="3" class="form-control" placeholder="向粉絲說明這項目的目的..."></textarea>
+
                 <div class="proof-setup">
                     <label class="checkbox-label">
-                        <input type="checkbox" checked> 頒發前 10 名專屬貢獻證明
+                        <input type="checkbox" id="ms-award-check" checked> 頒發專屬貢獻證明 (Top 10)
                     </label>
                 </div>
             </div>
@@ -390,6 +583,59 @@
         </div>
     </div>
 
+    <!-- Ranking Modal -->
+    <div id="ranking-modal" class="modal-overlay">
+        <!-- ... existing content ... -->
+    </div>
+
+    <!-- Photo Upload Modal -->
+    <div id="photo-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-camera"></i> 發布新相片</h3>
+                <button class="btn-close" onclick="closePhotoModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body form-group">
+                <label>相片標題</label>
+                <input type="text" id="photo-title" placeholder="例如：今天的直播截圖" class="form-control">
+                
+                <label>圖片網址 (Image URL)</label>
+                <input type="text" id="photo-url" placeholder="https://images.unsplash.com/..." class="form-control">
+                <p class="text-muted" style="font-size:0.75rem;">目前 prototype 版本請提供圖片網址，或於下一版本上傳檔案。</p>
+
+                <div id="photo-preview-box" style="display:none; margin-top:10px;">
+                    <img id="photo-preview-img" src="" style="width:100%; border-radius:12px; border:1px solid var(--border);">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-outline" onclick="closePhotoModal()">取消</button>
+                <button class="btn-primary" onclick="publishPhoto()">立即發布</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal-overlay">
+        <div class="modal-content share-content">
+            <div class="modal-header">
+                <h3>分享此企劃</h3>
+                <button class="btn-close" onclick="closeShareModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="share-body" style="text-align:center; padding:20px 0;">
+                <div id="share-preview-card" class="share-card">
+                    <img id="share-img" src="" alt="Project Banner" style="width:100%; border-radius:12px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <h4 id="share-title">企劃標題</h4>
+                    <p class="text-muted" style="font-size:0.85rem;">支持您心儀的創作者達成里程碑！</p>
+                </div>
+                <div class="share-options" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:25px;">
+                    <button class="btn-share-icon" onclick="mockShare('twitter')"><i class="fab fa-twitter"></i> <span>Twitter</span></button>
+                    <button class="btn-share-icon" onclick="mockShare('facebook')"><i class="fab fa-facebook"></i> <span>Facebook</span></button>
+                    <button class="btn-share-icon" onclick="copyShareLink()"><i class="fas fa-copy"></i> <span>複製連結</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="dashboard.js"></script>
     <script>
         function saveVProfile() {
