@@ -43,7 +43,7 @@
                     <img src="image/miku_test.png" alt="Sakura Nova">
                 </div>
                 <div class="vt-hero-info">
-                    <div class="vt-hero-subtitle">陪伴他成長</div>
+                    <div class="vt-hero-subtitle">一起創造下個舞台</div>
                     <h1 class="vt-hero-title">SAKURA NOVA</h1>
                     <p class="vt-hero-bio">
                         我是 Sakura Nova！為了能與各位更近距離地互動，現正朝著 3D 化目標前進。
@@ -79,14 +79,14 @@
                                     </div>
                                     <div class="collab-text">
                                         <span class="vt-name-sakura">SAKURA NOVA</span> 和 <span
-                                            class="vt-name-ume">UME</span> 的聯合成長企劃
+                                            class="vt-name-ume">UME</span> 的聯合企劃
                                     </div>
                                 </div>
                                 <span class="ms-status-badge">進行中!</span>
                                 <h2 class="ms-title">邁向全新 3D 舞台!!!</h2>
                             </div>
 
-                            <p class="ms-desc">達成此目標，我們將設計專屬的「櫻之星際」3D 場景，包含動態落櫻效果與全息音樂特效。</p>
+                            <p class="ms-desc">達成此目標，我們將設計專屬的「櫻之星際」3D 場景，終於可以開大家許願很久的3D LIVE了。贊助者可以獲得限定音聲做為謝禮!</p>
 
                             <div class="ms-support-box">
                                 <div class="ms-progress-wrap">
@@ -95,7 +95,7 @@
                                         <div class="target">目標: 100,000 NTD</div>
                                     </div>
                                     <div class="ms-progress-bar">
-                                        <div class="ms-progress-fill" style="width: 85%;"></div>
+                                        <div class="ms-progress-fill ms-progress-animated" style="width: 85%;"></div>
                                     </div>
                                 </div>
 
@@ -124,20 +124,22 @@
                                             <p>2 小時前</p>
                                         </div>
                                     </div>
-                                    <button class="btn-read-more" onclick="alert('這裡將會下拉展開或彈出視窗顯示貼文內容')">展開閱讀 <i
-                                            class="fa-solid fa-chevron-down"></i></button>
+                                    <button class="btn-read-more"
+                                        onclick="openPostModal('最新演唱會舞台設計草圖來啦!!', '2 小時前', 'image', '距離 3D 舞台達成更近了！這是我和設計師討論後的最新草圖概念，包含動態落櫻粒子和全息音效舞台 💖\n\n目前已完成基礎場景構建，預計下個月開始全面製作！感謝所有贊助者的支持，讓這一切成為可能 🌸✨', 'https://picsum.photos/seed/stage/600/350')">展開閱讀
+                                        <i class="fa-solid fa-chevron-down"></i></button>
                                 </div>
 
                                 <div class="exc-post">
                                     <div class="exc-post-info">
                                         <div class="exc-tag"><i class="fa-solid fa-microphone"></i></div>
                                         <div class="exc-text">
-                                            <h4>歷盡的謝謝~配音全收錄!</h4>
+                                            <h4>贊助的謝禮，點擊查收~!</h4>
                                             <p>5 天前</p>
                                         </div>
                                     </div>
-                                    <button class="btn-read-more" onclick="alert('這裡將會下拉展開或彈出視窗顯示貼文內容')">展開閱讀 <i
-                                            class="fa-solid fa-chevron-down"></i></button>
+                                    <button class="btn-read-more"
+                                        onclick="openPostModal('贊助的謝禮，點擊查收~!', '5 天前', 'microphone', '謝謝每一位支持我的大家！為了表達我的感謝，我錄製了一段專屬的語音謝禮 🎙️\n\n這段錄音裡有我最真摯的感謝，還有一個小秘密彩蛋，請務必聽到最後！💕\n\n你們的支持是我最大的動力，Sakura 愛你們！', null)">展開閱讀
+                                        <i class="fa-solid fa-chevron-down"></i></button>
                                 </div>
 
                                 <button class="btn-view-all">查看更多 <i class="fa-solid fa-chevron-down"></i></button>
@@ -222,7 +224,7 @@
                                         <div class="target">目標: 100,000 NTD</div>
                                     </div>
                                     <div class="ms-progress-bar">
-                                        <div class="ms-progress-fill" style="width: 85%;"></div>
+                                        <div class="ms-progress-fill ms-progress-animated" style="width: 85%;"></div>
                                     </div>
                                 </div>
 
@@ -364,8 +366,9 @@
                                     <div class="ava"></div>
                                     <div class="ava"></div>
                                 </div>
-                                <button class="btn-review" onclick="alert('這裡會跳出詳細里程碑小卡')">查看回顧 <i
-                                        class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                <button class="btn-review"
+                                    onclick="openReviewModal('3D 模型基礎開發', '2024.01', '300,000 NTD', 'fa-solid fa-masks-theater', '3D 基礎建模完成，Sakura Nova 的立體世界正式誕生！感謝所有讓這一刻成真的支持者。', 1248)">查看回顧
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                             </div>
                         </div>
 
@@ -387,8 +390,9 @@
                                 <div class="ac-avatars">
                                     <div class="ava" style="background:#EC4899;"></div>
                                 </div>
-                                <button class="btn-review" onclick="alert('這裡會跳出詳細里程碑小卡')">查看回顧 <i
-                                        class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                <button class="btn-review"
+                                    onclick="openReviewModal('專屬音樂製作企劃', '2024.02', '20,000 NTD', 'fa-solid fa-music', '首張原創曲《星夜櫻》正式完成錄製！由贊助者票選的曲風、歌詞靈感，讓這首歌充滿大家的心意。', 532)">查看回顧
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                             </div>
                         </div>
 
@@ -410,8 +414,9 @@
                                 <div class="ac-avatars">
                                     <div class="ava" style="background:#EC4899;"></div>
                                 </div>
-                                <button class="btn-review" onclick="alert('這裡會跳出詳細里程碑小卡')">查看回顧 <i
-                                        class="fa-solid fa-arrow-up-right-from-square"></i></button>
+                                <button class="btn-review"
+                                    onclick="openReviewModal('實況錄音室設備更新', '2024.03', '10,000 NTD', 'fa-solid fa-tv', '全新設備升級完成！麥克風、燈光、收音環境全面翻新，讓每一場實況都能帶給大家最清晰的聲音與畫面。', 389)">查看回顧
+                                    <i class="fa-solid fa-arrow-up-right-from-square"></i></button>
                             </div>
                         </div>
                     </div>
@@ -453,8 +458,422 @@
             <p>© 2024 Sakura Nova 數位展演版權所有</p>
         </footer>
 
+        <!-- ===== Post Modal ===== -->
+        <div class="post-modal-overlay" id="post-modal" onclick="closePostModal(event)">
+            <div class="post-modal-card">
+                <!-- Author strip -->
+                <div class="pmc-author">
+                    <img src="image/miku_test.png" class="pmc-avatar" alt="Sakura Nova">
+                    <div class="pmc-author-info">
+                        <span class="pmc-name">SAKURA NOVA</span>
+                        <span class="pmc-time" id="pmc-time"></span>
+                    </div>
+                    <button class="pmc-close" onclick="closePostModal(null)" aria-label="關閉">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <!-- Title -->
+                <h3 class="pmc-title" id="pmc-title"></h3>
+                <!-- Image (optional) -->
+                <div class="pmc-image-wrap" id="pmc-image-wrap">
+                    <img id="pmc-image" src="" alt="貼文圖片">
+                </div>
+                <!-- Body -->
+                <p class="pmc-body" id="pmc-body"></p>
+                <!-- Footer actions -->
+                <div class="pmc-footer">
+                    <button class="pmc-react-btn"><i class="fa-regular fa-heart"></i> 喜歡</button>
+                    <button class="pmc-react-btn"><i class="fa-regular fa-comment"></i> 留言</button>
+                    <button class="pmc-react-btn"><i class="fa-solid fa-share-nodes"></i> 分享</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Review Modal ===== -->
+        <div class="review-modal-overlay" id="review-modal" onclick="closeReviewModal(event)">
+            <div class="review-modal-card">
+                <button class="rmc-close" onclick="closeReviewModal(null)" aria-label="關閉">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <!-- Badge -->
+                <div class="rmc-badge-wrap">
+                    <div class="rmc-badge" id="rmc-badge"><i id="rmc-icon" class="fa-solid fa-star"></i></div>
+                    <span class="rmc-achieved-tag">ACHIEVED</span>
+                </div>
+                <!-- Info -->
+                <h3 class="rmc-title" id="rmc-title"></h3>
+                <p class="rmc-desc" id="rmc-desc"></p>
+                <!-- Progress (always 100%) -->
+                <div class="rmc-progress-wrap">
+                    <div class="rmc-progress-labels">
+                        <span>100% 達成</span>
+                        <span id="rmc-amt" class="rmc-amt"></span>
+                    </div>
+                    <div class="rmc-progress-bar">
+                        <div class="rmc-progress-fill ms-progress-animated" style="width:100%"></div>
+                    </div>
+                </div>
+                <!-- Stats -->
+                <div class="rmc-stats">
+                    <div class="rmc-stat">
+                        <i class="fa-regular fa-calendar"></i>
+                        <span id="rmc-date"></span>
+                    </div>
+                    <div class="rmc-stat">
+                        <i class="fa-solid fa-users"></i>
+                        <span id="rmc-supporters"></span> 位贊助者
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Payment Gateway Integration Modal (Kept for logical completeness, styled for new UI) -->
         <style>
+            /* ===========================
+               Post Modal Styles
+               =========================== */
+            .post-modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 10, 30, 0.65);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 3000;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s;
+                padding: 20px;
+            }
+
+            .post-modal-overlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .post-modal-card {
+                background: white;
+                border-radius: 24px;
+                width: 500px;
+                max-width: 95vw;
+                max-height: 90vh;
+                overflow-y: auto;
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+                transform: translateY(24px) scale(0.95);
+                transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .post-modal-overlay.open .post-modal-card {
+                transform: translateY(0) scale(1);
+            }
+
+            .pmc-author {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 20px 20px 16px;
+                border-bottom: 1px solid #F1F5F9;
+            }
+
+            .pmc-avatar {
+                width: 46px;
+                height: 46px;
+                border-radius: 50%;
+                object-fit: cover;
+                border: 2px solid var(--vt-pink-light);
+            }
+
+            .pmc-author-info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                gap: 3px;
+            }
+
+            .pmc-name {
+                font-size: 0.95rem;
+                font-weight: 800;
+                color: var(--vt-pink-dark);
+            }
+
+            .pmc-time {
+                font-size: 0.78rem;
+                color: var(--text-muted);
+                font-weight: 600;
+            }
+
+            .pmc-close {
+                background: #F1F5F9;
+                border: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                transition: background 0.2s, color 0.2s;
+                flex-shrink: 0;
+            }
+
+            .pmc-close:hover {
+                background: var(--vt-pink-light);
+                color: var(--vt-pink-dark);
+            }
+
+            .pmc-title {
+                font-size: 1.1rem;
+                font-weight: 800;
+                color: var(--text-main);
+                margin: 18px 20px 12px;
+            }
+
+            .pmc-image-wrap {
+                margin: 0 0 16px;
+                overflow: hidden;
+            }
+
+            .pmc-image-wrap img {
+                width: 100%;
+                display: block;
+                object-fit: cover;
+                max-height: 280px;
+            }
+
+            .pmc-body {
+                font-size: 0.9rem;
+                line-height: 1.75;
+                color: var(--text-muted);
+                margin: 0 20px 20px;
+                white-space: pre-wrap;
+            }
+
+            .pmc-footer {
+                display: flex;
+                gap: 0;
+                border-top: 1px solid #F1F5F9;
+                padding: 10px 12px;
+            }
+
+            .pmc-react-btn {
+                flex: 1;
+                background: transparent;
+                border: none;
+                color: var(--text-muted);
+                font-size: 0.85rem;
+                font-weight: 700;
+                padding: 8px 4px;
+                cursor: pointer;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                transition: background 0.2s, color 0.2s;
+                font-family: inherit;
+            }
+
+            .pmc-react-btn:hover {
+                background: var(--vt-pink-light);
+                color: var(--vt-pink-dark);
+            }
+
+            /* ===========================
+               Review Modal Styles
+               =========================== */
+            .review-modal-overlay {
+                position: fixed;
+                inset: 0;
+                background: rgba(15, 10, 30, 0.65);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 3000;
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.3s;
+                padding: 20px;
+            }
+
+            .review-modal-overlay.open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .review-modal-card {
+                background: white;
+                border-radius: 24px;
+                width: 400px;
+                max-width: 95vw;
+                padding: 32px;
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
+                position: relative;
+                transform: translateY(24px) scale(0.95);
+                transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            }
+
+            .review-modal-overlay.open .review-modal-card {
+                transform: translateY(0) scale(1);
+            }
+
+            .rmc-close {
+                position: absolute;
+                top: 18px;
+                right: 18px;
+                background: #F1F5F9;
+                border: none;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: var(--text-muted);
+                font-size: 0.9rem;
+                transition: background 0.2s, color 0.2s;
+            }
+
+            .rmc-close:hover {
+                background: var(--vt-pink-light);
+                color: var(--vt-pink-dark);
+            }
+
+            .rmc-badge-wrap {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                margin-bottom: 20px;
+            }
+
+            .rmc-badge {
+                width: 56px;
+                height: 56px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, var(--vt-pink-light), white);
+                border: 2px solid var(--vt-pink-light);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.6rem;
+                color: var(--vt-pink-dark);
+                box-shadow: 0 8px 20px rgba(255, 107, 158, 0.15);
+            }
+
+            .rmc-achieved-tag {
+                background: linear-gradient(90deg, var(--vt-pink-dark), var(--vt-blue));
+                -webkit-background-clip: text;
+                background-clip: text;
+                color: transparent;
+                font-size: 0.75rem;
+                font-weight: 900;
+                letter-spacing: 2px;
+            }
+
+            .rmc-title {
+                font-size: 1.3rem;
+                font-weight: 900;
+                color: var(--text-main);
+                margin: 0 0 10px;
+            }
+
+            .rmc-desc {
+                font-size: 0.9rem;
+                color: var(--text-muted);
+                line-height: 1.65;
+                margin: 0 0 24px;
+            }
+
+            .rmc-progress-wrap {
+                margin-bottom: 20px;
+            }
+
+            .rmc-progress-labels {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.82rem;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--text-muted);
+            }
+
+            .rmc-amt {
+                color: var(--vt-pink-dark);
+            }
+
+            .rmc-progress-bar {
+                height: 10px;
+                background: #F1F5F9;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+
+            .rmc-progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, var(--vt-pink) 0%, var(--vt-blue) 100%);
+                border-radius: 10px;
+            }
+
+            .rmc-stats {
+                display: flex;
+                gap: 20px;
+                padding-top: 18px;
+                border-top: 1px dashed #E2E8F0;
+            }
+
+            .rmc-stat {
+                display: flex;
+                align-items: center;
+                gap: 7px;
+                font-size: 0.82rem;
+                font-weight: 700;
+                color: var(--text-main);
+            }
+
+            .rmc-stat i {
+                color: var(--vt-pink-dark);
+            }
+
+            /* Progress bar shimmer animation */
+            @keyframes progressShimmer {
+                0% {
+                    background-position: -400px 0;
+                }
+
+                100% {
+                    background-position: 400px 0;
+                }
+            }
+
+            .ms-progress-animated {
+                position: relative;
+                overflow: hidden;
+            }
+
+            .ms-progress-animated::after {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: linear-gradient(90deg,
+                        transparent 0%,
+                        rgba(255, 255, 255, 0.55) 40%,
+                        rgba(255, 255, 255, 0.9) 50%,
+                        rgba(255, 255, 255, 0.55) 60%,
+                        transparent 100%);
+                background-size: 400px 100%;
+                animation: progressShimmer 2.2s ease-in-out infinite;
+                border-radius: 10px;
+            }
+
             .payment-modal-overlay {
                 position: fixed;
                 inset: 0;
@@ -652,6 +1071,53 @@
         </div>
 
         <script>
+            /* ---- Post Modal ---- */
+            function openPostModal(title, time, iconType, body, imageUrl) {
+                document.getElementById('pmc-title').textContent = title;
+                document.getElementById('pmc-time').textContent = time;
+                document.getElementById('pmc-body').textContent = body;
+
+                const imgWrap = document.getElementById('pmc-image-wrap');
+                const img = document.getElementById('pmc-image');
+                if (imageUrl) {
+                    img.src = imageUrl;
+                    imgWrap.style.display = 'block';
+                } else {
+                    imgWrap.style.display = 'none';
+                }
+
+                document.getElementById('post-modal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closePostModal(event) {
+                if (event && event.target !== document.getElementById('post-modal')) return;
+                document.getElementById('post-modal').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
+            /* ---- Review Modal ---- */
+            function openReviewModal(title, date, amt, iconClass, desc, supporters) {
+                document.getElementById('rmc-title').textContent = title;
+                document.getElementById('rmc-date').textContent = date + ' 達成';
+                document.getElementById('rmc-amt').textContent = amt;
+                document.getElementById('rmc-desc').textContent = desc;
+                document.getElementById('rmc-supporters').textContent = supporters.toLocaleString();
+
+                // Update badge icon
+                const iconEl = document.getElementById('rmc-icon');
+                iconEl.className = iconClass;
+
+                document.getElementById('review-modal').classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeReviewModal(event) {
+                if (event && event.target !== document.getElementById('review-modal')) return;
+                document.getElementById('review-modal').classList.remove('open');
+                document.body.style.overflow = '';
+            }
+
             let selectedMethod = 'credit';
             let currentItem = '';
 
