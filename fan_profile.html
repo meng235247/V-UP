@@ -19,12 +19,26 @@
                     style="font-weight: 900; background: linear-gradient(90deg, #ec4899, #0ea5e9); -webkit-background-clip: text; background-clip: text; color: transparent; font-size: 1.5rem; letter-spacing: -1px;">V-UP!</span></a>
         </div>
         <div class="nav-links center-links">
-            <a href="#" class="nav-item">探索</a>
-            <a href="#" class="nav-item">藝人</a>
+            <!-- Navigation links removed -->
         </div>
         <div class="nav-actions right-actions">
-            <button class="icon-btn"><i class="fa-regular fa-heart"></i></button>
-            <button class="icon-btn"><i class="fa-regular fa-bell"></i></button>
+            <!-- Notification Dropdown -->
+            <div class="notification-dropdown" style="position: relative;">
+                <button class="icon-btn" id="btn-notifications" style="position:relative;">
+                    <i class="fa-regular fa-bell"></i>
+                    <span id="notif-unread-badge"
+                        style="display:none; position:absolute; top:2px; right:2px; background:#ec4899; color:white; border-radius:50%; width:16px; height:16px; font-size:0.6rem; font-weight:800; line-height:16px; text-align:center;">0</span>
+                </button>
+                <div class="dropdown-menu" id="notif-menu"
+                    style="display: none; position: absolute; top: 100%; right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 320px; z-index: 100; padding: 10px; text-align: left;">
+                    <h4 style="margin: 0 0 10px 10px; font-size: 0.9rem; font-weight: 800; color: var(--text-main);">
+                        通知中心</h4>
+                    <ul id="notif-list"
+                        style="list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto;">
+                        <!-- Dynamically rendered by renderNotifications() -->
+                    </ul>
+                </div>
+            </div>
             <div class="user-menu-nav">
                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar">
             </div>
@@ -51,13 +65,14 @@
                         <h2 class="fan-name">快樂的盤子</h2>
                         <div class="tagline-row">
                             <p class="fan-tagline">感恩我推讚嘆我推</p>
-                            <button class="btn-edit-profile">編輯個人設定</button>
+                            <button class="btn-edit-profile" onclick="openSettingsModal()">編輯個人設定</button>
                         </div>
                     </div>
                 </div>
                 <div class="profile-actions">
-                    <button class="btn-social black-btn"><i class="fa-brands fa-twitter"></i> Twitter</button>
-                    <button class="btn-social black-btn"><i class="fa-brands fa-line"></i> LINE</button>
+                    <button class="btn-social share-btn" onclick="openShareModal()"
+                        style="background: var(--text-main); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 0.85rem; transition: transform 0.2s, box-shadow 0.2s;"><i
+                            class="fa-solid fa-share-nodes"></i> 您的專屬分享</button>
                 </div>
             </div>
 
@@ -70,26 +85,13 @@
                         <h3 class="section-title"><i class="fa-solid fa-shield-halved text-pink"></i> 收藏成就勳章</h3>
                         <span class="date-badge">DECEMBER 2024</span>
                     </div>
-                    <div class="badges-grid">
-                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-regular fa-gem"></i></div>
-                        <div class="badge-icon bg-blue-light text-blue"><i class="fa-solid fa-seedling"></i></div>
-                        <div class="badge-icon bg-purple-light text-purple"><i class="fa-solid fa-star"></i></div>
-                        <div class="badge-icon bg-gray-light text-gray"><i class="fa-solid fa-lock"></i></div>
-                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-solid fa-wand-magic-sparkles"></i>
-                        </div>
-                        <div class="badge-icon bg-blue-light text-blue"><i class="fa-solid fa-heart"></i></div>
-
-                        <div class="badge-icon bg-pink-light text-pink"><i class="fa-solid fa-wine-glass"></i></div>
-                        <div class="badge-icon bg-purple-light text-purple"><i class="fa-solid fa-hands-clapping"></i>
-                        </div>
-                        <div class="badge-icon bg-gray-light text-gray"><i class="fa-solid fa-ellipsis"></i></div>
+                    <div class="badges-grid" id="outer-badges-grid">
+                        <!-- Badges dynamically rendered by JS -->
                     </div>
 
-                    <h4 class="sub-title">獲得稱號</h4>
-                    <div class="titles-flex">
-                        <span class="title-tag"><i class="fa-solid fa-flag text-blue"></i> 為您的首位里程碑助力</span>
-                        <span class="title-tag"><i class="fa-solid fa-trophy text-purple"></i> sakura的全面應援</span>
-                        <span class="title-tag"><i class="fa-solid fa-flag text-blue"></i> 全部都是盤幣</span>
+                    <h4 class="sub-title" style="margin-top: 20px;">獲得稱號</h4>
+                    <div class="titles-flex" id="outer-titles-grid">
+                        <!-- Titles dynamically rendered by JS -->
                     </div>
                 </div>
 
@@ -102,14 +104,14 @@
                                 <div class="icon-wrap bg-pink-light text-pink"><i class="fa-regular fa-clock"></i></div>
                                 <div class="stat-text">
                                     <span class="lbl">最長應援時間</span>
-                                    <span class="val">1,240 <small>day</small></span>
+                                    <span class="val" id="stat-longest-day">1,240 <small>day</small></span>
                                 </div>
                             </li>
                             <li>
                                 <div class="icon-wrap bg-blue-light text-blue"><i class="fa-solid fa-users"></i></div>
                                 <div class="stat-text">
                                     <span class="lbl">支持VTuber人數</span>
-                                    <span class="val">42 <small>位</small></span>
+                                    <span class="val" id="stat-vtuber-count">42 <small>位</small></span>
                                 </div>
                             </li>
                             <li>
@@ -117,7 +119,7 @@
                                 </div>
                                 <div class="stat-text">
                                     <span class="lbl">里程碑達成率</span>
-                                    <span class="val">92%</span>
+                                    <span class="val" id="stat-milestone-rate">92%</span>
                                 </div>
                             </li>
                             <li>
@@ -125,7 +127,7 @@
                                 </div>
                                 <div class="stat-text">
                                     <span class="lbl">徽章獲得數</span>
-                                    <span class="val">14</span>
+                                    <span class="val" id="stat-badge-count">14</span>
                                 </div>
                             </li>
                         </ul>
@@ -133,11 +135,8 @@
 
                     <div class="stat-panel">
                         <h4 class="panel-header">應援最多的對象</h4>
-                        <ul class="support-list">
-                            <li><span class="dot bg-pink"></span> sakura</li>
-                            <li><span class="dot bg-blue"></span> 繁</li>
-                            <li><span class="dot bg-purple"></span> あいうえお</li>
-                            <li><span class="dot bg-purple-light"></span> さしすせそ</li>
+                        <ul class="support-list" id="stat-top-supported">
+                            <!-- Dynamically rendered by renderSupportList() -->
                         </ul>
                     </div>
                 </div>
@@ -145,12 +144,12 @@
             </div>
         </div>
 
-        <!-- Card 2: Supported VTubers -->
-        <div class="fan-card">
+        <!-- Card 2: Supported VTubers - auth-only, hidden in share view -->
+        <div class="fan-card" data-auth-only="true" data-section="following">
             <h3 class="section-title text-lg"><i class="fa-solid fa-heart text-pink"></i> 陪伴成長的 VTuber 們</h3>
             <p class="section-sub">您目前正在贊助與追隨的創作者名單。</p>
 
-            <div class="vtuber-flex">
+            <div class="vtuber-flex" id="vtuber-flex-container">
                 <div class="vtuber-circle-card">
                     <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
                     <span class="v-name">Mori<br>Calliope</span>
@@ -171,21 +170,33 @@
                     <span class="v-name">Kobo<br>Kanaeru</span>
                     <a href="vtuber_profile.html" class="v-link">前往專頁</a>
                 </div>
-                <div class="vtuber-circle-card">
+                <div class="vtuber-circle-card mobile-hidden">
                     <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
                     <span class="v-name">Vox<br>Akuma</span>
                     <a href="vtuber_profile.html" class="v-link">前往專頁</a>
                 </div>
+                <!-- Hidden VTubers -->
+                <div class="vtuber-circle-card hidden-item extra-vtuber">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Sakura<br>Miko</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
+                </div>
+                <div class="vtuber-circle-card hidden-item extra-vtuber">
+                    <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
+                    <span class="v-name">Hoshimachi<br>Suisei</span>
+                    <a href="vtuber_profile.html" class="v-link">前往專頁</a>
+                </div>
             </div>
-            <button class="btn-view-more">查看更多 <i class="fa-solid fa-chevron-down"></i></button>
+            <button class="btn-view-more" onclick="toggleMoreVTubers(this)">查看更多 <i
+                    class="fa-solid fa-chevron-down"></i></button>
         </div>
 
-        <!-- Card 3: Transactions -->
-        <div class="fan-card">
+        <!-- Card 3: Transactions - auth-only, hidden in share view -->
+        <div class="fan-card fixed-theme" data-auth-only="true" data-section="transactions">
             <h3 class="section-title text-lg"><i class="fa-solid fa-receipt text-blue"></i> 近期贊助與點數異動明細</h3>
             <p class="section-sub">您最近 30 天內的付費紀錄與贊助目標。</p>
 
-            <div style="overflow-x: auto;">
+            <div>
                 <table class="transaction-table">
                     <thead>
                         <tr>
@@ -198,30 +209,51 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td class="col-date">2026-03-24 14:30</td>
-                            <td class="col-bold">星野夢彩</td>
-                            <td>3D化募資</td>
-                            <td class="col-red">- 500</td>
-                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                            <td class="col-date" data-label="日期時間">2026-03-24 14:30</td>
+                            <td class="col-bold" data-label="對象">星野夢彩</td>
+                            <td data-label="項目">3D化募資</td>
+                            <td class="col-red" data-label="花費(NTD)">- 500</td>
+                            <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
+                                    成功扣款</span></td>
                         </tr>
                         <tr>
-                            <td class="col-date">2026-03-22 09:15</td>
-                            <td class="col-bold">sakura</td>
-                            <td>原創曲製作</td>
-                            <td class="col-red">- 3,000</td>
-                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                            <td class="col-date" data-label="日期時間">2026-03-22 09:15</td>
+                            <td class="col-bold" data-label="對象">sakura</td>
+                            <td data-label="項目">原創曲製作</td>
+                            <td class="col-red" data-label="花費(NTD)">- 3,000</td>
+                            <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
+                                    成功扣款</span></td>
                         </tr>
                         <tr>
-                            <td class="col-date">2026-03-15 20:00</td>
-                            <td class="col-bold">電玩少女_小葵</td>
-                            <td>遊戲伺服器</td>
-                            <td class="col-red">- 150</td>
-                            <td><span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span></td>
+                            <td class="col-date" data-label="日期時間">2026-03-15 20:00</td>
+                            <td class="col-bold" data-label="對象">電玩少女_小葵</td>
+                            <td data-label="項目">遊戲伺服器</td>
+                            <td class="col-red" data-label="花費(NTD)">- 150</td>
+                            <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
+                                    成功扣款</span></td>
+                        </tr>
+                        <!-- Hidden Transactions -->
+                        <tr class="hidden-item extra-trans">
+                            <td class="col-date" data-label="日期時間">2026-03-10 11:45</td>
+                            <td class="col-bold" data-label="對象">Calliope</td>
+                            <td data-label="項目">新服裝預售</td>
+                            <td class="col-red" data-label="花費(NTD)">- 1,200</td>
+                            <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
+                                    成功扣款</span></td>
+                        </tr>
+                        <tr class="hidden-item extra-trans">
+                            <td class="col-date" data-label="日期時間">2026-03-01 18:20</td>
+                            <td class="col-bold" data-label="對象">Marine</td>
+                            <td data-label="項目">海賊船維護</td>
+                            <td class="col-red" data-label="花費(NTD)">- 800</td>
+                            <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
+                                    成功扣款</span></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-            <button class="btn-view-more">查看更多 <i class="fa-solid fa-chevron-down"></i></button>
+            <button class="btn-view-more" onclick="toggleMoreTrans(this)">查看更多 <i
+                    class="fa-solid fa-chevron-down"></i></button>
         </div>
 
     </div>
@@ -246,6 +278,699 @@
         </div>
     </footer>
 
+    <!-- ===== Settings Modal ===== -->
+    <div class="fan-modal-overlay" id="settings-modal" onclick="closeSettingsModal(event)">
+        <div class="settings-card" onclick="event.stopPropagation()">
+            <button class="btn-close-modal" onclick="closeSettingsModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="settings-sidebar">
+                <h3>個人設定</h3>
+                <button class="settings-tab active" onclick="switchTab('tab-interface', this)"><i
+                        class="fa-solid fa-palette" style="width:20px;"></i> 粉絲介面設定</button>
+                <button class="settings-tab" onclick="switchTab('tab-badges', this)"><i
+                        class="fa-solid fa-shield-halved" style="width:20px;"></i> 徽章與成就一覽</button>
+                <button class="settings-tab" onclick="switchTab('tab-privacy', this)"><i class="fa-solid fa-lock"
+                        style="width:20px;"></i> 隱私設定 (綁定)</button>
+                <button class="settings-tab" onclick="switchTab('tab-payment', this)"><i class="fa-solid fa-credit-card"
+                        style="width:20px;"></i> 付費途徑設定</button>
+            </div>
+            <div class="settings-content">
+
+                <!-- Tab: Interface -->
+                <div id="tab-interface" class="tab-pane active">
+                    <h2 class="tab-header">粉絲介面設定</h2>
+                    <div class="form-group">
+                        <label>顯示使用者名稱</label>
+                        <input type="text" id="theme-name" class="form-input" value="快樂的盤子">
+                    </div>
+                    <div class="form-group">
+                        <label>個人簽名檔 (Tagline)</label>
+                        <input type="text" id="theme-tagline" class="form-input" value="感恩我推讚嘆我推">
+                    </div>
+                    <div class="form-group">
+                        <label>個人頭像上傳 (Avatar)</label>
+                        <input type="file" id="theme-avatar" class="form-input" accept="image/*">
+                    </div>
+                    <div class="form-group" style="margin-top:30px;">
+                        <label>介面色彩風格 (Theme Colors)</label>
+                        <div class="color-pickers">
+                            <div class="color-picker-wrap">
+                                <span>主色 (Primary): </span>
+                                <input type="color" value="#ec4899" id="theme-color-primary">
+                            </div>
+                            <div class="color-picker-wrap">
+                                <span>副色 (Secondary): </span>
+                                <input type="color" value="#0ea5e9" id="theme-color-secondary">
+                            </div>
+                        </div>
+                        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:10px;">目前將反映在您的個人頁面標籤與按紐色彩上。</p>
+                    </div>
+                    <button class="btn-primary" onclick="saveInterfaceSettings()">儲存變更</button>
+                </div>
+
+                <!-- Tab: Badges -->
+                <div id="tab-badges" class="tab-pane">
+                    <h2 class="tab-header">所有徽章與成就一覽</h2>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">選擇您想展示在個人資料首頁「收藏成就勳章」區塊的徽章
+                        (勾選對應徽章)。</p>
+
+                    <div id="settings-badges-grid" style="display: flex; flex-wrap: wrap; gap: 20px;">
+                        <!-- Settings Badges dynamically rendered by JS -->
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px; font-size: 1.1rem;">獲得稱號展示配置</h3>
+                    <div id="settings-titles-grid" style="display: flex; flex-wrap: wrap; gap: 15px;">
+                        <!-- Settings Titles dynamically rendered by JS -->
+                    </div>
+
+                    <button class="btn-primary" style="margin-top:30px;" onclick="saveBadgeSettings()">儲存展示設定</button>
+                </div>
+
+                <!-- Tab: Privacy -->
+                <div id="tab-privacy" class="tab-pane">
+                    <h2 class="tab-header">隱私設定</h2>
+
+                    <div class="form-group" style="margin-bottom: 30px;">
+                        <label>檢視與修改綁定帳號</label>
+                        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:15px;">您可以使用 Google 帳號快速登入
+                            V-UP!，並同步您的贊助紀錄。</p>
+
+                        <div class="google-bind-box">
+                            <div class="google-bind-left">
+                                <i class="fa-brands fa-google"></i>
+                                <div>
+                                    <h4 style="margin:0 0 4px 0; font-size:1rem; color:var(--text-main);">已綁定 Google 帳號
+                                    </h4>
+                                    <p style="margin:0; font-size:0.85rem; color:var(--text-muted);"
+                                        id="bound-google-email">
+                                        example.fan@gmail.com</p>
+                                </div>
+                            </div>
+                            <button
+                                style="background:transparent; border:1px solid #d1d5db; border-radius:8px; padding:6px 12px; cursor:pointer; font-weight:600; font-size:0.85rem; color:var(--text-main);">解除綁定</button>
+                        </div>
+                    </div>
+
+                    <hr style="border:none; border-top:1px dashed #e5e7eb; margin:30px 0;">
+
+                    <div class="form-group">
+                        <label>修改密碼</label>
+                        <input type="password" class="form-input" placeholder="輸入舊密碼" style="margin-bottom:10px;">
+                        <input type="password" class="form-input" placeholder="輸入新密碼">
+                    </div>
+                    <button class="btn-primary">更新密碼</button>
+                </div>
+
+                <!-- Tab: Payment -->
+                <div id="tab-payment" class="tab-pane fixed-theme">
+                    <h2 class="tab-header">付費途徑設定</h2>
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">管理您的付款方式與自動扣款設定。</p>
+
+                    <div class="st-badge-item" style="padding: 20px;">
+                        <div class="st-badge-left">
+                            <i class="fa-brands fa-cc-visa" style="font-size:2.5rem; color:#1434CB;"></i>
+                            <div class="st-badge-info" style="margin-left: 10px;">
+                                <h5 style="font-size:1.1rem;">Visa 結尾 4242</h5>
+                                <p>預設付款方式 • 有效期限 12/28</p>
+                            </div>
+                        </div>
+                        <button
+                            style="background:transparent; border:none; color:#EC4899; cursor:pointer; font-weight:700;">移除</button>
+                    </div>
+
+                    <button class="btn-primary" style="background:#f3f4f6; color:#111827; box-shadow:none;"><i
+                            class="fa-solid fa-plus"></i> 新增付款方式</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Share Modal ===== -->
+    <div class="fan-modal-overlay" id="share-modal" onclick="closeShareModal(event)">
+        <div class="review-modal-card" style="max-width:400px; text-align:center;" onclick="event.stopPropagation()">
+            <button class="btn-close-modal" onclick="closeShareModal()"><i class="fa-solid fa-xmark"></i></button>
+            <h2 style="margin-bottom: 20px; font-weight: 800; color: var(--text-main);">您的專屬分享</h2>
+            <div
+                style="background: #F3F4F6; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
+                <span id="share-url"
+                    style="color: var(--text-muted); font-size: 0.85rem; word-break: break-all;">https://v-up.com/fan/happy-plate</span>
+                <button
+                    style="background: var(--text-main); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 700;"
+                    onclick="copyShareUrl()">複製</button>
+            </div>
+            <div style="display: flex; justify-content: center; gap: 15px;">
+                <button class="btn-social"
+                    style="background: #1DA1F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
+                        class="fa-brands fa-twitter"></i></button>
+                <button class="btn-social"
+                    style="background: #00C300; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
+                        class="fa-brands fa-line"></i></button>
+                <button class="btn-social"
+                    style="background: #1877F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
+                        class="fa-brands fa-facebook-f"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Achievement Review Modal ===== -->
+    <div class="fan-modal-overlay" id="badge-review-modal" onclick="closeBadgeReview(event)">
+        <div class="review-modal-card" style="max-width:500px;" onclick="event.stopPropagation()">
+            <button class="btn-close-modal" onclick="closeBadgeReview()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="rmc-badge" style="display:flex; justify-content:center; margin-bottom: 20px;">
+                <div id="brm-shadow"
+                    style="width:120px; height:120px; border-radius:50%; box-shadow:0 10px 25px rgba(0,0,0,0.1);">
+                    <div id="brm-icon"
+                        style="width:100%; height:100%; border-radius:50%; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                        💎</div>
+                </div>
+            </div>
+
+            <h2 class="rmc-title" id="brm-title" style="margin-bottom: 5px;">首位應援</h2>
+            <div
+                style="font-size: 0.9rem; font-weight: 700; color:var(--text-purple); letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;">
+                SAKURA NOVA 專屬成就</div>
+
+            <p class="rmc-desc" id="brm-desc"
+                style="background:#F8FAFC; padding: 15px; border-radius: 12px; text-align: left; border-left: 4px solid var(--text-pink);">
+                初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！</p>
+
+            <!-- Additional Details Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; text-align: left;">
+                <div
+                    style="background:#F8FAFC; padding:15px; border-radius:12px; display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-pink-light); color: var(--text-pink); display: flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                        <i class="fa-regular fa-calendar-check"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">達成時間</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--text-main);" id="brm-date">2023.12.15
+                        </div>
+                    </div>
+                </div>
+
+                <div
+                    style="background:#F8FAFC; padding:15px; border-radius:12px; display:flex; align-items:center; gap:12px;">
+                    <div
+                        style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg-blue-light); color: var(--text-blue); display: flex; align-items:center; justify-content:center; font-size:1.2rem;">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">贊助金額</div>
+                        <div style="font-size:1rem; font-weight:800; color:var(--text-main);"><span
+                                id="brm-contribution">1,500</span> <span
+                                style="font-size:0.7rem; color:var(--text-muted);">NTD</span></div>
+                    </div>
+                </div>
+
+                <div
+                    style="grid-column: 1 / -1; background: linear-gradient(90deg, var(--bg-pink-light), var(--bg-blue-light)); padding:15px; border-radius:12px; display:flex; justify-content: space-between; align-items:center;">
+                    <div>
+                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">成就解鎖來源</div>
+                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">SAKURA
+                            NOVA 3D化募資</div>
+                    </div>
+                    <a href="vtuber_profile.html#achieved"
+                        style="background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:6px;">前往
+                        VTuber 專頁查看詳細 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== Scripts ===== -->
+    <script>
+        // -- Share Modal --
+        function openShareModal() {
+            document.getElementById('share-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeShareModal(e) {
+            if (e && e.target !== document.getElementById('share-modal')) return;
+            document.getElementById('share-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function copyShareUrl() {
+            const url = document.getElementById('share-url').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('分享網址已複製！');
+            });
+        }
+
+        // -- Dropdown View More Toggles --
+        function toggleMoreVTubers(btn) {
+            const extraItems = document.querySelectorAll('.extra-vtuber');
+            const mobileHidden = document.querySelectorAll('.mobile-hidden');
+            let isOpening = false;
+
+            // Check if we are currently revealing
+            const firstExtra = extraItems[0] || mobileHidden[0];
+            if (firstExtra && (firstExtra.classList.contains('hidden-item') || (window.innerWidth <= 768 && firstExtra.classList.contains('mobile-hidden')))) {
+                isOpening = true;
+            }
+
+            extraItems.forEach(item => {
+                if (isOpening) item.classList.remove('hidden-item');
+                else item.classList.add('hidden-item');
+            });
+            mobileHidden.forEach(item => {
+                if (isOpening) item.classList.add('mobile-reveal');
+                else item.classList.remove('mobile-reveal');
+            });
+
+            btn.innerHTML = isOpening
+                ? '收起 <i class="fa-solid fa-chevron-up"></i>'
+                : '查看更多 <i class="fa-solid fa-chevron-down"></i>';
+        }
+
+        function toggleMoreTrans(btn) {
+            const hiddenItems = document.querySelectorAll('.extra-trans');
+            let isExpanded = false;
+            hiddenItems.forEach(item => {
+                if (item.classList.contains('hidden-item')) {
+                    item.classList.remove('hidden-item');
+                    isExpanded = true;
+                } else {
+                    item.classList.add('hidden-item');
+                }
+            });
+            btn.innerHTML = isExpanded
+                ? '收起 <i class="fa-solid fa-chevron-up"></i>'
+                : '查看更多 <i class="fa-solid fa-chevron-down"></i>';
+        }
+
+        // -- Settings Modal --
+        function openSettingsModal() {
+            document.getElementById('settings-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSettingsModal(e) {
+            if (e && e.target !== document.getElementById('settings-modal')) return;
+            document.getElementById('settings-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function switchTab(tabId, btnElement) {
+            // Update buttons
+            document.querySelectorAll('.settings-tab').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Update Panes
+            document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // Apply settings changes visually
+        function saveInterfaceSettings() {
+            // Get inputs
+            const newName = document.getElementById('theme-name').value;
+            const newTagline = document.getElementById('theme-tagline').value;
+            const avatarInput = document.getElementById('theme-avatar');
+            const colorPrimary = document.getElementById('theme-color-primary').value;
+            const colorSecondary = document.getElementById('theme-color-secondary').value;
+
+            // Update texts in DOM
+            const nameEl = document.querySelector('.fan-name');
+            const taglineEl = document.querySelector('.fan-tagline');
+            if (nameEl) nameEl.textContent = newName;
+            if (taglineEl) taglineEl.textContent = newTagline;
+
+            // Update CSS variables for theme tracking and structural coloring
+            const root = document.documentElement;
+            root.style.setProperty('--text-pink', colorPrimary); // Main primary
+            root.style.setProperty('--text-blue', colorSecondary); // Main secondary
+
+            // Generate lighter variants for backgrounds and set shadow dynamically via mixed colors
+            const mixPinkLight = `color-mix(in srgb, ${colorPrimary} 10%, white)`;
+            const mixBlueLight = `color-mix(in srgb, ${colorSecondary} 10%, white)`;
+            root.style.setProperty('--bg-pink-light', mixPinkLight);
+            root.style.setProperty('--bg-blue-light', mixBlueLight);
+
+            // 1. SUPPORTER Tag Icon Color ONLY (text remains muted)
+            const supporterTagText = document.querySelector('.supporter-tag');
+            if (supporterTagText) supporterTagText.style.color = ''; // reset just in case
+            const supporterIcon = document.querySelector('.supporter-tag i');
+            if (supporterIcon) supporterIcon.style.color = colorPrimary;
+
+            // 2. Section Icons Color (like the star before 收藏成就勳章)
+            document.querySelectorAll('.section-title .text-pink').forEach(el => {
+                if (!el.closest('.fixed-theme')) el.style.color = colorPrimary;
+            });
+
+            // 3. Gradient mix and Box Shadows
+            root.style.setProperty('--grad-left', `color-mix(in srgb, ${colorPrimary} 15%, white)`);
+            root.style.setProperty('--grad-right', `color-mix(in srgb, ${colorSecondary} 15%, white)`);
+            document.querySelector('.bg-gradient').style.background = `linear-gradient(90deg, var(--grad-left, #FCE7F3) 0%, var(--grad-right, #E0F2FE) 100%)`;
+
+            // Adjust central shadows dynamically using color-mix to keep hue 
+            const shadowMix = `color-mix(in srgb, ${colorPrimary} 20%, transparent)`;
+            const fanCard = document.querySelector('.fan-card:not(.fixed-theme)');
+            if (fanCard) fanCard.style.boxShadow = `0 10px 40px ${shadowMix}`;
+
+            const avatarWrap = document.querySelector('.avatar-wrapper');
+            if (avatarWrap) avatarWrap.style.boxShadow = `0 0 30px ${shadowMix}`;
+
+            // Update badge review modal shadow
+            const brmShadow = document.getElementById('brm-shadow');
+            if (brmShadow) brmShadow.style.boxShadow = `0 10px 25px ${shadowMix}`;
+
+            // 4. "前往專頁" button hue
+            document.querySelectorAll('.v-link').forEach(link => {
+                link.style.color = colorPrimary;
+                // Add hover logic dynamically via CSS overrides or simple color swap to mimic CSS hover
+                link.onmouseover = () => { link.style.borderColor = `color-mix(in srgb, ${colorPrimary} 30%, white)`; };
+                link.onmouseleave = () => { link.style.borderColor = 'rgba(255, 255, 255, 0.9)'; };
+            });
+
+            // Handle temporary avatar preview via file object URL
+            if (avatarInput.files && avatarInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const avatarImage = document.querySelector('.avatar-wrapper img');
+                    const navAvatarImage = document.querySelector('.nav-avatar');
+                    if (avatarImage) avatarImage.src = e.target.result;
+                    if (navAvatarImage) navAvatarImage.src = e.target.result;
+                };
+                reader.readAsDataURL(avatarInput.files[0]);
+            }
+
+            // Close modal & notify
+            closeSettingsModal();
+            setTimeout(() => {
+                alert('您的個人風格設定已更新！');
+            }, 300);
+        }
+
+        // --- BADGE & TITLES LOGIC ---
+        const ALL_BADGES = [
+            // id will be replaced by real DB id from GET /api/user/badges
+            { id: 'badge_first_support', imgSrc: 'image/資產 1.png', style: 'bg-pink-light', title: '首位應援', origin: 'SAKURA NOVA 3D化募資', date: '2023.12.15', desc: '初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！', contribution: '1,500', selected: true },
+            { id: 'badge_sprout', imgSrc: 'image/資產 3.png', style: 'bg-blue-light', title: '新芽滋長', origin: '初次贊助成就', date: '2024.01.20', desc: '你的支持讓小樹苗開始成長。', contribution: '1,000', selected: true },
+            { id: 'badge_starlight', imgSrc: 'image/資產 15.png', style: 'bg-purple-light', title: '繁星點點', origin: '2月情人節活動', date: '2024.02.14', desc: '點亮了更多星星！', contribution: '2,000', selected: true },
+            { id: 'badge_mystery', imgSrc: 'image/資產 1.png', style: 'bg-gray-light', title: '尚未解鎖', origin: '神秘里程碑', date: '???', desc: '等待緣分解鎖的秘密。', contribution: '0', selected: false, locked: true },
+            { id: 'badge_magic', imgSrc: 'image/blaori.png', style: 'bg-pink-light', title: '魔法時刻', origin: '春季特別活動', date: '2024.04.01', desc: '魔法般的應援力！', contribution: '5,500', selected: true },
+            { id: 'badge_love', imgSrc: 'image/endless.png', style: 'bg-blue-light', title: '滿滿愛心', origin: '520 告白日', date: '2024.05.20', desc: '感受到滿滿的愛。', contribution: '300', selected: true },
+            { id: 'badge_cheers', imgSrc: 'image/padoru2.png', style: 'bg-pink-light', title: '乾杯紀念', origin: '半年慶祝直播', date: '2024.06.18', desc: '一起舉杯慶祝吧！', contribution: '10,000', selected: true },
+            { id: 'badge_applause', imgSrc: 'image/v_head_ryusei.jpg', style: 'bg-purple-light', title: '熱烈掌聲', origin: '七夕應援', date: '2024.07.07', desc: '為你的貢獻歡呼！', contribution: '1,200', selected: true },
+            { id: 'badge_more', iconClass: 'fa-solid fa-ellipsis', style: 'bg-gray-light', title: '更多驚喜', origin: '未來成就', date: '2024.08', desc: '還有更多未知等著你。', contribution: '0', selected: true, unclickable: true }
+        ];
+
+        const ALL_TITLES = [
+            { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: 'SAKURA NOVA 3D化募資', selected: true },
+            { id: 't2', iconClass: 'fa-solid fa-trophy text-purple', title: 'sakura的全面應援', origin: '陪伴 sakura 走過所有重要時刻', selected: true },
+            { id: 't3', iconClass: 'fa-solid fa-flag text-blue', title: '全部都是盤幣', origin: '累積消費超過 100,000 NTD', selected: true },
+            { id: 't4', iconClass: 'fa-solid fa-crown text-pink', title: '頂尖粉絲', origin: '年度貢獻前 1% 專屬', selected: false }
+        ];
+
+        function renderBadgesAndTitles() {
+            // Badges containers
+            const outerBadges = document.getElementById('outer-badges-grid');
+            const settingsBadges = document.getElementById('settings-badges-grid');
+
+            // Titles containers
+            const outerTitles = document.getElementById('outer-titles-grid');
+            const settingsTitles = document.getElementById('settings-titles-grid');
+
+            if (!outerBadges || !settingsBadges || !outerTitles || !settingsTitles) return;
+
+            // ----- Render Badges -----
+            outerBadges.innerHTML = '';
+            ALL_BADGES.filter(b => b.selected || b.unclickable).forEach(badge => {
+                const el = document.createElement('div');
+                el.className = `badge-icon ${badge.style}`;
+                el.title = badge.unclickable ? badge.title : `${badge.title} (${badge.origin})`;
+
+                if (badge.unclickable) {
+                    el.innerHTML = `<i class="${badge.iconClass}"></i>`;
+                } else {
+                    el.innerHTML = `<img src="${badge.imgSrc}" style="width:100%; height:100%; object-fit:cover;">`;
+                }
+
+                if (!badge.locked && !badge.unclickable) {
+                    el.onclick = () => openBadgeReview(badge.imgSrc, badge.title, badge.date, badge.desc, badge.contribution, badge.origin);
+                }
+                outerBadges.appendChild(el);
+            });
+
+            settingsBadges.innerHTML = '';
+            ALL_BADGES.forEach(badge => {
+                if (badge.unclickable) return;
+                const wrapper = document.createElement('div');
+                wrapper.style.textAlign = 'center';
+
+                let opacity = badge.locked ? '0.5' : '1';
+                let disabledAttr = badge.locked ? 'disabled' : '';
+                let checkedAttr = badge.selected ? 'checked' : '';
+
+                let innerHTML = badge.imgSrc
+                    ? `<img src="${badge.imgSrc}" style="width:100%; height:100%; object-fit:cover;">`
+                    : `<i class="${badge.iconClass}"></i>`;
+
+                wrapper.innerHTML = `
+                    <div class="badge-icon ${badge.style}" style="margin: 0 auto; position:relative; opacity:${opacity};">
+                        ${innerHTML}
+                        <input type="checkbox" id="chk-${badge.id}" ${checkedAttr} ${disabledAttr} style="position:absolute; bottom:-5px; right:-5px; transform:scale(1.2);">
+                    </div>
+                    <h5 style="margin: 8px 0 2px 0; font-size:0.85rem;">${badge.title}</h5>
+                `;
+                settingsBadges.appendChild(wrapper);
+            });
+
+            // ----- Render Titles -----
+            outerTitles.innerHTML = '';
+            ALL_TITLES.filter(t => t.selected).forEach(titleObj => {
+                const el = document.createElement('span');
+                el.className = 'title-tag';
+                el.title = titleObj.origin; // Native hover for desktop
+                el.innerHTML = `<i class="${titleObj.iconClass}"></i> ${titleObj.title}`;
+
+                // Mobile tap handler
+                el.onclick = (e) => {
+                    if (window.innerWidth <= 768) {
+                        alert(`稱號來源：${titleObj.origin}`);
+                        e.stopPropagation();
+                    }
+                };
+                outerTitles.appendChild(el);
+            });
+
+            settingsTitles.innerHTML = '';
+            ALL_TITLES.forEach(titleObj => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;" class="title-tag">
+                        <input type="checkbox" id="chk-${titleObj.id}" ${titleObj.selected ? 'checked' : ''}>
+                        <i class="${titleObj.iconClass}"></i> ${titleObj.title}
+                    </label>
+                `;
+                settingsTitles.appendChild(wrapper);
+            });
+        }
+
+        function saveBadgeSettings() {
+            ALL_BADGES.forEach(badge => {
+                if (badge.unclickable || badge.locked) return;
+                const chk = document.getElementById(`chk-${badge.id}`);
+                if (chk) {
+                    badge.selected = chk.checked;
+                }
+            });
+            ALL_TITLES.forEach(titleObj => {
+                const chk = document.getElementById(`chk-${titleObj.id}`);
+                if (chk) {
+                    titleObj.selected = chk.checked;
+                }
+            });
+            renderBadgesAndTitles();
+            closeSettingsModal();
+            setTimeout(() => {
+                alert('徽章與稱號展示設定已更新！');
+            }, 300);
+        }
+
+        // ============================================================
+        //  PAGE INITIALIZATION
+        //  Replace stub data with real fetch() calls when backend ready
+        // ============================================================
+
+        /**
+         * checkAuthSession()
+         * TODO: Replace with real session / JWT validation.
+         * Return { isLoggedIn: bool, isShareView: bool, shareToken: string|null }
+         */
+        function checkAuthSession() {
+            const params = new URLSearchParams(window.location.search);
+            const shareToken = params.get('share');
+            // TODO: Check real auth cookie / token here
+            // const token = document.cookie.match(/token=([^;]+)/);
+            return {
+                isLoggedIn: true,          // STUB: assume logged in
+                isShareView: !!shareToken, // true if ?share=xxx present
+                shareToken: shareToken
+            };
+        }
+
+        /**
+         * applyViewMode(session)
+         * Hides auth-only sections in share/read-only view.
+         */
+        function applyViewMode(session) {
+            if (session.isShareView) {
+                document.querySelectorAll('[data-auth-only="true"]').forEach(el => {
+                    el.style.display = 'none';
+                });
+                // Hide edit/share buttons
+                const editBtn = document.querySelector('.btn-edit-profile');
+                const shareBtn = document.querySelector('.share-btn');
+                if (editBtn) editBtn.style.display = 'none';
+                if (shareBtn) shareBtn.style.display = 'none';
+            }
+        }
+
+        /**
+         * renderNotifications(notifications)
+         * TODO: Replace MOCK_NOTIFICATIONS with fetch('GET /api/user/notifications')
+         */
+        function renderNotifications(notifications) {
+            const list = document.getElementById('notif-list');
+            if (!list) return;
+            list.innerHTML = '';
+            notifications.forEach(n => {
+                const li = document.createElement('li');
+                li.style.cssText = 'padding:10px; border-bottom:1px solid #f3f4f6; display:flex; gap:10px; align-items:start; cursor:pointer; border-radius:8px; transition:background 0.2s;';
+                li.onclick = () => {
+                    // TODO: call PATCH /api/user/notifications/{n.id}/read
+                    location.href = n.profileUrl || 'vtuber_profile.html';
+                };
+                li.innerHTML = `
+                    <img src="${n.avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+                    <div>
+                        <div style="font-size:0.85rem;font-weight:700;color:var(--text-main);margin-bottom:4px;">${n.title}</div>
+                        <div style="font-size:0.75rem;color:var(--text-muted);">${n.body}</div>
+                        <div style="font-size:0.7rem;color:#cbd5e1;margin-top:4px;">${n.time}</div>
+                    </div>`;
+                list.appendChild(li);
+            });
+        }
+
+        /**
+         * renderStats(stats)
+         * TODO: Replace MOCK_STATS with fetch('GET /api/user/stats')
+         */
+        function renderStats(stats) {
+            const el = (id) => document.getElementById(id);
+            if (el('stat-longest-day')) el('stat-longest-day').innerHTML = `${stats.longestSupportDays} <small>day</small>`;
+            if (el('stat-vtuber-count')) el('stat-vtuber-count').innerHTML = `${stats.vtuberCount} <small>位</small>`;
+            if (el('stat-milestone-rate')) el('stat-milestone-rate').textContent = `${stats.milestoneRate}%`;
+            if (el('stat-badge-count')) el('stat-badge-count').textContent = `${stats.badgeCount}`;
+        }
+
+        /**
+         * renderSupportList(topSupported)
+         * TODO: Replace MOCK_TOP_SUPPORTED with fetch result from /api/user/stats
+         */
+        function renderSupportList(topSupported) {
+            const list = document.getElementById('stat-top-supported');
+            if (!list) return;
+            list.innerHTML = '';
+            topSupported.forEach((v, i) => {
+                const li = document.createElement('li');
+                li.style.cssText = `display:flex;align-items:center;gap:10px;${i < topSupported.length - 1 ? 'margin-bottom:8px;' : ''}`;
+                li.innerHTML = `<img src="${v.avatarUrl}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> ${v.name}`;
+                list.appendChild(li);
+            });
+        }
+
+        /**
+         * initPage()
+         * Main entry point. Replace all MOCK_* with real API calls.
+         */
+        function initPage() {
+            const session = checkAuthSession();
+            applyViewMode(session);
+
+            // TODO: load real user settings from GET /api/user/settings
+            // fetch('/api/user/settings').then(r=>r.json()).then(settings => {
+            //     document.getElementById('theme-name').value = settings.displayName;
+            //     document.getElementById('theme-tagline').value = settings.tagline;
+            //     document.getElementById('theme-color-primary').value = settings.themeColorPrimary;
+            //     document.getElementById('theme-color-secondary').value = settings.themeColorSecondary;
+            //     document.getElementById('bound-google-email').textContent = settings.googleEmail;
+            //     applyThemeColors(settings.themeColorPrimary, settings.themeColorSecondary);
+            // });
+
+            // TODO: load badges from GET /api/user/badges
+            // fetch('/api/user/badges').then(r=>r.json()).then(data => {
+            //     ALL_BADGES = data; ALL_TITLES = data.titles;
+            //     renderBadgesAndTitles();
+            // });
+            renderBadgesAndTitles(); // STUB: uses hardcoded ALL_BADGES
+
+            // STUB: Mock stats — replace with fetch('/api/user/stats')
+            const MOCK_STATS = { longestSupportDays: '1,240', vtuberCount: 42, milestoneRate: 92, badgeCount: 14 };
+            renderStats(MOCK_STATS);
+
+            // STUB: Mock top supported — replace with stats API response
+            const MOCK_TOP_SUPPORTED = [
+                { name: 'sakura', avatarUrl: 'image/miku_test.png' },
+                { name: '繁', avatarUrl: 'image/v_head_ryusei.jpg' },
+                { name: 'あいうえお', avatarUrl: 'image/blaori.png' },
+                { name: 'さしすせそ', avatarUrl: 'image/endless.png' }
+            ];
+            renderSupportList(MOCK_TOP_SUPPORTED);
+
+            // STUB: Mock notifications — replace with fetch('/api/user/notifications')
+            const MOCK_NOTIFICATIONS = [
+                { id: 'n1', avatarUrl: 'image/v_head_ryusei.jpg', profileUrl: 'vtuber_profile.html', title: 'Sakura Nova 發布了新企劃！', body: '趕快來看看 Sakura Nova 的超大型 3D 演唱會募資企劃吧！', time: '10 分鐘前' },
+                { id: 'n2', avatarUrl: 'image/blaori.png', profileUrl: 'vtuber_profile.html', title: 'Mori Calliope 達成企劃里程碑 🎉', body: '全球粉絲努力達成解鎖，來看看她想說什麼。', time: '2 小時前' }
+            ];
+            renderNotifications(MOCK_NOTIFICATIONS);
+
+            // Update unread badge count
+            // TODO: replace with fetch('/api/user/notifications/unread-count')
+            const unreadCount = MOCK_NOTIFICATIONS.length;
+            const badge = document.getElementById('notif-unread-badge');
+            if (badge) {
+                badge.textContent = unreadCount;
+                badge.style.display = unreadCount > 0 ? 'block' : 'none';
+            }
+
+            // TODO: load share URL from POST /api/user/share-token
+            // fetch('/api/user/share-token', { method: 'POST' }).then(r=>r.json()).then(data => {
+            //     document.getElementById('share-url').textContent = data.url;
+            // });
+        }
+
+        document.addEventListener('DOMContentLoaded', initPage);
+
+        // -- Badge Review Modal --
+        function openBadgeReview(imgSrc, title, date, desc, contribution, origin) {
+            const iconContainer = document.getElementById('brm-icon');
+            iconContainer.innerHTML = `<img src="${imgSrc}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+
+            document.getElementById('brm-title').textContent = title;
+            document.getElementById('brm-date').textContent = date;
+            document.getElementById('brm-desc').textContent = desc;
+            document.getElementById('brm-origin').textContent = origin;
+
+            const contribEl = document.getElementById('brm-contribution');
+            if (contribEl && contribution) contribEl.textContent = contribution;
+
+            document.getElementById('badge-review-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBadgeReview(e) {
+            if (e && e.target !== document.getElementById('badge-review-modal')) return;
+            document.getElementById('badge-review-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+    </script>
 </body>
 
 </html>
