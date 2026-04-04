@@ -668,6 +668,8 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+    flex: 1;
+    min-width: 0;
 }
 
 .exc-tag {
@@ -683,10 +685,18 @@ body {
     flex-shrink: 0;
 }
 
+.exc-text {
+    flex: 1;
+    min-width: 0;
+}
+
 .exc-text h4 {
     margin: 0 0 4px 0;
     font-size: 0.95rem;
     font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .exc-text p {
@@ -710,6 +720,7 @@ body {
     padding: 5px 10px;
     border-radius: 8px;
     transition: background 0.2s;
+    flex-shrink: 0;
 }
 
 .btn-read-more:hover {
@@ -736,6 +747,7 @@ body {
     border-left: 1px solid white;
     padding: 30px 20px;
     flex-shrink: 0;
+    box-sizing: border-box;
 }
 
 .ranking-header {
@@ -904,31 +916,10 @@ body {
 
 .ac-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding-top: 15px;
     border-top: 1px dashed #E2E8F0;
-}
-
-.ac-avatars {
-    display: flex;
-}
-
-.ac-avatars .ava {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    background: var(--vt-blue);
-    border: 2px solid white;
-    margin-left: -8px;
-}
-
-.ac-avatars .ava:first-child {
-    margin-left: 0;
-}
-
-.ac-avatars .ava:nth-child(2) {
-    background: #E2E8F0;
 }
 
 .btn-review {
@@ -938,6 +929,13 @@ body {
     font-size: 0.75rem;
     font-weight: 800;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-review:hover {
+    color: var(--vt-pink);
 }
 
 /* ---- Achieved Milestones Timeline ---- */
@@ -1088,38 +1086,399 @@ body {
     box-shadow: 0 4px 15px rgba(255, 133, 178, 0.3);
 }
 
-/* Responsive */
+.pm-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    color: var(--vt-pink-dark);
+}
+
+.pm-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+}
+
+.pm-close {
+    background: #F1F5F9;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    transition: background 0.2s, color 0.2s;
+}
+
+.pm-close:hover {
+    background: var(--vt-pink-light);
+    color: var(--vt-pink-dark);
+}
+
+/* =============================================
+   RESPONSIVE DESIGN — Comprehensive RWD Overhaul
+   ============================================= */
+
+/* --- Tablet / Large Mobile (≤ 900px) --- */
 @media (max-width: 900px) {
+    /* Nav */
+    .vt-nav {
+        padding: 10px 20px;
+    }
+    .vt-nav-links {
+        display: none;
+    }
+    .vt-nav-actions .btn-share {
+        display: none;
+    }
+
+    /* Hero */
     .vt-hero {
         flex-direction: column;
         text-align: center;
         gap: 30px;
+        padding-left: 0;
+        padding-top: 20px;
     }
-
     .vt-hero-image {
         width: 100%;
         max-width: 400px;
+        margin: 0 auto;
     }
-
+    .vt-hero-info {
+        margin-top: 0;
+    }
+    .vt-hero-title {
+        font-size: 2.8rem;
+    }
     .vt-hero-bio {
         margin: 0 auto 25px;
+        max-width: 100%;
     }
-
     .vt-socials {
         justify-content: center;
     }
 
+    /* Milestone Cards */
     .ms-card {
         flex-direction: column;
     }
-
+    .ms-main {
+        padding: 24px;
+    }
     .ms-ranking {
         width: 100%;
         border-left: none;
         border-top: 1px solid white;
     }
-
     .ms-payment-row {
         flex-direction: column;
     }
+    .ms-title {
+        font-size: 1.4rem;
+    }
+    .ms-desc {
+        max-width: 100%;
+    }
+    .ms-top-header {
+        max-width: calc(100% - 100px);
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Floating badge: shrink on mobile */
+    .ms-floating-badge {
+        width: 68px;
+        height: 68px;
+        top: 24px;
+        right: 24px;
+        font-size: 1.8rem;
+    }
+
+    /* Achieved grid */
+    .achieved-card {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+    .achieved-grid {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+    }
+    .achieved-timeline {
+        overflow-x: auto;
+        padding: 20px 16px;
+    }
+
+    /* Timeline items */
+    .timeline-items {
+        min-width: 560px;
+    }
 }
+
+/* --- Mobile (≤ 600px) --- */
+@media (max-width: 600px) {
+    /* Global layout */
+    .container {
+        padding: 0 20px;
+    }
+    .milestones-wrapper {
+        padding-top: 30px;
+    }
+    .hero-wrapper {
+        padding-bottom: 60px;
+    }
+
+    /* Nav */
+    .vt-nav-wrapper {
+        top: 12px;
+        padding: 0 12px;
+    }
+    .vt-nav {
+        padding: 10px 16px;
+    }
+    .nav-logo-vup {
+        font-size: 1.15rem;
+    }
+    .vt-brand {
+        font-size: 0.9rem;
+    }
+    .btn-fan {
+        padding: 5px 14px;
+        font-size: 0.75rem;
+    }
+
+    /* Hero */
+    .vt-hero {
+        margin-top: 30px;
+    }
+    .vt-hero-subtitle {
+        font-size: 1.3rem;
+    }
+    .vt-hero-title {
+        font-size: 2.2rem;
+    }
+    .vt-hero-image {
+        height: 220px;
+        margin: 0 auto;
+        display: block;
+    }
+
+    /* Milestone Cards */
+    .ms-main {
+        padding: 20px 16px;
+    }
+    .ms-support-box {
+        padding: 20px 16px;
+    }
+    .ms-title {
+        font-size: 1.2rem;
+    }
+    .ms-status-badge {
+        font-size: 0.75rem;
+        padding: 4px 10px;
+    }
+    .ms-top-header {
+        max-width: calc(100% - 80px);
+    }
+    .ms-floating-badge {
+        width: 54px;
+        height: 54px;
+        top: 16px;
+        right: 16px;
+        font-size: 1.4rem;
+        border-radius: 14px;
+    }
+    .ms-progress-labels {
+        flex-direction: column;
+        gap: 2px;
+    }
+    .ms-progress-labels .current span {
+        font-size: 1.1rem;
+    }
+    .ms-payment-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .ms-input {
+        padding: 13px 16px 13px 64px;
+    }
+    .btn-support-now {
+        padding: 13px 24px;
+        min-width: unset;
+        width: 100%;
+    }
+
+    /* Joint Collab badge */
+    .ms-joint-collab {
+        flex-wrap: wrap;
+        border-radius: 16px;
+    }
+    .collab-text {
+        font-size: 0.82rem;
+    }
+
+    /* Exclusive posts */
+    .exc-post {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    .exc-post-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .btn-read-more {
+        font-size: 0.8rem;
+    }
+    .btn-view-all {
+        font-size: 0.8rem;
+    }
+    .ms-exc-title {
+        font-size: 0.85rem;
+    }
+
+    /* Ranking sidebar */
+    .ranking-header h3 {
+        font-size: 0.9rem;
+    }
+    .rank-item {
+        padding: 8px 12px;
+        gap: 10px;
+    }
+    .r-avatar {
+        width: 34px;
+        height: 34px;
+    }
+
+    /* Achieved section */
+    .achieved-header h2 {
+        font-size: 1.3rem;
+    }
+    .achieved-card {
+        padding: 16px;
+    }
+    .btn-review {
+        font-size: 0.8rem;
+    }
+
+    /* Timeline: hidden on mobile */
+    .achieved-timeline {
+        display: none;
+    }
+
+    /* Footer */
+    .vt-footer {
+        padding: 40px 16px 30px;
+    }
+    .vt-footer-links {
+        flex-wrap: wrap;
+        gap: 14px;
+        justify-content: center;
+    }
+    .vt-footer-links a {
+        font-size: 0.8rem;
+    }
+
+    /* Post Modal */
+    .post-modal-overlay {
+        padding: 12px;
+    }
+    .post-modal-card {
+        border-radius: 18px;
+        width: 100%;
+    }
+    .pmc-author {
+        padding: 14px 16px 12px;
+    }
+    .pmc-title {
+        margin: 10px 16px 8px;
+        font-size: 1rem;
+    }
+    .pmc-body {
+        margin: 0 16px 16px;
+        font-size: 0.88rem;
+    }
+    .pmc-audio-wrap {
+        margin: 0 16px 14px;
+    }
+
+    /* Review Modal */
+    .review-modal-overlay {
+        padding: 12px;
+    }
+    .review-modal-card {
+        padding: 20px 16px;
+        border-radius: 20px;
+        width: 100%;
+    }
+    .rmc-title {
+        font-size: 1.1rem;
+    }
+    .rmc-stats {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .rmc-my-record {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    /* Payment Modal */
+    .payment-modal-overlay {
+        padding: 20px;
+        align-items: center;
+    }
+    .payment-modal {
+        width: 100% !important;
+        border-radius: 20px !important;
+        padding: 20px 16px;
+        max-height: 85vh;
+        height: auto;
+        overflow-y: auto;
+    }
+    .pm-header {
+        margin-bottom: 16px;
+    }
+    .pm-header h2 {
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    .pm-row {
+        flex-direction: column;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+    .pm-methods {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
+    }
+    .pm-method-btn {
+        padding: 10px 8px;
+        font-size: 0.8rem;
+    }
+    .pm-method-btn i {
+        font-size: 1.1rem;
+    }
+    .pm-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .pm-btn-cancel {
+        display: none;
+    }
+    .pm-btn {
+        padding: 13px;
+        font-size: 0.95rem;
+    }
+    .pm-textarea {
+        min-height: 70px;
+    }
+}
