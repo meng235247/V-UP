@@ -651,73 +651,140 @@
             </div>
         </div>
 
-        <script>
-            let selectedMethod = 'credit';
-            let currentItem = '';
+    <script src="api.js"></script>
+    <script>
+        let selectedMethod = 'credit';
+        let currentItem = '';
 
-            function openPaymentModal(itemName, btnElement) {
-                currentItem = itemName;
-                document.getElementById('pm-item-name').textContent = `項目：${itemName}`;
+        function openPaymentModal(itemName, btnElement) {
+            currentItem = itemName;
+            document.getElementById('pm-item-name').textContent = `項目：${itemName}`;
 
-                // Try to pull the amount from the input field
-                const amountInput = btnElement.previousElementSibling.querySelector('input');
-                const defaultAmount = amountInput && amountInput.value ? amountInput.value : 500;
-                document.getElementById('pm-amount').value = defaultAmount;
+            // Try to pull the amount from the input field
+            const amountInput = btnElement.previousElementSibling.querySelector('input');
+            const defaultAmount = amountInput && amountInput.value ? amountInput.value : 500;
+            document.getElementById('pm-amount').value = defaultAmount;
 
-                document.getElementById('payment-modal').classList.add('open');
+            document.getElementById('payment-modal').classList.add('open');
+        }
+
+        function closePaymentModal() {
+            document.getElementById('payment-modal').classList.remove('open');
+        }
+
+        function selectMethod(btn, method) {
+            document.querySelectorAll('.pm-method-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedMethod = method;
+        }
+
+        function simulatePaymentAPI() {
+            const amount = document.getElementById('pm-amount').value;
+            if (!amount || amount < 100) {
+                alert('最低贊助金額為 100 NTD');
+                return;
             }
+            alert(`已準備發送交易！金額: ${amount} NTD, 方式: ${selectedMethod}`);
+            closePaymentModal();
+        }
 
-            function closePaymentModal() {
-                document.getElementById('payment-modal').classList.remove('open');
+        function toggleMoreMilestones() {
+            const extra = document.getElementById('more-milestones');
+            const btnText = document.getElementById('log-btn-text');
+            extra.classList.toggle('open');
+            if (extra.classList.contains('open')) {
+                btnText.textContent = "收起過往歷程";
+            } else {
+                btnText.textContent = "掌握所有歷程足跡 (展開更多回顧)";
             }
+        }
 
-            function selectMethod(btn, method) {
-                document.querySelectorAll('.pm-method-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedMethod = method;
-            }
+        // Active Nav State logic
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section, #top');
 
-            function simulatePaymentAPI() {
-                const amount = document.getElementById('pm-amount').value;
-                if (!amount || amount < 100) {
-                    alert('最低贊助金額為 100 NTD');
-                    return;
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
                 }
-                alert(`已準備發送交易！金額: ${amount} NTD, 方式: ${selectedMethod}`);
-                closePaymentModal();
-            }
-
-            function toggleMoreMilestones() {
-                const extra = document.getElementById('more-milestones');
-                const btnText = document.getElementById('log-btn-text');
-                extra.classList.toggle('open');
-                if (extra.classList.contains('open')) {
-                    btnText.textContent = "收起過往歷程";
-                } else {
-                    btnText.textContent = "掌握所有歷程足跡 (展開更多回顧)";
-                }
-            }
-
-            // Active Nav State logic
-            window.addEventListener('scroll', () => {
-                let current = '';
-                const sections = document.querySelectorAll('section, #top');
-
-                sections.forEach(section => {
-                    const sectionTop = section.offsetTop;
-                    if (scrollY >= sectionTop - 100) {
-                        current = section.getAttribute('id');
-                    }
-                });
-
-                document.querySelectorAll('.vt-nav-item').forEach(li => {
-                    li.classList.remove('active');
-                    if (li.getAttribute('href') === `#${current}` || (current === 'top' && li.getAttribute('href') === '#top')) {
-                        li.classList.add('active');
-                    }
-                });
             });
-        </script>
+
+            document.querySelectorAll('.vt-nav-item').forEach(li => {
+                li.classList.remove('active');
+                if (li.getAttribute('href') === `#${current}` || (current === 'top' && li.getAttribute('href') === '#top')) {
+                    li.classList.add('active');
+                }
+            });
+        });
+        
+        // ---- Dashbord Sync Logic (Using API) ----
+        async function syncProfileData() {
+            try {
+                // 1. 同步雲端資料
+                const profileData = await vupFetch('/profile');
+                const milestones = await vupFetch('/milestones');
+                const activeMs = milestones.find(m => m.status === 'active');
+
+                // 2. 更新 UI
+                if (profileData.style) document.body.dataset.style = profileData.style;
+                if (profileData.color) document.documentElement.style.setProperty('--primary', profileData.color);
+                
+                // --- Sync Active Milestone ---
+                if (activeMs) {
+                    const titleEl = document.querySelector('.ms-title');
+                    if (titleEl) titleEl.innerText = activeMs.title;
+                    
+                    const progressFill = document.querySelector('.ms-progress-fill');
+                    if (progressFill) {
+                        const pct = Math.round((activeMs.current / activeMs.goal) * 100);
+                        progressFill.style.width = pct + '%';
+                        const pctLabel = document.querySelector('.ms-progress-labels .current span');
+                        if (pctLabel) pctLabel.innerText = pct + '%';
+                    }
+
+                    const avatarContainer = document.querySelector('.collab-avatars');
+                    const collabText = document.querySelector('.collab-text');
+                    const collabWrap = document.querySelector('.ms-joint-collab');
+
+                    if (activeMs.type === 'collab' && activeMs.participants && activeMs.participants.length > 0) {
+                        if (collabWrap) collabWrap.style.display = 'flex';
+                        if (avatarContainer) {
+                            avatarContainer.innerHTML = `
+                                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume" alt="Main" />
+                                ${activeMs.participants.map(p => `<img src="${p.avatar}" alt="${p.name}" />`).join('')}
+                            `;
+                        }
+                        if (collabText) {
+                            collabText.innerHTML = `與 ${activeMs.participants.map(p => `<span class="vt-name-ume">${p.name}</span>`).join(', ')} 的聯合成長企劃`;
+                        }
+                    } else {
+                        if (collabWrap) collabWrap.style.display = 'none';
+                    }
+                }
+
+                if (profileData.name) {
+                    const nameEl = document.querySelector('.vt-hero-title');
+                    if (nameEl) nameEl.innerText = profileData.name;
+                    const brandEl = document.querySelector('.vt-brand');
+                    if (brandEl) brandEl.innerText = profileData.name;
+                }
+                if (profileData.catchphrase && document.querySelector('.vt-hero-subtitle')) {
+                    document.querySelector('.vt-hero-subtitle').innerText = profileData.catchphrase;
+                }
+                if (profileData.bio && document.querySelector('.vt-hero-bio')) {
+                    document.querySelector('.vt-hero-bio').innerText = profileData.bio;
+                }
+                if (profileData.avatar && document.querySelector('.vt-hero-image img')) {
+                    document.querySelector('.vt-hero-image img').src = profileData.avatar;
+                }
+            } catch (err) {
+                console.warn('同步 API 資料失敗，保留預設值');
+            }
+        }
+        document.addEventListener('DOMContentLoaded', syncProfileData);
+    </script>
 </body>
 
 </html>

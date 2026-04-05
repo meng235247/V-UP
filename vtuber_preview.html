@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! | 創作者前台預覽 (Preview Mode)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        :root {
+            --bg-body: #f8fafc;
+            --surface: #ffffff;
+            --primary: #8b5cf6;
+            --primary-glow: rgba(139, 92, 246, 0.15);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --glass: rgba(255, 255, 255, 0.8);
+        }
+
+        body { background: var(--bg-body); color: var(--text-main); font-family: 'Inter', 'Noto Sans TC', sans-serif; margin: 0; line-height: 1.6; }
+
+        /* ---- Preview Overlay ---- */
+        .preview-bar {
+            background: #1e293b;
+            color: white;
+            padding: 12px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 9999;
+            font-size: 0.95rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        .preview-badge {
+            background: #f59e0b;
+            color: #451a03;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-right: 12px;
+        }
+        .btn-return {
+            background: var(--primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        .btn-return:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+        /* ---- Premium Header ---- */
+        .v-banner {
+            height: 320px;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%);
+            position: relative;
+            background-size: cover;
+            background-position: center;
+        }
+        .v-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent, var(--bg-body));
+        }
+
+        .profile-container { max-width: 1100px; margin: -100px auto 0; padding: 0 24px; position: relative; z-index: 10; }
+        
+        .profile-header-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            padding: 40px;
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            border: 1px solid var(--surface);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            margin-bottom: 32px;
+        }
+
+        .avatar-box {
+            width: 160px; height: 160px;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 6px solid var(--surface);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: #fff;
+            flex-shrink: 0;
+        }
+        .avatar-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        .profile-info { flex: 1; }
+        .profile-info h1 { font-size: 2.8rem; font-weight: 900; margin: 0; color: #1e1b4b; }
+        .profile-handle { color: var(--primary); font-weight: 700; margin-bottom: 12px; display: block; }
+        .profile-tags { display: flex; gap: 8px; margin-top: 12px; }
+        .p-tag { background: #fff; padding: 6px 16px; border-radius: 12px; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); border: 1px solid var(--border); }
+
+        /* ---- Main Grid ---- */
+        .profile-grid { display: grid; grid-template-columns: 1fr 340px; gap: 32px; padding-bottom: 100px; }
+
+        .content-card {
+            background: var(--surface);
+            border-radius: 24px;
+            padding: 32px;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 32px;
+        }
+        .content-card h2 { font-size: 1.4rem; font-weight: 800; margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+        .content-card h2 i { color: var(--primary); }
+
+        .ms-item { padding: 24px; border-radius: 20px; background: #fcfcfd; border: 1px solid var(--border); margin-bottom: 20px; }
+        .ms-progress-wrap { height: 12px; background: #f1f5f9; border-radius: 6px; overflow: hidden; margin: 16px 0; }
+        .ms-progress-fill { height: 100%; background: linear-gradient(90deg, #8b5cf6, #c084fc); border-radius: 6px; width: 0%; transition: width 1s ease-out; }
+    </style>
+</head>
+<body>
+
+    <div class="preview-bar">
+        <div>
+            <span class="preview-badge"><i class="fas fa-magic"></i> 預覽模式</span>
+            您的粉絲將會看到如下內容
+        </div>
+        <a href="dashboard.html" class="btn-return"><i class="fas fa-reply"></i> 返回控制台</a>
+    </div>
+
+    <div class="v-banner" id="p-banner"></div>
+
+    <div class="profile-container">
+        <header class="profile-header-card">
+            <div class="avatar-box">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume" id="p-avatar">
+            </div>
+            <div class="profile-info">
+                <span class="profile-handle" id="p-handle">@Yume_Official</span>
+                <h1 id="p-name">星野夢彩</h1>
+                <p id="p-tagline" style="color: var(--text-muted); font-size: 1.1rem; margin: 10px 0;">載入預覽中...</p>
+                <div class="profile-tags" id="p-tags">
+                    <span class="p-tag">新人 VTuber</span>
+                    <span class="p-tag">歌姬</span>
+                </div>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-primary" style="padding: 16px 32px; border-radius: 16px; font-weight: 800; font-size: 1rem; cursor:not-allowed; opacity:0.7;">
+                    成為粉絲 <i class="fas fa-heart"></i>
+                </button>
+            </div>
+        </header>
+
+        <div class="profile-grid">
+            <main>
+                <section class="content-card">
+                    <h2><i class="fas fa-sparkles"></i> 創作者企劃 (Milestones)</h2>
+                    <div id="ms-container"></div>
+                </section>
+            </main>
+            <aside>
+                <section class="content-card">
+                    <h3>關於 夢彩</h3>
+                    <p id="p-bio" style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.7;">載入中...</p>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <script>
+        function loadPreview() {
+            const data = JSON.parse(localStorage.getItem('vt-profile-data') || '{}');
+            const milestones = JSON.parse(localStorage.getItem('vup-milestones') || '[]');
+
+            if (data.name) document.getElementById('p-name').innerText = data.name;
+            if (data.handle) document.getElementById('p-handle').innerText = data.handle;
+            if (data.catchphrase) document.getElementById('p-tagline').innerText = data.catchphrase;
+            if (data.bio) document.getElementById('p-bio').innerText = data.bio;
+            if (data.avatar) document.getElementById('p-avatar').src = data.avatar;
+            if (data.banner) document.getElementById('p-banner').style.backgroundImage = `url('${data.banner}')`;
+
+            const msList = document.getElementById('ms-container');
+            if(milestones.length === 0) {
+                msList.innerHTML = '<p class="text-muted">暫無項目</p>';
+            } else {
+                msList.innerHTML = milestones.map(ms => `
+                    <div class="ms-item">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h3 style="margin:0;">${ms.title}</h3>
+                            <span style="font-weight:900; color:var(--primary);">${Math.round((ms.current/ms.goal)*100)}%</span>
+                        </div>
+                        <div class="ms-progress-wrap"><div class="ms-progress-fill" style="width:${Math.round((ms.current/ms.goal)*100)}%"></div></div>
+                        <div style="display:flex; justify-content:space-between; font-size:0.9rem; font-weight:700;">
+                            <span>${ms.current.toLocaleString()} 點</span>
+                            <span class="text-muted">目標 ${ms.goal.toLocaleString()}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        window.addEventListener('storage', loadPreview);
+        document.addEventListener('DOMContentLoaded', loadPreview);
+    </script>
+</body>
+</html>

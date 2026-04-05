@@ -17,6 +17,36 @@
     --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.04);
 }
 
+/* Theme / Style Overrides */
+[data-style="cyberpunk"] {
+    --vt-pink: #00ffcc;
+    --vt-pink-dark: #00ccaa;
+    --vt-pink-light: #e0fff9;
+    --vt-blue: #ff00ff;
+    --vt-blue-light: #ffe0ff;
+    --vt-bg: #0b0e14;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    --border-light: #1e293b;
+    --shadow-soft: 0 10px 40px rgba(0, 255, 204, 0.1);
+}
+
+[data-style="kawaii"] {
+    --vt-pink: #ff85a2;
+    --vt-pink-dark: #f472b6;
+    --vt-pink-light: #fdf2f8;
+    --vt-blue: #93c5fd;
+    --vt-bg: #fffafb;
+}
+
+[data-style="minimal"] {
+    --vt-pink: #1e293b;
+    --vt-pink-dark: #0f172a;
+    --vt-pink-light: #f1f5f9;
+    --vt-blue: #94a3b8;
+    --vt-bg: #ffffff;
+}
+
 body {
     font-family: 'Inter', sans-serif;
     margin: 0;

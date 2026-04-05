@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-TW" data-theme="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>V-Up! Creator Studio - 創作者專業後台</title>
+    <title>V-Up! Creator Studio - ?萎???璆剖???/title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css">
@@ -19,39 +19,39 @@
             </div>
             <nav class="sidebar-nav">
                 <a href="#" class="nav-item active" data-tab="overview">
-                    <i class="fas fa-chart-line"></i> 總覽數據 (Overview)
+                    <i class="fas fa-chart-line"></i> 蝮質汗?豢? (Overview)
                 </a>
                 <a href="#" class="nav-item" data-tab="milestones">
-                    <i class="fas fa-bullseye"></i> 里程碑管理 (Milestones)
+                    <i class="fas fa-bullseye"></i> ??蝣恣??(Milestones)
                 </a>
                 <a href="#" class="nav-item" data-tab="crm">
-                    <i class="fas fa-users"></i> 粉絲關係管理 (CRM)
+                    <i class="fas fa-users"></i> 蝎結??蝞∠? (CRM)
                 </a>
                 <a href="#" class="nav-item" data-tab="posts">
-                    <i class="fas fa-newspaper"></i> 限定內容發布 (Posts)
+                    <i class="fas fa-newspaper"></i> ???批捆?澆? (Posts)
                 </a>
                 <a href="#" class="nav-item" data-tab="history">
-                    <i class="fas fa-history"></i> 歷史紀錄存檔 (History)
+                    <i class="fas fa-history"></i> 甇瑕蝝??瑼?(History)
                 </a>
                 <a href="#" class="nav-item" data-tab="customization">
-                    <i class="fas fa-palette"></i> 專屬頁面自訂
+                    <i class="fas fa-palette"></i> 撠惇??芾?
                 </a>
                 <a href="#" class="nav-item" data-tab="settings">
-                    <i class="fas fa-cog"></i> 帳號設定 (Settings)
+                    <i class="fas fa-cog"></i> 撣唾?閮剖? (Settings)
                 </a>
                 <a href="index.html" class="nav-item" style="margin-top: 15px; border-top: 1px dashed rgba(0,0,0,0.1); padding-top: 15px;">
-                    <i class="fas fa-home"></i> 回到 V-Up! 探索首頁
+                    <i class="fas fa-home"></i> ? V-Up! ?Ｙ揣擐?
                 </a>
             </nav>
             <div class="sidebar-footer">
                 <div class="user-profile">
                     <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume&backgroundColor=b6e3f4" alt="Avatar" class="mini-avatar">
                     <div class="user-info">
-                        <span class="user-name">星野夢彩</span>
-                        <span class="user-role">VTuber 創作者</span>
+                        <span class="user-name">??憭Ｗ蔗</span>
+                        <span class="user-role">VTuber ?萎???/span>
                     </div>
                 </div>
-                <a href="vtuber_profile.html" class="btn-view-public"><i class="fas fa-external-link-alt"></i> 前往公開頁面</a>
+                <a href="vtuber_profile.html" class="btn-view-public"><i class="fas fa-external-link-alt"></i> ???祇??</a>
             </div>
         </aside>
 
@@ -59,23 +59,22 @@
         <main class="main-content">
             <header class="topbar">
                 <div class="page-title">
-                    <h1 id="page-title-h1">總覽數據 (Overview)</h1>
-                    <p id="page-title-desc" class="text-muted">追蹤您的募資進度與粉絲互動狀況</p>
+                    <h1 id="page-title-h1">蝮質汗?豢? (Overview)</h1>
+                    <p id="page-title-desc" class="text-muted">餈質馱?函????脣漲??蝯脖???瘜?/p>
                 </div>
                 <div class="topbar-actions">
                     <a href="vtuber_preview.html" target="_blank" class="btn-outline" style="text-decoration:none; display:inline-flex; align-items:center; gap:8px; background:var(--primary-light); color:var(--primary); border:none;">
-                        <i class="fas fa-eye"></i> 檢視前台預覽
+                        <i class="fas fa-eye"></i> 瑼Ｚ???汗
                     </a>
-                    <button class="theme-toggle" id="theme-btn" title="深淺色模式" onclick="toggleTheme()">
+                    <button class="theme-toggle" id="theme-btn" title="瘛望滓?脫芋撘? onclick="toggleTheme()">
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </button>
-                    <button class="btn-icon" id="bell-btn" title="通知">
+                    <button class="btn-icon" id="bell-btn" title="?">
                         <i class="fas fa-bell"></i>
                         <span class="badge">3</span>
                     </button>
                     <button class="btn-primary" onclick="openNewMilestoneModal()">
-                        <i class="fas fa-plus"></i> 新增里程碑
-                    </button>
+                        <i class="fas fa-plus"></i> ?啣???蝣?                    </button>
                 </div>
             </header>
 
@@ -86,8 +85,8 @@
                     <div class="bento-card bento-hero">
                         <div class="section-header">
                             <div>
-                                <h2>數據趨勢分析 (Last 30 Days)</h2>
-                                <p class="text-muted" style="font-size:0.8rem;">贊助點數與粉絲增長情形</p>
+                                <h2>?豢?頞典?? (Last 30 Days)</h2>
+                                <p class="text-muted" style="font-size:0.8rem;">韐暺??蝯脣??瑟?敶?/p>
                             </div>
                             <div class="header-actions">
                                 <span class="tag t-purple pulse-tag">Live Data</span>
@@ -102,43 +101,43 @@
                     <div class="bento-card bento-stats">
                         <div class="data-mini-grid">
                             <div class="mini-data-card">
-                                <span class="data-label">本月總點數</span>
+                                <span class="data-label">?祆?蝮賡???/span>
                                 <div class="data-value">42,500 <span class="trend pos">+12%</span></div>
                             </div>
                             <div class="mini-data-card">
-                                <span class="data-label">活躍粉絲</span>
+                                <span class="data-label">瘣餉?蝎結</span>
                                 <div class="data-value">1,248 <span class="trend pos">+5%</span></div>
                             </div>
                             <div class="mini-data-card">
-                                <span class="data-label">頁面瀏覽</span>
+                                <span class="data-label">??汗</span>
                                 <div class="data-value">18.2K <span class="trend pos">+8%</span></div>
                             </div>
                             <div class="mini-data-card">
-                                <span class="data-label">里程碑進度</span>
-                                <div class="data-value">75% <span class="trend neu">穩定</span></div>
+                                <span class="data-label">??蝣脣漲</span>
+                                <div class="data-value">75% <span class="trend neu">蝛拙?</span></div>
                             </div>
                         </div>
                     </div>
 
                     <!-- Small Card: Quick Actions -->
                     <div class="bento-card bento-actions">
-                        <h3>快速操作 (Quick Actions)</h3>
+                        <h3>敹恍?雿?(Quick Actions)</h3>
                         <div class="quick-btns">
                             <button class="qb-item" onclick="switchTab('posts')">
                                 <i class="fas fa-edit"></i>
-                                <span>發布動態</span>
+                                <span>?澆???</span>
                             </button>
                             <button class="qb-item" onclick="openPhotoModal()">
                                 <i class="fas fa-camera"></i>
-                                <span>發布相片</span>
+                                <span>?澆??貊?</span>
                             </button>
                             <button class="qb-item" onclick="openNewMilestoneModal()">
                                 <i class="fas fa-bullseye"></i>
-                                <span>建立里程碑</span>
+                                <span>撱箇???蝣?/span>
                             </button>
                             <button class="qb-item" onclick="switchTab('customization')">
                                 <i class="fas fa-magic"></i>
-                                <span>頁面變更</span>
+                                <span>?霈</span>
                             </button>
                         </div>
                     </div>
@@ -146,15 +145,15 @@
                     <!-- Medium Card: Top Fans (Redesigned) -->
                     <div class="bento-card bento-list">
                         <div class="section-header">
-                            <h2>最近大額貢獻 (Stock Style)</h2>
+                            <h2>?餈之憿甜??(Stock Style)</h2>
                         </div>
                         <div class="recent-fans-list" id="stock-style-fans">
                             <!-- Stock-style dynamic items -->
                             <div class="fan-list-item stock-mode">
                                 <div class="fan-avatar"><i class="fas fa-user-astronaut"></i></div>
                                 <div class="fan-details">
-                                    <span class="fan-name">星空騎士_阿龍</span>
-                                    <span class="fan-status"><i class="fas fa-circle text-success"></i> 活躍贊助中</span>
+                                    <span class="fan-name">?征擉ㄚ_?輸?</span>
+                                    <span class="fan-status"><i class="fas fa-circle text-success"></i> 瘣餉?韐銝?/span>
                                 </div>
                                 <div class="fan-trend-mini">
                                     <svg viewBox="0 0 100 30" width="60" height="20"><path d="M0 25 L10 20 L20 22 L30 15 L40 18 L50 10 L60 12 L70 5 L80 8 L90 2 L100 5" fill="none" stroke="var(--success)" stroke-width="2"></path></svg>
@@ -167,8 +166,8 @@
                             <div class="fan-list-item stock-mode">
                                 <div class="fan-avatar"><i class="fas fa-user-ninja"></i></div>
                                 <div class="fan-details">
-                                    <span class="fan-name">深海的貓</span>
-                                    <span class="fan-status"><i class="fas fa-clock"></i> 1 小時前</span>
+                                    <span class="fan-name">瘛望絲??</span>
+                                    <span class="fan-status"><i class="fas fa-clock"></i> 1 撠???/span>
                                 </div>
                                 <div class="fan-trend-mini">
                                     <svg viewBox="0 0 100 30" width="60" height="20"><path d="M0 10 L10 15 L20 12 L30 20 L40 22 L50 18 L60 25 L70 20 L80 22 L90 28 L100 25" fill="none" stroke="var(--primary)" stroke-width="2"></path></svg>
@@ -180,15 +179,15 @@
                             </div>
                         </div>
                         <button class="btn-outline full-width" style="margin-top:20px;" onclick="switchTab('crm')">
-                            <i class="fas fa-chart-line"></i> 查看詳細趨勢報表
+                            <i class="fas fa-chart-line"></i> ?亦?閰喟敦頞典?梯”
                         </button>
                     </div>
 
                     <!-- Platform Tips Card -->
                     <div class="bento-card bento-tips">
-                        <h3><i class="fas fa-lightbulb text-warning"></i> 平台小撇步</h3>
-                        <p>上傳 2K 高畫質橫幅圖片，能提升粉絲 15% 的贊助意願喔！</p>
-                        <a href="#" class="text-link">瞭解更多技巧 &rarr;</a>
+                        <h3><i class="fas fa-lightbulb text-warning"></i> 撟喳撠?甇?/h3>
+                        <p>銝 2K 擃鞈芣帖撟????賣???蝯?15% ???拇?憿?嚗?/p>
+                        <a href="#" class="text-link">?剛圾?游??撌?&rarr;</a>
                     </div>
                 </div>
             </div>
@@ -196,18 +195,24 @@
             <!-- ===== TAB: Milestones ===== -->
             <div class="tab-panel" id="panel-milestones">
                 <div class="dashboard-section">
-                    <div id="admin-review-panel" class="admin-review-panel" style="display:none;">
-                        <h3 style="margin-bottom:15px; color:var(--primary); font-size:1.1rem;"><i class="fas fa-user-shield"></i> 待手動審核 (Platform Review Queue)</h3>
-                        <div id="review-list-container" class="milestone-grid">
-                            <!-- Pending admin approvals here -->
+                    <div class="section-header">
+                        <h2>? ??蝣??恣??/h2>
+                        <div class="header-actions">
+                            <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> ?潸絲?唬???/button>
                         </div>
+                    </div>
+                    
+                    <div class="milestone-tabs" style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                        <button class="tab-btn active" data-filter="all">?券 (All)</button>
+                        <button class="tab-btn" data-filter="individual">?犖 (Individual)</button>
+                        <button class="tab-btn" data-filter="collab">?勗?隡? (Joint)</button>
                     </div>
 
                     <div id="milestone-list-container" class="milestone-grid">
-                        <!-- 動態渲染清單 -->
+                        <!-- ??皜脫?皜 -->
                         <div class="empty-state" style="text-align:center; padding:40px;">
                             <i class="fas fa-tasks" style="font-size:3rem; color:var(--border); margin-bottom:15px;"></i>
-                            <p class="text-muted">載入中或尚無企劃...</p>
+                            <p class="text-muted">頛銝剜?撠隡?...</p>
                         </div>
                     </div>
                 </div>
@@ -217,10 +222,10 @@
             <div class="tab-panel" id="panel-crm">
                 <div class="dashboard-section">
                     <div class="section-header">
-                        <h2>👥 粉絲關係管理 (CRM)</h2>
+                        <h2>? 蝎結??蝞∠? (CRM)</h2>
                         <div class="header-actions">
-                            <button class="btn-outline btn-sm"><i class="fas fa-filter"></i> 篩選</button>
-                            <button class="btn-outline btn-sm"><i class="fas fa-file-export"></i> 匯出名單</button>
+                            <button class="btn-outline btn-sm"><i class="fas fa-filter"></i> 蝭拚</button>
+                            <button class="btn-outline btn-sm"><i class="fas fa-file-export"></i> ?臬?</button>
                         </div>
                     </div>
                     
@@ -229,11 +234,11 @@
                             <table class="data-table">
                                 <thead>
                                     <tr>
-                                        <th>粉絲名稱 / 勳章</th>
-                                        <th>累計贊助</th>
-                                        <th>追蹤時長</th>
-                                        <th>最後互動</th>
-                                        <th>操作</th>
+                                        <th>蝎結?迂 / ?喟?</th>
+                                        <th>蝝航?韐</th>
+                                        <th>餈質馱?</th>
+                                        <th>?敺???/th>
+                                        <th>??</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -242,18 +247,18 @@
                                             <div style="display:flex; align-items:center; gap:10px;">
                                                 <div class="mini-avatar-ctx"><i class="fas fa-user-astronaut"></i></div>
                                                 <div>
-                                                    <div class="fan-name">星空騎士_阿龍</div>
-                                                    <span class="tag t-purple">鉑金推</span>
-                                                    <span class="tag t-blue">開台元老</span>
+                                                    <div class="fan-name">?征擉ㄚ_?輸?</div>
+                                                    <span class="tag t-purple">????/span>
+                                                    <span class="tag t-blue">???/span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-primary font-mono">15,000</td>
-                                        <td style="font-size:0.85rem; font-weight:600;">520 天</td>
-                                        <td class="text-muted" style="font-size:0.8rem;">10 分鐘前 (斗內)</td>
+                                        <td style="font-size:0.85rem; font-weight:600;">520 憭?/td>
+                                        <td class="text-muted" style="font-size:0.8rem;">10 ????(?)</td>
                                         <td>
-                                            <button class="btn-table-action" onclick="showFanInsight('阿龍')" title="查看洞察"><i class="fas fa-chart-pie"></i></button>
-                                            <button class="btn-table-action" onclick="alert('禮物已加入待發送清單')" title="贈送禮物"><i class="fas fa-gift"></i></button>
+                                            <button class="btn-table-action" onclick="showFanInsight('?輸?')" title="?亦?瘣?"><i class="fas fa-chart-pie"></i></button>
+                                            <button class="btn-table-action" onclick="alert('蝳桃撌脣??亙??潮???)" title="韐旨??><i class="fas fa-gift"></i></button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -261,17 +266,17 @@
                                             <div style="display:flex; align-items:center; gap:10px;">
                                                 <div class="mini-avatar-ctx"><i class="fas fa-user-ninja"></i></div>
                                                 <div>
-                                                    <div class="fan-name">深海的貓</div>
-                                                    <span class="tag t-blue">黃金推</span>
+                                                    <div class="fan-name">瘛望絲??</div>
+                                                    <span class="tag t-blue">暺???/span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-primary font-mono">3,200</td>
-                                        <td style="font-size:0.85rem; font-weight:600;">180 天</td>
-                                        <td class="text-muted" style="font-size:0.8rem;">1 小時前 (觀看)</td>
+                                        <td style="font-size:0.85rem; font-weight:600;">180 憭?/td>
+                                        <td class="text-muted" style="font-size:0.8rem;">1 撠???(閫??</td>
                                         <td>
-                                            <button class="btn-table-action" onclick="showFanInsight('深海的貓')" title="查看洞察"><i class="fas fa-chart-pie"></i></button>
-                                            <button class="btn-table-action" onclick="alert('禮物已加入待發送清單')" title="贈送禮物"><i class="fas fa-gift"></i></button>
+                                            <button class="btn-table-action" onclick="showFanInsight('瘛望絲??')" title="?亦?瘣?"><i class="fas fa-chart-pie"></i></button>
+                                            <button class="btn-table-action" onclick="alert('蝳桃撌脣??亙??潮???)" title="韐旨??><i class="fas fa-gift"></i></button>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -283,25 +288,25 @@
                     <div id="fan-insight-card" class="fan-insight-card">
                         <div class="insight-avatar"><i class="fas fa-user-circle"></i></div>
                         <div class="insight-content">
-                            <h3 id="insight-fan-name">粉絲詳細洞察</h3>
-                            <p class="text-muted" style="font-size:0.85rem;">這裡顯示該粉絲與您的深度關係數據，而非直接私訊。</p>
+                            <h3 id="insight-fan-name">蝎結閰喟敦瘣?</h3>
+                            <p class="text-muted" style="font-size:0.85rem;">?ㄐ憿舐內閰脩?蝯脰??函?瘛勗漲???豢?嚗??湔蝘???/p>
                             <div class="insight-grid">
                                 <div class="insight-stat">
                                     <span class="val" id="insight-days">365</span>
-                                    <span class="lbl">追蹤天數</span>
+                                    <span class="lbl">餈質馱憭拇</span>
                                 </div>
                                 <div class="insight-stat">
                                     <span class="val" id="insight-total">25,000</span>
-                                    <span class="lbl">總貢獻度</span>
+                                    <span class="lbl">蝮質甜?餃漲</span>
                                 </div>
                                 <div class="insight-stat">
                                     <span class="val" id="insight-rank">Top 1%</span>
-                                    <span class="lbl">粉絲階級</span>
+                                    <span class="lbl">蝎結??</span>
                                 </div>
                             </div>
                             <div style="margin-top:15px; display:flex; gap:10px;">
-                                <button class="btn-primary btn-sm" onclick="alert('已標記為 VIP 粉絲')"><i class="fas fa-star"></i> 設為 VIP</button>
-                                <button class="btn-outline btn-sm" onclick="document.getElementById('fan-insight-card').classList.remove('show')">關閉</button>
+                                <button class="btn-primary btn-sm" onclick="alert('撌脫?閮 VIP 蝎結')"><i class="fas fa-star"></i> 閮剔 VIP</button>
+                                <button class="btn-outline btn-sm" onclick="document.getElementById('fan-insight-card').classList.remove('show')">??</button>
                             </div>
                         </div>
                     </div>
@@ -312,24 +317,19 @@
             <div class="tab-panel" id="panel-posts">
                 <div class="dashboard-section">
                     <div class="section-header">
-                        <h2>📰 限定內容發布</h2>
+                        <h2>? ???批捆?澆?</h2>
                     </div>
                     <div class="card">
                         <div class="form-group" style="margin-bottom: 20px;">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">發布給粉絲的最新動態</label>
-                                <button class="ai-btn-inline" onclick="triggerAI('post_social', 'vt-post-input')">
-                                    <i class="fas fa-magic"></i> AI 靈感發想 ✨
-                                </button>
-                            </div>
-                            <textarea id="vt-post-input" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;" rows="4" placeholder="今天有什麼新鮮事想跟粉絲分享？"></textarea>
+                            <label style="display:block;margin-bottom:8px;font-weight:bold;">?澆?蝯衣?蝯脩???啣???/label>
+                            <textarea id="vt-post-input" style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;" rows="4" placeholder="隞予??暻潭擙桐??唾?蝎結?澈嚗?></textarea>
                         </div>
-                        <button class="btn-primary" onclick="publishPost()"><i class="fas fa-paper-plane"></i> 立即發布</button>
+                        <button class="btn-primary" onclick="publishPost()"><i class="fas fa-paper-plane"></i> 蝡?澆?</button>
                     </div>
                     <div style="margin-top: 2rem;">
-                        <h3 style="margin-bottom: 1rem;">已發布文章</h3>
+                        <h3 style="margin-bottom: 1rem;">撌脩撣?蝡?/h3>
                         <div id="vt-post-list" style="display:flex; flex-direction:column; gap:1rem;">
-                            <!-- JS渲染此處 -->
+                            <!-- JS皜脫?甇方? -->
                         </div>
                     </div>
                 </div>
@@ -343,7 +343,7 @@
                             <!-- Group 1: Brand & Style -->
                             <div class="settings-group">
                                 <div class="group-header">
-                                    <i class="fas fa-palette"></i> 品牌風格套裝
+                                    <i class="fas fa-palette"></i> ??憸冽憟?
                                 </div>
                                 <div class="card editor-card">
                                     <div class="style-pack-grid-mini">
@@ -365,7 +365,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group" style="margin-top:15px;">
-                                        <label><i class="fas fa-eye-dropper"></i> 主題色設定</label>
+                                        <label><i class="fas fa-eye-dropper"></i> 銝駁??脰身摰?/label>
                                         <input type="color" id="vt-color" value="#FF85C0" oninput="syncPreview()" style="height:44px; padding:4px;">
                                     </div>
                                 </div>
@@ -374,26 +374,26 @@
                             <!-- Group 2: Identity -->
                             <div class="settings-group">
                                 <div class="group-header">
-                                    <i class="fas fa-id-card"></i> 基本身分訊息
+                                    <i class="fas fa-id-card"></i> ?箸頨怠?閮
                                 </div>
                                 <div class="card editor-card">
                                     <div class="form-grid">
                                         <div class="form-group" id="group-name">
-                                            <label><i class="fas fa-user-tag"></i> 顯示名稱 *</label>
-                                            <input type="text" id="vt-name" placeholder="星野夢彩" oninput="syncPreview()">
+                                            <label><i class="fas fa-user-tag"></i> 憿舐內?迂 *</label>
+                                            <input type="text" id="vt-name" placeholder="??憭Ｗ蔗" oninput="syncPreview()">
                                         </div>
                                         <div class="form-group" id="group-handle">
-                                            <label><i class="fas fa-at"></i> 專屬 ID *</label>
+                                            <label><i class="fas fa-at"></i> 撠惇 ID *</label>
                                             <input type="text" id="vt-handle" placeholder="@Yume_Official" oninput="syncPreview()">
                                         </div>
                                     </div>
                                     <div class="form-group" id="group-catchphrase">
-                                        <label><i class="fas fa-bullhorn"></i> 頻道招呼語</label>
-                                        <input type="text" id="vt-catchphrase" placeholder="你的星空，由我來點亮 ✨" oninput="syncPreview()">
+                                        <label><i class="fas fa-bullhorn"></i> ?駁??隤?/label>
+                                        <input type="text" id="vt-catchphrase" placeholder="雿??征嚗??暺漁 ?? oninput="syncPreview()">
                                     </div>
                                     <div class="form-group" id="group-bio">
-                                        <label><i class="fas fa-quote-left"></i> 個人簡介 (Bio)</label>
-                                        <textarea id="vt-bio" rows="4" placeholder="詳細介紹..." oninput="syncPreview()"></textarea>
+                                        <label><i class="fas fa-quote-left"></i> ?犖蝪∩? (Bio)</label>
+                                        <textarea id="vt-bio" rows="4" placeholder="閰喟敦隞晶..." oninput="syncPreview()"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -401,16 +401,16 @@
                             <!-- Group 3: Visuals -->
                             <div class="settings-group">
                                 <div class="group-header">
-                                    <i class="fas fa-image"></i> 視覺素材設定
+                                    <i class="fas fa-image"></i> 閬死蝝?閮剖?
                                 </div>
                                 <div class="card editor-card">
                                     <div class="form-grid">
                                         <div class="form-group" id="group-avatar">
-                                            <label><i class="fas fa-circle-user"></i> 頭像圖片網址</label>
+                                            <label><i class="fas fa-circle-user"></i> ?剖???蝬脣?</label>
                                             <input type="text" id="vt-avatar" placeholder="https://..." oninput="syncPreview()">
                                         </div>
                                         <div class="form-group" id="group-banner">
-                                            <label><i class="fas fa-panorama"></i> 橫幅圖片網址</label>
+                                            <label><i class="fas fa-panorama"></i> 璈怠???蝬脣?</label>
                                             <input type="text" id="vt-banner" placeholder="https://..." oninput="syncPreview()">
                                         </div>
                                     </div>
@@ -420,16 +420,15 @@
                             <!-- Group 4: Milestone Summary -->
                             <div class="settings-group">
                                 <div class="group-header">
-                                    <i class="fas fa-trophy"></i> 里程碑概覽文字
-                                </div>
+                                    <i class="fas fa-trophy"></i> ??蝣?閬賣?摮?                                </div>
                                 <div class="card editor-card">
                                     <div class="form-grid">
                                         <div class="form-group">
-                                            <label>目前里程碑標題</label>
-                                            <input type="text" id="vt-ms-title" placeholder="例如：新服裝製作" oninput="syncPreview()">
+                                            <label>?桀???蝣?憿?/label>
+                                            <input type="text" id="vt-ms-title" placeholder="靘?嚗??鋆賭?" oninput="syncPreview()">
                                         </div>
                                         <div class="form-group">
-                                            <label>目標點數</label>
+                                            <label>?格?暺</label>
                                             <input type="number" id="vt-ms-target" placeholder="10000" oninput="syncPreview()">
                                         </div>
                                     </div>
@@ -439,7 +438,7 @@
                             <!-- Group 5: Socials -->
                             <div class="settings-group">
                                 <div class="group-header">
-                                    <i class="fas fa-share-nodes"></i> 社群連結綁定
+                                    <i class="fas fa-share-nodes"></i> 蝷曄黎???蝬?
                                 </div>
                                 <div class="card editor-card">
                                     <div class="form-grid">
@@ -455,31 +454,31 @@
                                 </div>
                             </div>
                             
-                            <div id="save-toast" style="display:none; background:var(--success); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-top:15px;">設定已成功儲存！</div>
+                            <div id="save-toast" style="display:none; background:var(--success); color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-top:15px;">閮剖?撌脫??摮?</div>
                             <button class="btn-primary full-width" style="margin-top:20px;" onclick="saveVProfile()">
-                                <i class="fas fa-cloud-upload-alt"></i> 確認發布至前台 (組員功能保留)
+                                <i class="fas fa-cloud-upload-alt"></i> 蝣箄??澆??喳???(蝯?靽?)
                             </button>
                         </div>
 
                     <!-- Right: Live Preview -->
                     <div class="preview-panel">
                         <div class="preview-header">
-                            <div class="preview-title"><i class="fas fa-desktop"></i> 公開頁面預覽 (粉絲視角)</div>
+                            <div class="preview-title"><i class="fas fa-desktop"></i> ?祇???汗 (蝎結閬?)</div>
                             <div class="preview-controls">
-                                <button class="p-btn active" id="p-light-btn" onclick="setPreviewTheme('light')"><i class="fas fa-sun"></i> 亮色</button>
-                                <button class="p-btn" id="p-dark-btn" onclick="setPreviewTheme('dark')"><i class="fas fa-moon"></i> 暗色</button>
+                                <button class="p-btn active" id="p-light-btn" onclick="setPreviewTheme('light')"><i class="fas fa-sun"></i> 鈭株</button>
+                                <button class="p-btn" id="p-dark-btn" onclick="setPreviewTheme('dark')"><i class="fas fa-moon"></i> ?</button>
                             </div>
                         </div>
                         <div class="preview-viewport-container">
                             <div class="preview-viewport" id="profile-preview-container">
                                 <!-- The profile will be injected here via JS -->
-                                <div class="preview-placeholder">正在產生預覽...</div>
+                                <div class="preview-placeholder">甇??Ｙ??汗...</div>
                             </div>
                             <div class="preview-overlay">
                                 <!-- Clickable regions will be positioned here to trigger focus in settings -->
                             </div>
                         </div>
-                        <p class="preview-hint"><i class="fas fa-info-circle"></i> 提示：預覽畫面不可點選跳轉。點擊區塊可快速跳至左側對應設定欄位。</p>
+                        <p class="preview-hint"><i class="fas fa-info-circle"></i> ?內嚗?閬賜?Ｖ??舫??貉歲頧???憛敹恍歲?喳椰?游??身摰?雿?/p>
                     </div>
                 </div>
             </div>
@@ -488,8 +487,8 @@
             <div class="tab-panel" id="panel-history">
                 <div class="dashboard-section">
                     <div class="section-header">
-                        <h2>📜 活動歷史紀錄 (History Logs)</h2>
-                        <button class="btn-outline btn-sm" onclick="clearHistory()"><i class="fas fa-trash-alt"></i> 清除紀錄</button>
+                        <h2>?? 瘣餃?甇瑕蝝??(History Logs)</h2>
+                        <button class="btn-outline btn-sm" onclick="clearHistory()"><i class="fas fa-trash-alt"></i> 皜蝝??/button>
                     </div>
                     <div class="card p-0" style="max-height: 500px; overflow-y: auto;">
                         <div id="history-container" class="history-list">
@@ -503,23 +502,23 @@
             <div class="tab-panel" id="panel-settings">
                 <div class="dashboard-section">
                     <div class="section-header">
-                        <h2>⚙️ 帳號與收款設定</h2>
-                        <button class="btn-primary" onclick="alert('設定已儲存')"><i class="fas fa-save"></i> 儲存設定</button>
+                        <h2>?? 撣唾??甈曇身摰?/h2>
+                        <button class="btn-primary" onclick="alert('閮剖?撌脣摮?)"><i class="fas fa-save"></i> ?脣?閮剖?</button>
                     </div>
                     <div class="card">
-                        <h3 style="margin-bottom: 1rem;">銀行提款帳戶設定</h3>
+                        <h3 style="margin-bottom: 1rem;">?銵?甈曉董?嗉身摰?/h3>
                         <div class="form-group" style="margin-bottom:15px;">
-                            <label style="display:block;margin-bottom:5px;font-weight:bold;">銀行代碼 / 名稱</label>
-                            <input type="text" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);" value="808 玉山銀行" disabled>
+                            <label style="display:block;margin-bottom:5px;font-weight:bold;">?銵誨蝣?/ ?迂</label>
+                            <input type="text" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);" value="808 ?控?銵? disabled>
                         </div>
                         <div class="form-group" style="margin-bottom:15px;">
-                            <label style="display:block;margin-bottom:5px;font-weight:bold;">帳號</label>
+                            <label style="display:block;margin-bottom:5px;font-weight:bold;">撣唾?</label>
                             <input type="text" style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);" value="****-****-****-5566" disabled>
-                            <small class="text-muted" style="display:block;margin-top:5px;">為確保金流安全，如需修改提款帳號，請聯繫平台客服重新驗證身份。</small>
+                            <small class="text-muted" style="display:block;margin-top:5px;">?箇Ⅱ靽?瘚??剁?憒?靽格?狡撣唾?嚗??舐鼠撟喳摰Ｘ??撽?頨思遢??/small>
                         </div>
-                        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">通知偏好</h3>
-                        <label style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><input type="checkbox" checked> 接收大額贊助即時 Email 通知</label>
-                        <label style="display:flex; align-items:center; gap:10px;"><input type="checkbox" checked> 接收系統更新與每月結算報表</label>
+                        <h3 style="margin-top: 2rem; margin-bottom: 1rem;">??末</h3>
+                        <label style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><input type="checkbox" checked> ?交憭折?韐?單? Email ?</label>
+                        <label style="display:flex; align-items:center; gap:10px;"><input type="checkbox" checked> ?交蝟餌絞?湔????蝞銵?/label>
                     </div>
                 </div>
             </div>
@@ -531,146 +530,178 @@
     <div id="milestone-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>新增里程碑募資項目</h3>
+                <h3>?啣???蝣?鞈???/h3>
                 <button class="btn-close" onclick="closeNewMilestoneModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body form-group">
                 <div class="type-toggle-container" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-                    <button class="type-btn active" id="type-indie" onclick="setProjectType('individual')">個人項目</button>
-                    <button class="type-btn" id="type-collab" onclick="setProjectType('collab')">共同企劃</button>
+                    <button class="type-btn active" id="type-indie" onclick="setProjectType('individual')">?犖?</button>
+                    <button class="type-btn" id="type-collab" onclick="setProjectType('collab')">?勗?隡?</button>
                     <input type="hidden" id="ms-type" value="individual">
                 </div>
 
-                <label>企劃/里程碑標題</label>
-                <input type="text" id="ms-title" placeholder="例如：新服裝製作！" class="form-control">
+                <label>隡?/??蝣?憿?/label>
+                <input type="text" id="ms-title" placeholder="靘?嚗??鋆賭?嚗? class="form-control">
 
-                <div id="collab-fields" style="display:none; background:var(--bg-subtle); padding:20px; border-radius:16px; margin-bottom:20px; border:1.5px dashed var(--primary); position:relative;">
-                    <label style="font-weight:800; color:var(--primary); margin-bottom:12px; display:block;"><i class="fas fa-at"></i> 標記合作 VTuber (@ Mentions)</label>
+                <div id="collab-fields" style="display:none; background:var(--bg-subtle); padding:15px; border-radius:12px; margin-bottom:15px; border:1px dashed var(--primary);">
+                    <label>??銝血??亙?雿?VTuber</label>
                     <div style="position:relative;">
-                        <input type="text" id="collab-search" placeholder="搜尋名稱或 ID (例如: 月野)..." class="form-control" oninput="handleCollabSearch(this.value)" style="border-radius:10px; padding:12px;">
-                        <div id="collab-search-results" class="mention-results-dropdown"></div>
+                        <input type="text" id="collab-search" placeholder="頛詨????..." class="form-control" oninput="searchCollaborators(this.value)">
+                        <div id="search-results" class="search-dropdown"></div>
                     </div>
-                    <div id="selected-collab-tags" class="tag-container" style="margin-top:15px; display:flex; flex-wrap:wrap; gap:10px;">
-                        <!-- Selected collaborators will appear here as tags -->
+                    <div id="selected-collabs" class="tag-container" style="margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;">
+                        <!-- 撌脤????-->
                     </div>
-                    <p style="font-size:0.75rem; color:var(--text-muted); margin-top:10px;"><i class="fas fa-info-circle"></i> 提交後需等待對方同意及平台人工審核方可發布。</p>
                 </div>
 
                 <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px;">
                     <div>
-                        <label>目標點數</label>
+                        <label>?格?暺</label>
                         <input type="number" id="ms-goal" placeholder="10000" class="form-control">
                     </div>
                     <div>
-                        <label>封面圖片網址</label>
+                        <label>撠??蝬脣?</label>
                         <input type="text" id="ms-banner" placeholder="https://..." class="form-control">
                     </div>
                 </div>
 
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;">
-                    <label>企劃介紹</label>
-                    <button class="ai-btn-inline" onclick="triggerAI('milestone_desc', 'ms-desc')">
-                        <i class="fas fa-sparkles"></i> AI 幫我寫 ✨
-                    </button>
-                </div>
-                <textarea id="ms-desc" rows="3" class="form-control" placeholder="向粉絲說明這項目的目的..."></textarea>
+                <label>隡?隞晶</label>
+                <textarea id="ms-desc" rows="3" class="form-control" placeholder="??蝯脰牧???桃??桃?..."></textarea>
 
                 <div class="proof-setup">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="ms-award-check" checked> 頒發專屬貢獻證明 (Top 10)
+                        <input type="checkbox" id="ms-award-check" checked> ?撠惇鞎Ｙ霅? (Top 10)
                     </label>
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-outline" onclick="closeNewMilestoneModal()">取消</button>
-                <button class="btn-primary" onclick="submitMilestone()"><i class="fas fa-check"></i> 建立里程碑</button>
+                <button class="btn-outline" onclick="closeNewMilestoneModal()">??</button>
+                <button class="btn-primary" onclick="submitMilestone()"><i class="fas fa-check"></i> 撱箇???蝣?/button>
             </div>
         </div>
     </div>
 
-    <!-- Ranking Modal (Restored) -->
+    <!-- Ranking Modal -->
     <div id="ranking-modal" class="modal-overlay">
-        <div class="modal-content ranking-modal-box">
-            <div class="modal-header">
-                <h3><i class="fas fa-trophy"></i> 貢獻排行榜 (Leaderboard)</h3>
-                <button class="btn-close" onclick="document.getElementById('ranking-modal').classList.remove('open')"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="modal-body">
-                <div class="ranking-header-stats" style="display:flex; justify-content:space-around; margin-bottom:20px; padding:15px; background:var(--bg-subtle); border-radius:12px;">
-                    <div class="stat-item text-center">
-                        <div class="text-muted" style="font-size:0.8rem;">總貢獻人數</div>
-                        <div style="font-weight:700; font-size:1.2rem; color:var(--primary);">1.2K+</div>
-                    </div>
-                    <div class="stat-item text-center">
-                        <div class="text-muted" style="font-size:0.8rem;">平均支持率</div>
-                        <div style="font-weight:700; font-size:1.2rem; color:var(--primary);">85%</div>
-                    </div>
-                </div>
-                <!-- Ranking items will be injected here by JS -->
-                <div id="ranking-list" class="ranking-list-container"></div>
-            </div>
-            <div class="modal-footer" style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
-                <i class="fas fa-info-circle"></i> 數據每 5 分鐘同步一次，感謝各位的支持與陪伴。
-            </div>
-        </div>
+        <!-- ... existing content ... -->
     </div>
 
     <!-- Photo Upload Modal -->
     <div id="photo-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-camera"></i> 發布新相片</h3>
+                <h3><i class="fas fa-camera"></i> ?澆??啁??/h3>
                 <button class="btn-close" onclick="closePhotoModal()"><i class="fas fa-times"></i></button>
             </div>
             <div class="modal-body form-group">
-                <label>相片標題</label>
-                <input type="text" id="photo-title" placeholder="例如：今天的直播截圖" class="form-control">
+                <label>?貊?璅?</label>
+                <input type="text" id="photo-title" placeholder="靘?嚗?憭拍??湔?芸?" class="form-control">
                 
-                <label>圖片網址 (Image URL)</label>
+                <label>??蝬脣? (Image URL)</label>
                 <input type="text" id="photo-url" placeholder="https://images.unsplash.com/..." class="form-control">
-                <p class="text-muted" style="font-size:0.75rem;">目前 prototype 版本請提供圖片網址，或於下一版本上傳檔案。</p>
+                <p class="text-muted" style="font-size:0.75rem;">?桀? prototype ?隢?靘??雯?嚗??潔?銝?銝瑼???/p>
 
                 <div id="photo-preview-box" style="display:none; margin-top:10px;">
                     <img id="photo-preview-img" src="" style="width:100%; border-radius:12px; border:1px solid var(--border);">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-outline" onclick="closePhotoModal()">取消</button>
-                <button class="btn-primary" onclick="publishPhoto()">立即發布</button>
+                <button class="btn-outline" onclick="closePhotoModal()">??</button>
+                <button class="btn-primary" onclick="publishPhoto()">蝡?澆?</button>
             </div>
         </div>
     </div>
-    </div>
 
-    <!-- AI Suggestion Modal (NEW) -->
-    <div id="ai-modal" class="modal-overlay">
-        <div class="modal-content">
+    <!-- Share Modal -->
+    <div id="share-modal" class="modal-overlay">
+        <div class="modal-content share-content">
             <div class="modal-header">
-                <h3><i class="fas fa-robot"></i> V-Up! AI 創作助理 ✨</h3>
-                <button class="btn-close" onclick="closeAIModal()"><i class="fas fa-times"></i></button>
+                <h3>?澈甇支???/h3>
+                <button class="btn-close" onclick="closeShareModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="modal-body">
-                <p class="text-muted" style="font-size:0.85rem; margin-bottom:10px;">根據您的草稿，AI 生成了以下建議內容：</p>
-                <div id="ai-suggestion-content" class="ai-suggestion-content">
-                    <!-- AI content or skeleton here -->
+            <div class="share-body" style="text-align:center; padding:20px 0;">
+                <div id="share-preview-card" class="share-card">
+                    <img id="share-img" src="" alt="Project Banner" style="width:100%; border-radius:12px; margin-bottom:15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <h4 id="share-title">隡?璅?</h4>
+                    <p class="text-muted" style="font-size:0.85rem;">?舀??典???雿???蝔?嚗?/p>
                 </div>
-                <div class="ai-actions" style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn-primary" style="flex:1;" onclick="applyAISuggestion()">
-                        <i class="fas fa-check"></i> 採用此建議
-                    </button>
-                    <button class="btn-outline" style="flex:1;" onclick="closeAIModal()">
-                        再找靈感
-                    </button>
+                <div class="share-options" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:25px;">
+                    <button class="btn-share-icon" onclick="mockShare('twitter')"><i class="fab fa-twitter"></i> <span>Twitter</span></button>
+                    <button class="btn-share-icon" onclick="mockShare('facebook')"><i class="fab fa-facebook"></i> <span>Facebook</span></button>
+                    <button class="btn-share-icon" onclick="copyShareLink()"><i class="fas fa-copy"></i> <span>銴ˊ???</span></button>
                 </div>
-            </div>
-            <div class="modal-footer" style="background:#f8fafc; font-size:0.75rem; color:var(--text-muted);">
-                <i class="fas fa-info-circle"></i> AI 生成內容僅供參考，請務必確認符合您的個人風格。
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="api.js"></script>
-    <script src="ai_service.js"></script>
     <script src="dashboard.js"></script>
+    <script>
+        function saveVProfile() {
+            const data = {
+                color: document.getElementById('vt-color').value,
+                banner: document.getElementById('vt-banner').value,
+                name: document.getElementById('vt-name').value,
+                catchphrase: document.getElementById('vt-catchphrase').value,
+                youtube: document.getElementById('vt-youtube').value,
+                twitter: document.getElementById('vt-twitter').value,
+                msTitle: document.getElementById('vt-ms-title').value,
+                msTarget: document.getElementById('vt-ms-target').value,
+                bio: document.getElementById('vt-bio').value
+            };
+            localStorage.setItem('vt-profile-data', JSON.stringify(data));
+            
+            const toast = document.getElementById('save-toast');
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function publishPost() {
+            const input = document.getElementById('vt-post-input');
+            const content = input.value.trim();
+            if(!content) return alert('隢撓?交?蝡摰?);
+            const post = { content: content, date: new Date().toLocaleString() };
+            let posts = JSON.parse(localStorage.getItem('vt-posts') || '[]');
+            posts.unshift(post);
+            localStorage.setItem('vt-posts', JSON.stringify(posts));
+            input.value = '';
+            renderPosts();
+            alert('???澆?蝯衣?蝯莎?');
+        }
+
+        function renderPosts() {
+            const list = document.getElementById('vt-post-list');
+            if(!list) return;
+            const posts = JSON.parse(localStorage.getItem('vt-posts') || '[]');
+            if (posts.length === 0) {
+                list.innerHTML = '<div class="text-muted">?桀????撣遙雿摰嫘?/div>';
+                return;
+            }
+            list.innerHTML = posts.map(p => `
+                <div class="card" style="padding:1.5rem; background:var(--bg-subtle);">
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">${p.date}</div>
+                    <div style="white-space: pre-wrap; line-height:1.6;">${p.content}</div>
+                </div>
+            `).join('');
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('vt-profile-data');
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    if(data.color) document.getElementById('vt-color').value = data.color;
+                    if(data.banner) document.getElementById('vt-banner').value = data.banner;
+                    if(data.name) document.getElementById('vt-name').value = data.name;
+                    if(data.catchphrase) document.getElementById('vt-catchphrase').value = data.catchphrase;
+                    if(data.youtube) document.getElementById('vt-youtube').value = data.youtube;
+                    if(data.twitter) document.getElementById('vt-twitter').value = data.twitter;
+                    if(data.msTitle) document.getElementById('vt-ms-title').value = data.msTitle;
+                    if(data.msTarget) document.getElementById('vt-ms-target').value = data.msTarget;
+                    if(data.bio) document.getElementById('vt-bio').value = data.bio;
+                } catch(e) {}
+            }
+            renderPosts();
+        });
+    </script>
 </body>
 </html>

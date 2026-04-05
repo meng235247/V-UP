@@ -500,6 +500,10 @@
             <button class="nav-item" onclick="switchNav('cms', this)">
                 <div class="nav-item-left"><i class="fas fa-edit"></i> 平台內容 (CMS)</div>
             </button>
+            <button class="nav-item" onclick="switchNav('milestones', this)">
+                <div class="nav-item-left"><i class="fas fa-tasks"></i> 企劃審核 Milestone Review</div>
+                <span class="nav-badge" id="ms-badge" style="display:none;">0</span>
+            </button>
         </ul>
 
         <div style="padding: 16px 16px 12px; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px;">
@@ -830,6 +834,34 @@
                 </div>
             </div>
         </div>
+        <!-- ================= PANEL: MILESTONE REVIEW ================= -->
+        <div id="panel-milestones" class="admin-panel">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title"><i class="fas fa-tasks"></i> 創作者企劃審核</div>
+                        <div class="card-desc">審核創作者提交的新企劃，核准後將立即於前台公開。</div>
+                    </div>
+                </div>
+                <div class="data-table-wrapper">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>企劃標題</th>
+                                <th>類型</th>
+                                <th>目標金額</th>
+                                <th>申請時間</th>
+                                <th>狀態</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ms-review-tbody">
+                            <!-- 由 JS 動態生成 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
     </main>
 
@@ -868,6 +900,7 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
+    <script src="api.js"></script>
     <script>
         // ----------------- Theme Toggle ----------------- //
         (function(){
@@ -893,9 +926,12 @@
                 'kyc': 'KYC 與身份審查',
                 'finance': '金流與清算管理',
                 'cms': '平台內容管理 (CMS)',
-                'security': '系統安全與存取稽核'
+                'security': '系統安全與存取稽核',
+                'milestones': '企劃審核 Milestone Review'
             };
             document.getElementById('page-title').innerText = titles[panelId] || '平台營運總覽';
+
+            if(panelId === 'milestones') loadMilestonesReview();
 
             // Active State
             if (btnEl) {
@@ -912,11 +948,14 @@
         }
 
         // ----------------- Fake Refresh Logic ----------------- //
-        function refreshData() {
+        async function refreshData() {
             const icon = document.getElementById('refresh-icon');
             icon.classList.add('fa-spin');
-            setTimeout(() => {
-                icon.classList.remove('fa-spin');
+            
+            try {
+                // 真正的 API 同步
+                await loadMilestonesReview();
+                renderFinanceTable(); 
                 
                 const now = new Date();
                 const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
@@ -924,8 +963,12 @@
                                    now.getSeconds().toString().padStart(2, '0');
                                    
                 document.getElementById('last-update').innerText = '今日 ' + timeString;
-                showToast('API 數據已同步更新！', 'success');
-            }, 800);
+                showToast('API 雲端數據已即時同步！', 'success');
+            } catch (err) {
+                showToast('連線失敗，請檢查伺服器狀態', 'error');
+            } finally {
+                setTimeout(() => icon.classList.remove('fa-spin'), 500);
+            }
         }
 
         // ----------------- Custom Toast Alert ----------------- //
@@ -1011,6 +1054,59 @@
             }
         }
 
+        async function loadMilestonesReview() {
+            const tbody = document.getElementById('ms-review-tbody');
+            if(!tbody) return;
+            
+            try {
+                const milestones = await vupFetch('/milestones');
+                const pending = milestones.filter(m => m.status === 'pending_admin' || m.status === 'pending_collab');
+                
+                // 更新側邊欄小紅點
+                const badge = document.getElementById('ms-badge');
+                if(badge) {
+                    badge.innerText = pending.length;
+                    badge.style.display = pending.length > 0 ? 'inline-block' : 'none';
+                }
+
+                if(pending.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">目前無待審核企劃</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = pending.map(m => `
+                    <tr>
+                        <td>
+                            <div style="font-weight:700;">${m.title}</div>
+                            <div style="font-size:0.8rem; color:var(--text-muted);">${m.desc ? m.desc.substring(0, 30) + '...' : '無描述'}</div>
+                        </td>
+                        <td><span class="status-badge ${m.type === 'collab' ? 'status-warning' : 'status-success'}">${m.type === 'collab' ? '聯合開發' : '個人成長'}</span></td>
+                        <td class="font-mono text-primary">$ ${m.goal.toLocaleString()}</td>
+                        <td style="font-family:JetBrains Mono; font-size:0.85rem;">${new Date(parseInt(m.id.split('-')[1])).toLocaleDateString()}</td>
+                        <td><span class="status-badge status-warning">審核中</span></td>
+                        <td>
+                            <button class="btn btn-success" style="padding:4px 12px; font-size:0.8rem;" onclick="approveMS('${m.id}')">
+                                <i class="fas fa-check"></i> 核准
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (err) {
+                showToast('無法讀取企劃清單', 'error');
+            }
+        }
+
+        async function approveMS(id) {
+            if(!confirm('確定要核准這項企劃嗎？')) return;
+            try {
+                await vupFetch(`/milestones/${id}/approve`, { method: 'PUT' });
+                showToast('企劃已核准並發布！', 'success');
+                loadMilestonesReview();
+            } catch (err) {
+                showToast('核准失敗，請檢查連線', 'error');
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('vup-cms-h1')) document.getElementById('cms-h1').value = localStorage.getItem('vup-cms-h1');
             if (localStorage.getItem('vup-cms-sub')) document.getElementById('cms-sub').value = localStorage.getItem('vup-cms-sub');
@@ -1019,6 +1115,7 @@
             if (localStorage.getItem('vup-cms-marquee')) document.getElementById('cms-marquee').value = localStorage.getItem('vup-cms-marquee');
             
             renderFinanceTable();
+            loadMilestonesReview(); // 初始載入數值
         });
     </script>
 </body>
