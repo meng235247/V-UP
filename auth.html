@@ -108,61 +108,250 @@
                 <button type="submit" class="btn-secondary full-width auth-submit">建立帳號</button>
             </form>
 
-            <div class="social-login">
-                <p>或使用社群帳號登入</p>
-                <div class="social-btns">
-                    <button class="social-btn google"><i class="fab fa-google"></i></button>
-                    <button class="social-btn discord"><i class="fab fa-discord"></i></button>
-                    <button class="social-btn twitter"><i class="fab fa-twitter"></i></button>
+            <!-- Identity Setup (Identity Selection BEFORE entering) -->
+            <div id="setup-container" style="display:none;">
+                <div class="auth-brand">
+                    <span class="brand-v">建立您的虛擬身分</span>
+                    <p>這將是您在 V-Up! 的第一名片</p>
                 </div>
+
+                <!-- Avatar Preview & Preset Picker -->
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="position: relative; display: inline-block;">
+                        <img id="setup-avatar-preview" src="https://api.dicebear.com/7.x/notionists/svg?seed=Sugar" 
+                             style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid var(--vt-pink-dark); object-fit: cover; background: white; margin-bottom: 15px; box-shadow: var(--vt-shadow-lg);">
+                        <div style="position: absolute; bottom: 15px; right: 0; background: var(--vt-pink-dark); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white;">
+                            <i class="fas fa-magic" style="font-size: 0.8rem;"></i>
+                        </div>
+                    </div>
+                    
+                    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">快速挑選預設形象：</p>
+                    <div class="avatar-preset-grid" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; max-width: 320px; margin: 0 auto;">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Sugar" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="甜美系">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="酷颯系">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Luna" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="神秘系">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Mochi" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="萌系">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Zen" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="簡約系">
+                        <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Nova" class="preset-opt" onclick="selectPresetAvatar(this.src)" title="偶像系">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-image"></i>
+                    <input type="text" id="setup-avatar-url" placeholder="自訂頭像網址 (可選)" oninput="document.getElementById('setup-avatar-preview').src = this.value">
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-id-card"></i>
+                    <input type="text" id="setup-name" placeholder="您的顯示名稱 (例如: 星野夢彩)" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-at"></i>
+                    <input type="text" id="setup-handle" placeholder="唯一 ID (例如: yume_ch)" required>
+                </div>
+
+                <div class="auth-role-select">
+                    <label class="role-option">
+                        <input type="radio" name="setup-role" value="fan" checked>
+                        <div class="role-box">
+                            <i class="fas fa-heart highlight-gold"></i>
+                            <span>我是粉絲</span>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="setup-role" value="vtuber">
+                        <div class="role-box">
+                            <i class="fas fa-microphone-alt text-primary"></i>
+                            <span>我是 VTuber</span>
+                        </div>
+                    </label>
+                </div>
+                <button class="btn-primary full-width auth-submit" onclick="window.finalizeSetup()">開啟奇蹟之旅 <i class="fas fa-rocket"></i></button>
+            </div>
+
+            <!-- Welcome Message (Clean & Simple) -->
+            <div id="welcome-message" style="display:none; text-align:center; padding: 40px 0;">
+                <h2 style="font-size: 2rem; color: var(--primary); margin-bottom: 10px;">🎉 歡迎加入 V-Up!</h2>
+                <p style="color: #64748b; font-weight: 600;">正在帶您前往專屬後台...</p>
+            </div>
+
+            <div class="social-login" id="social-container">
+                <p id="social-label">使用 Google 帳號快速登入</p>
+                <div class="social-btns">
+                    <button class="social-btn google full-width-social" id="google-login-btn">
+                        <i class="fab fa-google"></i> <span id="google-btn-text">使用 Google 帳號登入</span>
+                    </button>
+                </div>
+                <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 15px;">🔒 您的連線受 SSL 加密保護</p>
             </div>
 
         </div>
     </div>
 
-    <script>
-        function switchAuth(mode) {
+    <script type="module">
+        import { authService } from './auth_service.js';
+
+        let pendingUser = null;
+        let currentMode = 'login'; // Track mode: login vs register
+
+        // Bind Google Login
+        document.getElementById('google-login-btn').addEventListener('click', async () => {
+            const btnText = document.getElementById('google-btn-text');
+            btnText.textContent = '連線中...';
+            
+            try {
+                // Pass current mode (login or register)
+                const result = await authService.loginWithGoogle(currentMode);
+                
+                if (result.needsSetup) {
+                    pendingUser = result.user;
+                    showSetup();
+                }
+            } catch (err) {
+                alert(err.message);
+                btnText.textContent = currentMode === 'login' ? '使用 Google 帳號登入' : '透過 Google 帳號註冊';
+            }
+        });
+
+        function showSetup() {
+            // Hide normal auth UI
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('register-form').style.display = 'none';
+            document.querySelector('.auth-toggle').style.display = 'none';
+            document.getElementById('social-container').style.display = 'none';
+            
+            // Pre-fill name from Google
+            if (pendingUser) {
+                document.getElementById('setup-avatar-preview').src = pendingUser.photoURL || `https://api.dicebear.com/7.x/notionists/svg?seed=${pendingUser.uid}`;
+                document.getElementById('setup-name').value = pendingUser.displayName || '';
+                document.getElementById('setup-handle').value = pendingUser.email.split('@')[0];
+                
+                // Inherit the role selection from the "Register" form choice
+                const preSelectedRole = document.querySelector('input[name="role"]:checked')?.value || 'fan';
+                document.querySelectorAll('input[name="setup-role"]').forEach(radio => {
+                    if (radio.value === preSelectedRole) radio.checked = true;
+                });
+            }
+            
+            // Show setup
+            document.getElementById('setup-container').style.display = 'block';
+        }
+
+        window.finalizeSetup = async () => {
+            const name = document.getElementById('setup-name').value.trim();
+            const handle = '@' + document.getElementById('setup-handle').value.trim().replace('@', '');
+            const selectedAvatar = document.getElementById('setup-avatar-url').value.trim();
+            const role = document.querySelector('input[name="setup-role"]:checked').value;
+
+            if (!name || handle === '@') {
+                alert('請填寫完整的名稱與 ID');
+                return;
+            }
+
+            // Fallback for avatar if nothing selected or filled
+            const finalAvatar = selectedAvatar || pendingUser.photoURL || `https://api.dicebear.com/7.x/notionists/svg?seed=${pendingUser.uid}`;
+
+            const submitBtn = document.querySelector('#setup-container .auth-submit');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 正在創造您的虛擬身分...';
+
+            try {
+                const userData = {
+                    name,
+                    handle,
+                    role,
+                    email: pendingUser.email,
+                    avatar: finalAvatar,
+                    bio: role === 'vtuber' ? '大家好！我是 V-Up! 的新成員。' : '很高興加入 V-Up! 追隨心儀的偶像。',
+                    catchphrase: role === 'vtuber' ? '歡迎來到我的專屬頻道！ ✨' : '',
+                    color: '#FF85C0'
+                };
+
+                await authService.completeSetup(pendingUser.uid, userData);
+                
+                // Show Welcome message
+                document.getElementById('setup-container').style.display = 'none';
+                document.getElementById('welcome-message').style.display = 'block';
+                
+            } catch (err) {
+                alert('設定失敗：' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.textContent = '開啟奇蹟之旅';
+            }
+        };
+
+        window.switchAuth = (mode) => {
+            currentMode = mode;
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
             const btnLogin = document.getElementById('btn-login');
             const btnRegister = document.getElementById('btn-register');
+            const btnText = document.getElementById('google-btn-text');
+            const socialLabel = document.getElementById('social-label');
 
             if (mode === 'login') {
                 loginForm.classList.add('active-form');
                 registerForm.classList.remove('active-form');
                 btnLogin.classList.add('active');
                 btnRegister.classList.remove('active');
+                btnText.textContent = '使用 Google 帳號登入';
+                socialLabel.textContent = '使用 Google 帳號快速登入';
             } else {
                 loginForm.classList.remove('active-form');
                 registerForm.classList.add('active-form');
                 btnLogin.classList.remove('active');
                 btnRegister.classList.add('active');
+                btnText.textContent = '透過 Google 帳號註冊';
+                socialLabel.textContent = '或是透過 Google 快速註冊';
             }
-        }
+        };
 
-        // Handle routing based on role selection
-        function handleAuth(event, type) {
+        // --- Real Auth Submit Handler ---
+        window.handleAuth = async (event, type) => {
             event.preventDefault();
-            
-            if (type === 'login') {
-                const role = document.querySelector('input[name="login-role"]:checked').value;
-                if (role === 'vtuber') {
-                    window.location.href = 'dashboard.html';
+            const form = event.target;
+            const email = form.querySelector('input[type="email"]').value;
+            const password = form.querySelector('input[type="password"]').value;
+            const submitBtn = form.querySelector('.auth-submit');
+            const originalText = submitBtn.textContent;
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '處理中...';
+
+            try {
+                let result;
+                if (type === 'register') {
+                    // Pre-capture the chosen role
+                    const chosenRole = form.querySelector('input[name="role"]:checked').value;
+                    const chosenName = form.querySelector('input[type="text"]').value;
+                    
+                    result = await authService.registerWithEmail(email, password);
+                    if (result.needsSetup) {
+                        pendingUser = result.user;
+                        pendingUser.displayName = chosenName; // Manual override for email users
+                        
+                        // Force the role in setup to match the register form
+                        document.querySelectorAll('input[name="setup-role"]').forEach(r => {
+                            if (r.value === chosenRole) r.checked = true;
+                        });
+                        
+                        showSetup();
+                    }
                 } else {
-                    window.location.href = 'fan_profile.html';
+                    result = await authService.loginWithEmail(email, password);
+                    // Login will auto-redirect if profile exists
                 }
-            } 
-            else if (type === 'register') {
-                const role = document.querySelector('input[name="role"]:checked').value; // 'fan' or 'vtuber'
-                localStorage.setItem('vup-temp-role', role); // Save for subsequent hypothetical logins
-                
-                if (role === 'vtuber') {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    window.location.href = 'fan_profile.html';
-                }
+            } catch (err) {
+                console.error("Auth Exception:", err);
+                let msg = "驗證失敗，請稍後再試。";
+                if (err.code === 'auth/email-already-in-use') msg = "此 Email 已被註冊，請直接登入。";
+                if (err.code === 'auth/operation-not-allowed') msg = "平台目前暫未開啟 Email 註冊（Firebase 設定），請改用 Google 帳號快速加入 V-Up!。";
+                if (err.code === 'auth/weak-password') msg = "密碼太弱囉，請輸入至少 6 位數。";
+                alert(msg);
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
-        }
+        };
     </script>
 </body>
 </html>

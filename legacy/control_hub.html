@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! Cloud Control Hub | Admin Panel [UNLIMITED]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    
+    <style>
+        :root {
+            --primary: #ec4899;
+            --secondary: #8b5cf6;
+            --accent: #0ea5e9;
+            --bg: #020617;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+
+        .container { width: 100%; max-width: 1000px; padding: 2rem; display: grid; grid-template-columns: 350px 1fr; gap: 2rem; }
+
+        .control-panel { background: var(--card-bg); backdrop-filter: blur(20px); border: 2px solid var(--border); border-radius: 28px; padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5rem; }
+        .brand i { font-size: 2rem; color: var(--primary); }
+        .brand h1 { font-weight: 900; font-size: 1.6rem; letter-spacing: -1px; }
+
+        .status-badge { background: rgba(0,0,0,0.4); border-radius: 12px; padding: 1rem; border-left: 5px solid #ef4444; display: flex; justify-content: space-between; align-items: center; transition: all 0.5s; }
+        .status-badge.online { border-left-color: #10b981; box-shadow: 0 0 15px rgba(16,185,129,0.2); }
+        
+        .btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: white; padding: 1rem; border-radius: 15px; cursor: pointer; display: flex; align-items: center; gap: 15px; text-align: left; transition: all 0.3s; width: 100%; }
+        .btn:hover { background: rgba(255,255,255,0.1); transform: translateY(-3px); }
+        .btn.primary { background: var(--primary); border: none; font-weight: 700; }
+        .btn.primary:hover { filter: brightness(1.1); box-shadow: 0 10px 20px rgba(236,72,153,0.3); }
+
+        .terminal-panel { background: #000; border: 1px solid var(--border); border-radius: 20px; display: flex; flex-direction: column; overflow: hidden; height: 500px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        .terminal-header { background: #111; padding: 0.75rem 1.25rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        #terminal-content { flex: 1; padding: 1.5rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: #34d399; overflow-y: auto; line-height: 1.6; }
+        
+        .log-entry { margin-bottom: 6px; }
+        .log-err { color: #f43f5e; }
+        .log-success { color: #10b981; font-weight: bold; }
+        .log-info { color: #fbbf24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="control-panel">
+            <div class="brand">
+                <i class="fa-solid fa-cloud-bolt"></i>
+                <h1>CLOUD HUB v3</h1>
+            </div>
+
+            <div class="status-badge" id="conn-status">
+                <div style="display:flex; flex-direction:column;">
+                    <span style="font-size:0.7rem; color:var(--text-dim);">SYSTEM STATUS</span>
+                    <span id="status-text" style="font-weight:700;">OFFLINE</span>
+                </div>
+                <i class="fa-solid fa-circle" id="status-icon" style="color:#ef4444;"></i>
+            </div>
+
+            <div style="display:flex; flex-direction:column; gap:12px;">
+                <button class="btn" onclick="testConnection()">
+                    <i class="fa-solid fa-plug"></i>
+                    <span>Test Handshake</span>
+                </button>
+
+                <button class="btn primary" onclick="universalSync()">
+                    <i class="fa-solid fa-rocket"></i>
+                    <span>Universal Sync & Populate</span>
+                </button>
+            </div>
+
+            <div style="margin-top:auto; font-size:0.7rem; color:var(--text-dim); text-align:center;">
+                Admin Terminal Engine v3.0.0<br>
+                Ready for Production
+            </div>
+        </aside>
+
+        <main class="terminal-panel">
+            <div class="terminal-header">
+                <div style="display:flex; gap:6px;">
+                    <div style="width:10px; height:10px; border-radius:50%; background:#ff5f56;"></div>
+                    <div style="width:10px; height:10px; border-radius:50%; background:#ffbd2e;"></div>
+                    <div style="width:10px; height:10px; border-radius:50%; background:#27c93f;"></div>
+                </div>
+                <span style="font-size:0.7rem; opacity:0.5;">system_admin@v-up:~/ops</span>
+            </div>
+            <div id="terminal-content">
+                <div class="log-entry">Waiting for user action...</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const terminal = document.getElementById('terminal-content');
+        
+        function writeLog(msg, type = '') {
+            const div = document.createElement('div');
+            div.className = 'log-entry ' + (type ? 'log-' + type : '');
+            div.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            terminal.appendChild(div);
+            terminal.scrollTop = terminal.scrollHeight;
+            console.log(`[FIREBASE] ${msg}`);
+        }
+
+        // Initialize Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAsXfdzWtmzYJRs_CkaMBbSLEMNy_GEupg",
+            authDomain: "v-up-b407d.firebaseapp.com",
+            projectId: "v-up-b407d",
+            storageBucket: "v-up-b407d.firebasestorage.app",
+            messagingSenderId: "1072759671746",
+            appId: "1:1072759671746:web:109be9a82e6b313eeca45b"
+        };
+
+        let db;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            db = firebase.firestore();
+            writeLog("✅ Firebase SDK Initialized.", "success");
+        } catch(e) {
+            alert("Firebase Init Error: " + e.message);
+            writeLog("❌ Init Error: " + e.message, "err");
+        }
+
+        async function testConnection() {
+            writeLog("📡 Testing cloud handshake...", "info");
+            try {
+                await db.collection("_admin_ping").doc("current").set({ 
+                    lastPing: Date.now(),
+                    client: "WebAdminV3"
+                });
+                writeLog("✨ Handshake successful! Database is reachable.", "success");
+                document.getElementById('conn-status').classList.add('online');
+                document.getElementById('status-text').innerText = "ONLINE";
+                document.getElementById('status-icon').style.color = "#10b981";
+            } catch(e) {
+                writeLog("❌ Connection failed: " + e.message, "err");
+                alert("Connection failed! See terminal for details.");
+            }
+        }
+
+        const systemModel = {
+            milestones: [
+                { id: "ms-1", title: "【熱血企劃】專業麥克風升級！🎙️", goal: 20000, current: 15400, status: "active", desc: "換成專業級電容麥克風。", type: "individual" },
+                { id: "ms-2", title: "春季特別直播 🌸", goal: 50000, current: 42500, status: "active", desc: "紀念春天的到來。", type: "individual" }
+            ],
+            creator: {
+                uid: "hoshino_yume",
+                profile: { name: "星野夢彩", handle: "@Yume_Official", bio: "你的星空，由我來點亮 ✨", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Yume", color: "#ec4899" },
+                role: "vtuber"
+            },
+            fan: {
+                uid: "test_user_vup",
+                profile: { name: "快樂的盤子", handle: "@Happy_Plate", bio: "感恩我推，讚嘆我推！", avatar: "https://api.dicebear.com/7.x/notionists/svg?seed=Felix", color: "#ec4899" },
+                role: "fan"
+            }
+        };
+
+        async function universalSync() {
+            writeLog("🚀 STAGING SYSTEM AUTO-POPULATE...", "info");
+            try {
+                // Milestones
+                writeLog("Syncing milestones...", "info");
+                for(const ms of systemModel.milestones) {
+                    await db.collection("milestones").doc(ms.id).set(ms);
+                    writeLog(`  ✔ ${ms.title}`);
+                }
+
+                // Users
+                writeLog("Syncing Identity: Creator...", "info");
+                await db.collection("users").doc(systemModel.creator.uid).set(systemModel.creator.profile);
+                await db.collection("users").doc(systemModel.creator.uid).update({ role: "vtuber" });
+
+                writeLog("Syncing Identity: Fan...", "info");
+                await db.collection("users").doc(systemModel.fan.uid).set(systemModel.fan.profile);
+                await db.collection("users").doc(systemModel.fan.uid).update({ role: "fan" });
+
+                writeLog("🎉 ALL SYSTEMS GO. UNIVERSAL SYNC COMPLETE.", "success");
+                alert("Sync Success!");
+            } catch(e) {
+                writeLog("❌ CRITICAL SYNC ERROR: " + e.message, "err");
+                alert("Sync Error: " + e.message);
+            }
+        }
+    </script>
+</body>
+</html>

@@ -189,8 +189,14 @@
                 <input type="text" class="input-field" placeholder="6-digit code" maxlength="6" required>
             </div>
 
-            <button type="submit" class="btn-login">
-                <i class="fas fa-fingerprint"></i> 驗證登入
+            <button type="submit" class="btn-login" style="margin-top: 12px; background: #334155;">
+                <i class="fas fa-lock"></i> 密碼驗證 (Legacy)
+            </button>
+
+            <div style="margin: 20px 0; text-align: center; color: var(--text-muted); font-size: 0.8rem; border-bottom: 1px solid var(--border-dark); line-height: 0.1em;"><span style="background: var(--surface-dark); padding: 0 10px;">OR</span></div>
+
+            <button type="button" id="admin-google-btn" class="btn-login">
+                <i class="fab fa-google"></i> Google 營運授權登入
             </button>
         </form>
 
@@ -199,6 +205,24 @@
         </div>
     </div>
 
+    <script type="module">
+        import { authService } from './auth_service.js';
+
+        document.getElementById('admin-google-btn').addEventListener('click', async () => {
+            try {
+                // In a real app, you would check if this specific Google Email is in an "Admin List"
+                await authService.loginWithGoogle('admin');
+            } catch (err) {
+                alert('授權失敗：' + err.message);
+            }
+        });
+
+        // Legacy bypass for demonstration
+        document.querySelector('form').onsubmit = (e) => {
+            e.preventDefault();
+            alert('請優先使用 Google 營運授權登入進行安全校驗。');
+        };
+    </script>
 </body>
 
 </html>

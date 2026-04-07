@@ -475,9 +475,9 @@
                 <i class="fas fa-moon" id="theme-icon"></i>
             </button>
             <a href="index.html" class="btn btn-outline"><i class="fas fa-external-link-alt"></i> 檢視前台</a>
-            <a href="admin_login.html" class="btn btn-outline" style="border-color: var(--danger-red); color: var(--danger-red);">
+            <button onclick="adminLogout()" class="btn btn-outline" style="border-color: var(--danger-red); color: var(--danger-red); cursor: pointer; background: transparent;">
                 <i class="fas fa-sign-out-alt"></i> 登出
-            </a>
+            </button>
         </div>
     </header>
 
@@ -514,10 +514,12 @@
                 <div class="nav-item-left"><i class="fas fa-shield-alt"></i> 資安與稽核日誌</div>
                 <span class="nav-badge" style="background:var(--warning-amber);">2</span>
             </button>
-            <button class="nav-item" onclick="showToast('功能建置中...','error')">
-                <div class="nav-item-left"><i class="fas fa-server"></i> 伺服器狀態監控</div>
+            <button class="nav-item" id="btn-init-db" style="border:1px dashed var(--danger-red); margin-top:20px; color:var(--danger-red);">
+                <div class="nav-item-left"><i class="fas fa-magic"></i> 一鍵初始化資料庫</div>
             </button>
         </ul>
+
+
     </aside>
 
     <!-- Main Content -->
@@ -547,18 +549,18 @@
 
             <div class="card-row">
                 <div class="card" style="border-top: 4px solid var(--primary-blue);">
-                    <div class="card-title"><i class="fas fa-dollar-sign text-muted"></i> 本月累計金流</div>
-                    <div class="kpi-value">$4,250,500</div>
-                    <div class="kpi-trend" style="color: var(--success-green);"><i class="fas fa-arrow-up"></i> +15.2% vs 上月</div>
+                    <div class="card-title"><i class="fas fa-dollar-sign text-muted"></i> 平台總金流 (NTD)</div>
+                    <div class="kpi-value" id="kpi-tx-total">$0</div>
+                    <div class="kpi-trend" style="color: var(--text-muted);"><i class="fas fa-clock"></i> 即時結算中</div>
                 </div>
                 <div class="card" style="border-top: 4px solid var(--success-green);">
                     <div class="card-title"><i class="fas fa-users text-muted"></i> 活躍 VTuber 數</div>
-                    <div class="kpi-value">128</div>
-                    <div class="kpi-trend" style="color: var(--primary-blue);"><i class="fas fa-user-plus"></i> 本月新增 12 人</div>
+                    <div class="kpi-value" id="kpi-vtubers">0</div>
+                    <div class="kpi-trend" style="color: var(--primary-blue);"><i class="fas fa-signal"></i> 系統驗證帳號數量</div>
                 </div>
                 <div class="card" style="border-top: 4px solid var(--danger-red);">
                     <div class="card-title"><i class="fas fa-id-card text-muted"></i> 待審核 KYC</div>
-                    <div class="kpi-value" style="color: var(--danger-red);">3</div>
+                    <div class="kpi-value" id="kpi-kyc-pending" style="color: var(--danger-red);">0</div>
                     <div class="kpi-trend" style="color: var(--warning-amber);"><i class="fas fa-clock"></i> 需盡速處理</div>
                 </div>
             </div>
@@ -578,35 +580,8 @@
                                     <th>信箱驗證</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="user-id-row">
-                                            <div class="user-avatar"><i class="fas fa-user"></i></div>
-                                            <div class="user-info">
-                                                <span class="user-name">林*明</span>
-                                                <span class="user-sub">VTuber 申請中</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="status-badge status-warning">審核中</span></td>
-                                    <td style="font-family:'JetBrains Mono'; color:var(--text-muted);">2026-03-24 08:30</td>
-                                    <td><span class="status-badge status-success">已驗證</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="user-id-row">
-                                            <div class="user-avatar" style="background:#e0f2fe; color:#0284c7;"><i class="fas fa-user"></i></div>
-                                            <div class="user-info">
-                                                <span class="user-name">王*傑</span>
-                                                <span class="user-sub">粉絲</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="status-badge status-success" style="background:transparent; border:1px solid #e2e8f0; color:var(--text-muted);">粉絲</span></td>
-                                    <td style="font-family:'JetBrains Mono'; color:var(--text-muted);">2026-03-24 07:12</td>
-                                    <td><span class="status-badge status-success">已驗證</span></td>
-                                </tr>
+                            <tbody id="overview-users-tbody">
+                                <tr><td colspan="4" style="text-align:center; padding: 20px; color:var(--text-muted);">載入中...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -660,41 +635,8 @@
                                 <th>操作</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <div class="user-id-row">
-                                        <div class="user-avatar"><i class="fas fa-id-card"></i></div>
-                                        <div class="user-info">
-                                            <span class="user-name">林*明</span>
-                                            <span class="user-sub">VT 宣稱名：幻影_Phantom</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>雙證件正本、銀行存摺封面</td>
-                                <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">2026-03-24 08:30</td>
-                                <td><span class="status-badge status-warning"><i class="fas fa-circle" style="font-size:0.4rem;"></i> 待審核</span></td>
-                                <td>
-                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openKYCModal('林*明','幻影_Phantom','2026-03-24 08:30')">審查資料</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="user-id-row">
-                                        <div class="user-avatar"><i class="fas fa-id-card"></i></div>
-                                        <div class="user-info">
-                                            <span class="user-name">陳*華</span>
-                                            <span class="user-sub">VT 宣稱名：貓又_Nekomata</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>身分證、直播設備照片佐證</td>
-                                <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">2026-03-24 09:15</td>
-                                <td><span class="status-badge status-warning"><i class="fas fa-circle" style="font-size:0.4rem;"></i> 待審核</span></td>
-                                <td>
-                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;" onclick="openKYCModal('陳*華','貓又_Nekomata','2026-03-24 09:15')">審查資料</button>
-                                </td>
-                            </tr>
+                        <tbody id="kyc-review-tbody">
+                            <!-- JS loaded -->
                         </tbody>
                     </table>
                 </div>
@@ -900,8 +842,24 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toast-container"></div>
 
-    <script src="api.js"></script>
-    <script>
+    <script type="module">
+        import { firebaseService } from './firebase-service.js';
+        import { authService } from './auth_service.js';
+        
+        window.firebaseService = firebaseService; // Global access for inline onclicks if needed
+
+        // ---- 安全性驗證 (Security Guard) ----
+        authService.guardPage('admin');
+
+        // ---- 全域 API 綁定 (Fix button clicks inside module scope) ----
+        window.toggleTheme = () => toggleTheme();
+        window.switchNav = (panelId, btnEl) => switchNav(panelId, btnEl);
+        window.refreshData = () => refreshData();
+        window.openKYCModal = (realName, vtName, time) => openKYCModal(realName, vtName, time);
+        window.closeKYCModal = () => closeKYCModal();
+        window.approveKYC = (isApproved) => approveKYC(isApproved);
+        window.adminLogout = () => authService.logout();
+
         // ----------------- Theme Toggle ----------------- //
         (function(){
             const t = localStorage.getItem('vup-theme') || '';
@@ -1013,44 +971,109 @@
         }
 
         // ----------------- CMS Dynamic Save ----------------- //
-        function saveCMS() {
-            localStorage.setItem('vup-cms-h1', document.getElementById('cms-h1').value);
-            localStorage.setItem('vup-cms-sub', document.getElementById('cms-sub').value);
-            localStorage.setItem('vup-cms-btn', document.getElementById('cms-btn').value);
-            localStorage.setItem('vup-cms-img', document.getElementById('cms-img').value);
-            localStorage.setItem('vup-cms-marquee', document.getElementById('cms-marquee').value);
-            showToast('內容已儲存並推播至 CDN！', 'success');
+        async function saveCMS() {
+            const cmsData = {
+                h1: document.getElementById('cms-h1').value,
+                sub: document.getElementById('cms-sub').value,
+                btn: document.getElementById('cms-btn').value,
+                img: document.getElementById('cms-img').value,
+                marquee: document.getElementById('cms-marquee').value,
+                updatedAt: new Date().toISOString()
+            };
+            
+            try {
+                // Save to Firestore global config
+                await firebaseService.updateProfile("hoshino_yume", { cms: cmsData });
+                showToast('內容已儲存至雲端並發布至各端！', 'success');
+            } catch (err) {
+                showToast('儲存失敗', 'error');
+            }
+        }
+        window.saveCMS = saveCMS;
+
+
+        // ====== 拔除假資料，套用真實系統 ======
+        
+        import { getDocs, query, collection, collectionGroup, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        async function renderFinanceTable() {
+            const tbody = document.getElementById('finance-log-tbody');
+            if(tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color:var(--text-muted);">目前無任何交易紀錄</td></tr>';
         }
 
-        function renderFinanceTable() {
-            const defaultTxns = [
-                { id: 'TXN-109485', user: '星空騎士_阿龍', vtuber: '星野夢彩', amount: 5000, status: '成功', time: '12:30:45' },
-                { id: 'TXN-109484', user: '深海的貓', vtuber: '星野夢彩', amount: 3200, status: '成功', time: '12:15:10' },
-                { id: 'TXN-109483', user: 'Mystic_K', vtuber: '電玩少女_小葵', amount: 2800, status: '成功', time: '11:45:00' },
-                { id: 'TXN-109482', user: '(匿名訪客)', vtuber: '夜月_Nocturne', amount: 500, status: '處理中', time: '11:15:22' }
-            ];
-            
-            let txns = JSON.parse(localStorage.getItem('vup-transactions'));
-            if (!txns) {
-                txns = defaultTxns;
-                localStorage.setItem('vup-transactions', JSON.stringify(txns));
-            }
-            
-            const tbody = document.getElementById('finance-log-tbody');
-            if (tbody) {
-                tbody.innerHTML = txns.map(t => {
-                    let statusTag = t.status === '成功' ? '<span class="tag t-green">成功</span>' : '<span class="tag t-yellow">處理中</span>';
-                    return `
+        async function loadKPIAndUsers() {
+            try {
+                // 讀取真實使用者總數與 KYC 狀態
+                const usersRef = collection(db, "users");
+                const snapshot = await getDocs(usersRef);
+                
+                let vtubersCount = 0;
+                let kycPending = 0;
+                let userHTML = '';
+                let kycHTML = '';
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    if (data.role === 'vtuber') vtubersCount++;
+                    if (data.verificationStatus === 'pending') kycPending++;
+
+                    // 填入總覽表的近期註冊者
+                    let badge = data.role === 'vtuber' 
+                        ? (data.verificationStatus === 'verified' ? '<span class="status-badge status-success">認證創作者</span>' : '<span class="status-badge status-warning">審核中創作者</span>')
+                        : '<span class="status-badge status-success" style="background:transparent; border:1px solid #e2e8f0; color:var(--text-muted);">粉絲</span>';
+                    
+                    userHTML += `
                         <tr>
-                            <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">${t.id}</td>
-                            <td>${t.user}</td>
-                            <td>${t.vtuber}</td>
-                            <td class="text-primary font-mono">+ ${t.amount.toLocaleString()}</td>
-                            <td>${statusTag}</td>
-                            <td style="font-family:'JetBrains Mono'; font-size:0.85rem; color:var(--text-muted);">${t.time}</td>
+                            <td>
+                                <div class="user-id-row">
+                                    <div class="user-avatar" style="${data.role==='fan' ? 'background:#e0f2fe; color:#0284c7;' : ''}"><i class="fas fa-user"></i></div>
+                                    <div class="user-info">
+                                        <span class="user-name">${data.name || '註冊用戶'}</span>
+                                        <span class="user-sub">${docSnap.id.substring(0, 8)}...</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>${badge}</td>
+                            <td style="font-family:'JetBrains Mono'; color:var(--text-muted);">${data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString() : '最近'}</td>
+                            <td><span class="status-badge status-success">安全連線</span></td>
                         </tr>
                     `;
-                }).join('');
+
+                    // 填入 KYC 審查表
+                    if (data.verificationStatus === 'pending') {
+                        kycHTML += `
+                            <tr>
+                                <td>
+                                    <div class="user-id-row">
+                                        <div class="user-avatar"><i class="fas fa-id-card"></i></div>
+                                        <div class="user-info">
+                                            <span class="user-name">機密文件保護中</span>
+                                            <span class="user-sub">VT 宣稱名：${data.name}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>系統防護文件加密中</td>
+                                <td style="font-family:'JetBrains Mono'; font-size:0.85rem;">等待審閱</td>
+                                <td><span class="status-badge status-warning"><i class="fas fa-circle" style="font-size:0.4rem;"></i> 待審核</span></td>
+                                <td>
+                                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem;" onclick="alert('尚未部署文件解密系統')">查閱資料</button>
+                                </td>
+                            </tr>
+                        `;
+                    }
+                });
+
+                document.getElementById('kpi-vtubers').innerText = vtubersCount;
+                document.getElementById('kpi-kyc-pending').innerText = kycPending;
+                
+                const overviewBody = document.getElementById('overview-users-tbody');
+                if(overviewBody) overviewBody.innerHTML = userHTML || '<tr><td colspan="4" style="text-align:center;">尚無註冊資料</td></tr>';
+
+                const kycBody = document.getElementById('kyc-review-tbody');
+                if(kycBody) kycBody.innerHTML = kycHTML || '<tr><td colspan="5" style="text-align:center;">無待審核之 KYC 文件</td></tr>';
+
+            } catch (err) {
+                console.error("載入真實資料失敗", err);
             }
         }
 
@@ -1059,38 +1082,39 @@
             if(!tbody) return;
             
             try {
-                const milestones = await vupFetch('/milestones');
-                const pending = milestones.filter(m => m.status === 'pending_admin' || m.status === 'pending_collab');
-                
-                // 更新側邊欄小紅點
-                const badge = document.getElementById('ms-badge');
-                if(badge) {
-                    badge.innerText = pending.length;
-                    badge.style.display = pending.length > 0 ? 'inline-block' : 'none';
-                }
+                // Fetching from Cloud Firestore now
+                firebaseService.getMilestones((milestones) => {
+                    const pending = milestones.filter(m => m.status === 'pending_admin' || m.status === 'pending_collab');
+                    
+                    const badge = document.getElementById('ms-badge');
+                    if(badge) {
+                        badge.innerText = pending.length;
+                        badge.style.display = pending.length > 0 ? 'inline-block' : 'none';
+                    }
 
-                if(pending.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">目前無待審核企劃</td></tr>';
-                    return;
-                }
+                    if(pending.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px; color:var(--text-muted);">目前無待審核企劃</td></tr>';
+                        return;
+                    }
 
-                tbody.innerHTML = pending.map(m => `
-                    <tr>
-                        <td>
-                            <div style="font-weight:700;">${m.title}</div>
-                            <div style="font-size:0.8rem; color:var(--text-muted);">${m.desc ? m.desc.substring(0, 30) + '...' : '無描述'}</div>
-                        </td>
-                        <td><span class="status-badge ${m.type === 'collab' ? 'status-warning' : 'status-success'}">${m.type === 'collab' ? '聯合開發' : '個人成長'}</span></td>
-                        <td class="font-mono text-primary">$ ${m.goal.toLocaleString()}</td>
-                        <td style="font-family:JetBrains Mono; font-size:0.85rem;">${new Date(parseInt(m.id.split('-')[1])).toLocaleDateString()}</td>
-                        <td><span class="status-badge status-warning">審核中</span></td>
-                        <td>
-                            <button class="btn btn-success" style="padding:4px 12px; font-size:0.8rem;" onclick="approveMS('${m.id}')">
-                                <i class="fas fa-check"></i> 核准
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
+                    tbody.innerHTML = pending.map(m => `
+                        <tr>
+                            <td>
+                                <div style="font-weight:700;">${m.title}</div>
+                                <div style="font-size:0.8rem; color:var(--text-muted);">${m.desc ? m.desc.substring(0, 30) + '...' : '無描述'}</div>
+                            </td>
+                            <td><span class="status-badge ${m.type === 'collab' ? 'status-warning' : 'status-success'}">${m.type === 'collab' ? '聯合開發' : '個人成長'}</span></td>
+                            <td class="font-mono text-primary">$ ${m.goal.toLocaleString()}</td>
+                            <td style="font-family:JetBrains Mono; font-size:0.85rem;">${m.date || '---'}</td>
+                            <td><span class="status-badge status-warning">審核中</span></td>
+                            <td>
+                                <button class="btn btn-success" style="padding:4px 12px; font-size:0.8rem;" onclick="window.approveMS('${m.id}')">
+                                    <i class="fas fa-check"></i> 核准
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }, "hoshino_yume");
             } catch (err) {
                 showToast('無法讀取企劃清單', 'error');
             }
@@ -1099,15 +1123,36 @@
         async function approveMS(id) {
             if(!confirm('確定要核准這項企劃嗎？')) return;
             try {
-                await vupFetch(`/milestones/${id}/approve`, { method: 'PUT' });
+                await firebaseService.updateMilestone(id, { status: 'active' });
                 showToast('企劃已核准並發布！', 'success');
-                loadMilestonesReview();
             } catch (err) {
                 showToast('核准失敗，請檢查連線', 'error');
             }
         }
+        window.approveMS = approveMS;
+        window.loadMilestonesReview = loadMilestonesReview;
+
+
+        async function runOneClickInit() {
+            showToast('正在準備初始化...', 'info');
+            if(!confirm('這將會覆蓋或新增預設的「Sakura Nova」資料到 Firebase。確定要執行嗎？')) return;
+            
+            showToast('🚀 正在寫入雲端資料庫...', 'info');
+            try {
+                await firebaseService.seedDatabase();
+                showToast('🎉 初始化成功！資料已同步。', 'success');
+                setTimeout(() => location.reload(), 2000);
+            } catch (err) {
+                console.error(err);
+                showToast(`初始化失敗: ${err.message || '請檢查權限與索引'}`, 'error');
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
+            // Bind Event Listeners
+            const initBtn = document.getElementById('btn-init-db');
+            if(initBtn) initBtn.addEventListener('click', runOneClickInit);
+
             if (localStorage.getItem('vup-cms-h1')) document.getElementById('cms-h1').value = localStorage.getItem('vup-cms-h1');
             if (localStorage.getItem('vup-cms-sub')) document.getElementById('cms-sub').value = localStorage.getItem('vup-cms-sub');
             if (localStorage.getItem('vup-cms-btn')) document.getElementById('cms-btn').value = localStorage.getItem('vup-cms-btn');
@@ -1115,8 +1160,10 @@
             if (localStorage.getItem('vup-cms-marquee')) document.getElementById('cms-marquee').value = localStorage.getItem('vup-cms-marquee');
             
             renderFinanceTable();
+            loadKPIAndUsers();
             loadMilestonesReview(); // 初始載入數值
         });
     </script>
 </body>
 </html>
+

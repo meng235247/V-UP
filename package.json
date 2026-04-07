@@ -1,0 +1,13 @@
+{
+  "name": "v-up-saas",
+  "version": "2.0.0",
+  "description": "VTuber Cloud-Native Management System",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "type": "commonjs"
+}

@@ -1,0 +1,25 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper: Is Signed In
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // 1. User Avatars & Banners
+    // Path: avatars/{userId}/profile.jpg
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if true; // Publicly viewable
+      allow write: if isSignedIn() && request.auth.uid == userId; // Only owner can upload
+    }
+
+    // 2. Milestone Exclusive Content
+    // Path: milestones/{milestoneId}/exclusive/{fileName}
+    match /milestones/{milestoneId}/exclusive/{fileName} {
+      allow read: if firestore.exists(/databases/$(database)/documents/milestones/$(milestoneId)/supporters/$(request.auth.uid));
+      allow write: if firestore.get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'creator';
+    }
+  }
+}

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! 雲端初始化工具</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    <style>
+        :root {
+            --primary: #FF6B9E;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #f8fafc;
+            --border: #334155;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .tool-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            padding: 40px;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #FF6B9E 0%, #7C3AED 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        p { color: #94a3b8; line-height: 1.6; margin-bottom: 30px; }
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(255,107,158,0.5); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .status-container {
+            margin-top: 20px;
+            text-align: left;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            background: #000;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            display: none;
+        }
+        .log-entry { margin-bottom: 5px; color: #10b981; }
+        .log-entry.error { color: #ef4444; }
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div class="tool-card">
+        <div class="logo">V-Up! Cloud Init</div>
+        <p>這是一個獨立的初始化工具，將會把 <b>Sakura Nova</b> 的預設資料寫入您的 Firebase Firestore。請確保您的索引（Index）已經在 Firebase 控制台建立完成。</p>
+        
+        <button id="init-btn" class="btn">
+            <div class="spinner" id="btn-spinner"></div>
+            <i class="fas fa-rocket" id="btn-icon"></i>
+            <span>執行雲端初始化</span>
+        </button>
+
+        <div class="status-container" id="status-box">
+            <div class="log-entry">準備就緒，等待指令...</div>
+        </div>
+
+        <div style="margin-top: 30px;">
+            <a href="dashboard.html" style="color: #64748b; text-decoration: none; font-size: 0.9rem;">
+                <i class="fas fa-arrow-left"></i> 回到 Dashboard
+            </a>
+        </div>
+    </div>
+
+    <script type="module">
+        import { firebaseService } from './firebase-service.js';
+
+        const btn = document.getElementById('init-btn');
+        const spinner = document.getElementById('btn-spinner');
+        const icon = document.getElementById('btn-icon');
+        const statusBox = document.getElementById('status-box');
+
+        function addLog(msg, type = 'info') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type === 'error' ? 'error' : ''}`;
+            entry.textContent = `> ${msg}`;
+            statusBox.appendChild(entry);
+            statusBox.scrollTop = statusBox.scrollHeight;
+        }
+
+        btn.addEventListener('click', async () => {
+            if(!confirm('這將會開始寫入雲端資料庫，確定要繼續嗎？')) return;
+
+            btn.disabled = true;
+            spinner.style.display = 'block';
+            icon.style.display = 'none';
+            statusBox.style.display = 'block';
+            addLog("正在連接 Firebase...");
+
+            try {
+                addLog("開始執行 seedDatabase()...");
+                await firebaseService.seedDatabase();
+                addLog("🎉 資料初始化成功！");
+                addLog("正在同步本地緩存...");
+                
+                btn.style.background = "#10b981";
+                btn.innerHTML = '<span><i class="fas fa-check"></i> 初始化完成!</span>';
+                
+                alert("初始化成功！您可以現在去查看 Dashboard 了。");
+            } catch (err) {
+                console.error(err);
+                addLog(`錯誤: ${err.message}`, 'error');
+                if(err.message.includes("indexes")) {
+                    addLog("🚨 請檢查 Firebase 索引是否已建立完成。", 'error');
+                }
+                btn.disabled = false;
+                spinner.style.display = 'none';
+                icon.style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+</html>

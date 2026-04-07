@@ -1,0 +1,272 @@
+{
+  "milestones": [
+    {
+      "id": "ms-1775413173239",
+      "type": "individual",
+      "title": "新衣服製作",
+      "goal": 1000,
+      "current": 0,
+      "status": "pending_admin",
+      "desc": "這不僅是一個目標，更是我們共同成長的證明。此項目的達成將優化硬體設備，為未來的長久陪伴打下基礎。",
+      "banner": "https://images.unsplash.com/photo-1540221652346-e5dd6b1d4c2e?auto=format&fit=crop&q=80",
+      "participants": [],
+      "donors": []
+    },
+    {
+      "id": "ms-1",
+      "type": "individual",
+      "title": "【熱血企劃】專業麥克風升級！🎙️",
+      "goal": 20000,
+      "current": 15400,
+      "status": "active",
+      "desc": "為了提供更好的直播音質，希望能換成專業級的電容麥克風。",
+      "donors": [
+        {
+          "name": "守護星野的騎士",
+          "amount": 5000
+        },
+        {
+          "name": "打賞狂魔",
+          "amount": 4000
+        },
+        {
+          "name": "草莓大福",
+          "amount": 3000
+        },
+        {
+          "name": "匿名用戶",
+          "amount": 3400
+        }
+      ],
+      "participants": []
+    }
+  ],
+  "profile": {
+    "name": "星野夢彩",
+    "handle": "@Yume_Official",
+    "bio": "你的星空，由我來點亮 ✨",
+    "avatar": "https://api.dicebear.com/7.x/notionists/svg?seed=Yume",
+    "banner": "https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&q=80",
+    "color": "#ec4899",
+    "style": "minimal"
+  },
+  "fanStats": {
+    "longestSupportDays": "1,240",
+    "vtuberCount": 42,
+    "milestoneRate": 92,
+    "badgeCount": 14
+  },
+  "topSupported": [
+    {
+      "name": "Sakura Nova",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Nova"
+    },
+    {
+      "name": "Mori Calliope",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Calliope"
+    },
+    {
+      "name": "Gawr Gura",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Gura"
+    },
+    {
+      "name": "Kobo Kanaeru",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Kobo"
+    }
+  ],
+  "following": [
+    {
+      "name": "Mori Calliope",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Calliope",
+      "slug": "mori-calliope"
+    },
+    {
+      "name": "Houshou Marine",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Marine",
+      "slug": "houshou-marine"
+    },
+    {
+      "name": "Gawr Gura",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Gura",
+      "slug": "gawr-gura"
+    },
+    {
+      "name": "Kobo Kanaeru",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Kobo",
+      "slug": "kobo-kanaeru"
+    },
+    {
+      "name": "Vox Akuma",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Vox",
+      "slug": "vox-akuma"
+    },
+    {
+      "name": "Sakura Miko",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Miko",
+      "slug": "sakura-miko",
+      "extra": true
+    },
+    {
+      "name": "Hoshimachi Suisei",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Suisei",
+      "slug": "suisei",
+      "extra": true
+    }
+  ],
+  "notifications": [
+    {
+      "id": "n1",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Nova",
+      "profileUrl": "vtuber_profile.html",
+      "title": "Sakura Nova 發布了新企劃！",
+      "body": "趕快來看看 Sakura Nova 的超大型 3D 演唱會募資企劃吧！",
+      "time": "10 分鐘前",
+      "read": false
+    },
+    {
+      "id": "n2",
+      "avatarUrl": "https://api.dicebear.com/7.x/notionists/svg?seed=Calliope",
+      "profileUrl": "vtuber_profile.html",
+      "title": "Mori Calliope 達成企劃里程碑 🎉",
+      "body": "全球粉絲努力達成解鎖，來看看她想說什麼。",
+      "time": "2 小時前",
+      "read": false
+    }
+  ],
+  "badges": [
+    {
+      "id": "badge_first_support",
+      "imgSrc": "image/資產 1.png",
+      "style": "bg-pink-light",
+      "title": "首位應援",
+      "origin": "SAKURA NOVA 3D化募資",
+      "date": "2023.12.15",
+      "desc": "初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！",
+      "contribution": "1,500",
+      "selected": true
+    },
+    {
+      "id": "badge_sprout",
+      "imgSrc": "image/資產 3.png",
+      "style": "bg-blue-light",
+      "title": "新芽滋長",
+      "origin": "初次贊助成就",
+      "date": "2024.01.20",
+      "desc": "你的支持讓小樹苗開始成長。",
+      "contribution": "1,000",
+      "selected": true
+    },
+    {
+      "id": "badge_starlight",
+      "imgSrc": "image/資產 15.png",
+      "style": "bg-purple-light",
+      "title": "繁星點點",
+      "origin": "2月情人節活動",
+      "date": "2024.02.14",
+      "desc": "點亮了更多星星！",
+      "contribution": "2,000",
+      "selected": true
+    },
+    {
+      "id": "badge_mystery",
+      "imgSrc": "image/資產 1.png",
+      "style": "bg-gray-light",
+      "title": "尚未解鎖",
+      "origin": "神秘里程碑",
+      "date": "???",
+      "desc": "等待緣分解鎖的秘密。",
+      "contribution": "0",
+      "selected": false,
+      "locked": true
+    },
+    {
+      "id": "badge_magic",
+      "imgSrc": "image/blaori.png",
+      "style": "bg-pink-light",
+      "title": "魔法時刻",
+      "origin": "春季特別活動",
+      "date": "2024.04.01",
+      "desc": "魔法般的應援力！",
+      "contribution": "5,500",
+      "selected": true
+    },
+    {
+      "id": "badge_love",
+      "imgSrc": "image/endless.png",
+      "style": "bg-blue-light",
+      "title": "滿滿愛心",
+      "origin": "520 告白日",
+      "date": "2024.05.20",
+      "desc": "感受到滿滿的愛。",
+      "contribution": "300",
+      "selected": true
+    },
+    {
+      "id": "badge_cheers",
+      "imgSrc": "image/padoru2.png",
+      "style": "bg-pink-light",
+      "title": "乾杯紀念",
+      "origin": "半年慶祝直播",
+      "date": "2024.06.18",
+      "desc": "一起舉杯慶祝吧！",
+      "contribution": "10,000",
+      "selected": true
+    },
+    {
+      "id": "badge_applause",
+      "imgSrc": "image/v_head_ryusei.jpg",
+      "style": "bg-purple-light",
+      "title": "熱烈掌聲",
+      "origin": "七夕應援",
+      "date": "2024.07.07",
+      "desc": "為你的貢獻歡呼！",
+      "contribution": "1,200",
+      "selected": true
+    },
+    {
+      "id": "badge_more",
+      "iconClass": "fa-solid fa-ellipsis",
+      "style": "bg-gray-light",
+      "title": "更多驚喜",
+      "origin": "未來成就",
+      "date": "2024.08",
+      "desc": "還有更多未知等著你。",
+      "contribution": "0",
+      "selected": true,
+      "unclickable": true
+    }
+  ],
+  "titles": [
+    {
+      "id": "t1",
+      "iconClass": "fa-solid fa-flag text-blue",
+      "title": "為您的首位里程碑助力",
+      "origin": "SAKURA NOVA 3D化募資",
+      "selected": true
+    },
+    {
+      "id": "t2",
+      "iconClass": "fa-solid fa-trophy text-purple",
+      "title": "sakura的全面應援",
+      "origin": "陪伴 sakura 走過所有重要時刻",
+      "selected": true
+    },
+    {
+      "id": "t3",
+      "iconClass": "fa-solid fa-flag text-blue",
+      "title": "全部都是盤幣",
+      "origin": "累積消費超過 100,000 NTD",
+      "selected": true
+    },
+    {
+      "id": "t4",
+      "iconClass": "fa-solid fa-crown text-pink",
+      "title": "頂尖粉絲",
+      "origin": "年度貢獻前 1% 專屬",
+      "selected": false
+    }
+  ],
+  "activity": [],
+  "posts": [],
+  "photos": []
+}

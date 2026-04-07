@@ -1,6 +1,7 @@
 /**
- * V-UP 專用「送餐員」函數 (API Fetch Utility)
- * 這個檔案負責幫你從「廚房」(伺服器) 拿資料。
+ * [LEGACY REFERENCE ONLY] V-UP 專用「送餐員」函數 (API Fetch Utility)
+ * 備註：此區域目前僅作 SaaS 架構參考用。
+ * 主導邏輯已遷移至 firebase-service.js (Direct Cloud Sync)。
  */
 
 const API_BASE_URL = 'http://localhost:3000/api';

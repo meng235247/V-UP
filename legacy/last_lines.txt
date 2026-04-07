@@ -1,0 +1,5 @@
+﻿@media (max-width: 480px) {
+    .vtuber-flex {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

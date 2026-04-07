@@ -1,0 +1,21 @@
+[debug] [2026-04-05T18:21:07.115Z] ----------------------------------------------------------------------
+[debug] [2026-04-05T18:21:07.118Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js LOGOUT
+[debug] [2026-04-05T18:21:07.118Z] CLI Version:   15.13.0
+[debug] [2026-04-05T18:21:07.118Z] Platform:      win32
+[debug] [2026-04-05T18:21:07.118Z] Node Version:  v24.14.1
+[debug] [2026-04-05T18:21:07.118Z] Time:          Mon Apr 06 2026 02:21:07 GMT+0800 (台北標準時間)
+[debug] [2026-04-05T18:21:07.119Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-04-05T18:21:07.153Z] RangeError: Maximum call stack size exceeded
+    at String.split (<anonymous>)
+    at Command.command (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\commander\index.js:168:30)
+    at Command.register (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\lib\command.js:70:29)
+    at runner.load (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\index.js:17:42)
+    at Command.<anonymous> (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js:95:13)
+    at Command.listener [as _actionHandler] (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\commander\index.js:413:31)
+    at Command._parseCommand (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\commander\index.js:914:14)
+    at Command.parse (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\commander\index.js:717:10)
+    at Command.<anonymous> (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\lib\index.js:97:20)
+    at Command.listener [as _actionHandler] (C:\Users\roksn\AppData\Roaming\npm\node_modules\firebase-tools\node_modules\commander\index.js:413:31)
+[error] 
+[error] Error: An unexpected error has occurred.
