@@ -3,7 +3,7 @@
    Light / Dark Mode Edition
    =========================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;500;600;700;800;900&display=swap');
 
 /* ---- Light Mode (default) ---- */
 :root {
@@ -19,14 +19,14 @@
     --primary-glow: rgba(244, 114, 182, 0.25);
     --primary-hover: #db2777;
 
-    --secondary: #a78bfa;
-    /* soft pastel purple */
-    --secondary-light: rgba(167, 139, 250, 0.1);
-    --secondary-hover: #7c3aed;
+    --secondary: #70ddf1;
+    /* soft pastel blue */
+    --secondary-light: rgba(112, 221, 241, 0.1);
+    --secondary-hover: #38bdf8;
 
-    --accent: #38bdf8;
-    /* soft cyan/blue */
-    --accent-light: rgba(56, 189, 248, 0.1);
+    --accent: #e0f8fc;
+    /* soft light blue */
+    --accent-light: rgba(224, 248, 252, 0.1);
 
     --text-main: #1e293b;
     --text-muted: #64748b;
@@ -35,16 +35,16 @@
     --border-color: #e2e8f0;
     --border-subtle: rgba(244, 114, 182, 0.12);
 
-    --gradient-primary: linear-gradient(135deg, #f472b6 0%, #a78bfa 100%);
+    --gradient-primary: linear-gradient(135deg, #f472b6 0%, #70ddf1 100%);
     --gradient-warm: linear-gradient(135deg, #fb923c 0%, #f472b6 100%);
-    --gradient-cool: linear-gradient(135deg, #a78bfa 0%, #38bdf8 100%);
-    --gradient-surface: linear-gradient(135deg, rgba(244, 114, 182, 0.03) 0%, rgba(167, 139, 250, 0.03) 100%);
+    --gradient-cool: linear-gradient(135deg, #70ddf1 0%, #38bdf8 100%);
+    --gradient-surface: linear-gradient(135deg, rgba(244, 114, 182, 0.03) 0%, rgba(112, 221, 241, 0.03) 100%);
 
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     --shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.06), 0 4px 10px -2px rgba(0, 0, 0, 0.03);
     --shadow-pink: 0 8px 25px rgba(244, 114, 182, 0.2);
-    --shadow-purple: 0 8px 25px rgba(167, 139, 250, 0.15);
+    --shadow-blue: 0 8px 25px rgba(112, 221, 241, 0.15);
 
     --radius-sm: 0.5rem;
     --radius-md: 1rem;
@@ -70,13 +70,13 @@
     --primary-glow: rgba(45, 212, 191, 0.25);
     --primary-hover: #14b8a6;
 
-    --secondary: #c084fc;
-    /* purple accent */
-    --secondary-light: rgba(192, 132, 252, 0.1);
-    --secondary-hover: #a855f7;
+    --secondary: #38bdf8;
+    /* blue accent */
+    --secondary-light: rgba(56, 189, 248, 0.1);
+    --secondary-hover: #0ea5e9;
 
-    --accent: #38bdf8;
-    --accent-light: rgba(56, 189, 248, 0.1);
+    --accent: #70ddf1;
+    --accent-light: rgba(112, 221, 241, 0.1);
 
     --text-main: #f4f4f5;
     --text-muted: #a1a1aa;
@@ -85,16 +85,16 @@
     --border-color: #27272a;
     --border-subtle: rgba(45, 212, 191, 0.15);
 
-    --gradient-primary: linear-gradient(135deg, #2dd4bf 0%, #c084fc 100%);
-    --gradient-warm: linear-gradient(135deg, #f97316 0%, #c084fc 100%);
-    --gradient-cool: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 100%);
-    --gradient-surface: linear-gradient(135deg, rgba(45, 212, 191, 0.03) 0%, rgba(192, 132, 252, 0.03) 100%);
+    --gradient-primary: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 100%);
+    --gradient-warm: linear-gradient(135deg, #f97316 0%, #38bdf8 100%);
+    --gradient-cool: linear-gradient(135deg, #2dd4bf 0%, #70ddf1 100%);
+    --gradient-surface: linear-gradient(135deg, rgba(45, 212, 191, 0.03) 0%, rgba(56, 189, 248, 0.03) 100%);
 
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.6);
     --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
     --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
     --shadow-pink: 0 8px 25px rgba(45, 212, 191, 0.15);
-    --shadow-purple: 0 8px 25px rgba(192, 132, 252, 0.15);
+    --shadow-blue: 0 8px 25px rgba(56, 189, 248, 0.15);
 
     --news-bg: linear-gradient(135deg, #121214 0%, #09090b 100%);
     /* very dark clean base */
@@ -482,11 +482,7 @@ img {
 .hero {
     padding: 7rem 20px;
     text-align: center;
-    background:
-        linear-gradient(160deg, rgba(10, 6, 30, 0.97) 0%, rgba(60, 20, 110, 0.9) 40%, rgba(90, 30, 160, 0.75) 70%, rgba(180, 50, 120, 0.55) 100%),
-        linear-gradient(135deg, #0a0620 0%, #1e0838 100%);
-    background-size: 300% 300%, 100% 100%;
-    /* animation: gradientShift 14s ease infinite; - Removed to improve performance */
+    background: linear-gradient(rgba(8, 3, 20, 0.5), rgba(8, 3, 20, 0.5)), url('image/banner.png') center/cover no-repeat;
     position: relative;
     color: white;
     overflow: hidden;
@@ -497,8 +493,8 @@ img {
     position: absolute;
     inset: 0;
     background:
-        radial-gradient(ellipse at 20% 50%, rgba(46, 220, 202, 0.15) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 30%, rgba(167, 139, 250, 0.18) 0%, transparent 50%);
+        radial-gradient(ellipse at 20% 50%, rgba(45, 212, 191, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 30%, rgba(112, 221, 241, 0.18) 0%, transparent 50%);
     pointer-events: none;
 }
 
@@ -529,7 +525,7 @@ img {
     letter-spacing: -1px;
     margin-bottom: 1rem;
     color: white;
-    background: linear-gradient(90deg, #fff 10%, #a5f3fc 45%, #ddd6fe 70%, #fff 90%);
+    background: linear-gradient(90deg, #fff 10%, #a5f3fc 45%, #70ddf1 70%, #fff 90%);
     background-size: 200% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -540,7 +536,7 @@ img {
 .hero-subtitle {
     font-size: 1.3rem;
     margin-bottom: 2.5rem;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgb(255, 255, 255);
     animation: fadeInUp 0.8s 0.15s ease both;
 }
 
@@ -758,8 +754,8 @@ img {
 }
 
 .badge-info {
-    background: #ede9fe;
-    color: #6d28d9;
+    background: #e0f2fe;
+    color: #0ea5e9;
 }
 
 .badge-live {
@@ -779,8 +775,8 @@ img {
 }
 
 [data-theme="dark"] .badge-info {
-    background: rgba(109, 40, 217, 0.18);
-    color: #a78bfa;
+    background: rgba(14, 165, 233, 0.18);
+    color: #38bdf8;
 }
 
 [data-theme="dark"] .badge-live {
@@ -901,14 +897,30 @@ img {
     color: #2edcca;
 }
 
-.why-icon.purple {
-    background: rgba(167, 139, 250, 0.15);
-    color: #a78bfa;
+.why-icon.blue {
+    background: rgba(112, 221, 241, 0.15);
+    color: #70ddf1;
 }
 
-.why-icon.pink {
-    background: rgba(244, 114, 182, 0.15);
-    color: #f472b6;
+.nav-logo-vup {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900;
+    background: linear-gradient(90deg, #ec4899, #0ea5e9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-size: 1.4rem;
+    letter-spacing: -1px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.nav-logo-vup:hover {
+    opacity: 0.85;
+}
+
+.font-vup {
+    font-family: 'Inter', sans-serif;
 }
 
 .why-card h3 {

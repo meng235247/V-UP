@@ -155,6 +155,8 @@
             gap: 0.65rem;
             margin-top: -26px;
             margin-bottom: 0.6rem;
+            position: relative;
+            z-index: 5;
         }
 
         .v-card-body .v-card-avatar {
@@ -164,7 +166,6 @@
             border: 3px solid var(--bg-surface);
             box-shadow: 0 4px 10px var(--primary-glow);
             flex-shrink: 0;
-            position: static;
         }
 
         .v-card-name-row h3 {
@@ -174,7 +175,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            margin: 0;
+            margin-top: 40px;
         }
 
         .v-card-followers {
@@ -200,7 +201,7 @@
             color: var(--primary);
         }
 
-        .tag.t-purple {
+        .tag.t-blue-sub {
             background: var(--secondary-light);
             color: var(--secondary);
         }
@@ -379,6 +380,117 @@
                 align-items: center;
             }
         }
+
+        /* Placeholder for missing VTubers */
+        .v-card-placeholder {
+            border: 2px dashed var(--border-color);
+            background: var(--bg-surface);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            opacity: 0.8;
+            transition: all 0.3s;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .v-card-placeholder:hover {
+            opacity: 1;
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .v-card-placeholder i {
+            font-size: 3.2rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1.25rem;
+        }
+
+        .v-card-placeholder h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .v-card-placeholder p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Recommendation Teaser */
+        .discovery-teaser {
+            margin-top: 4rem;
+            padding: 3rem 2rem;
+            background: rgba(var(--bg-surface-rgb), 0.4);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeInUp 0.8s ease both;
+        }
+
+        .teaser-badge {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 14px;
+            border-radius: 99px;
+            margin-bottom: 1.25rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            box-shadow: 0 4px 12px var(--primary-glow);
+        }
+
+        .teaser-title {
+            font-size: 1.75rem;
+            font-weight: 900;
+            margin-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .teaser-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 1.5rem;
+            line-height: 1.6;
+        }
+
+        .teaser-highlights {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .h-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .h-item i {
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 
@@ -388,12 +500,12 @@
     <!-- ── 導航：粉絲視角，完全不混入創作者後台 ── -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="brand-logo">V-Up!</a>
+            <a href="index.html" class="nav-logo-vup">V-UP!</a>
             <div class="nav-links">
                 <a href="#discover" class="nav-item active">探索 VTuber</a>
-                <a href="#news" class="nav-item">最新情報</a>
                 <a href="#why" class="nav-item">平台特色</a>
                 <a href="#how" class="nav-item">如何贊助</a>
+                <a href="#news" class="nav-item">最新情報</a>
                 <button class="theme-toggle" id="theme-btn" title="深淺色模式" onclick="toggleTheme()">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
@@ -407,8 +519,10 @@
     <!-- CSS Marquee Announcement -->
     <div class="announcement-bar" id="front-marquee">
         <div class="announcement-inner">
-            <span>🌟 歡迎來到 V-Up! 綻放計畫！ 🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！ 感謝「星空騎士_阿龍」成為本週最大貢獻者！ </span>
-            <span>🌟 歡迎來到 V-Up! 綻放計畫！ 🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！ 感謝「星空騎士_阿龍」成為本週最大貢獻者！ </span>
+            <span>🌟 歡迎來到 <span class="font-vup">V-Up!</span> 綻放計畫！ 🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！
+                感謝「星空騎士_阿龍」成為本週最大貢獻者！ </span>
+            <span>🌟 歡迎來到 <span class="font-vup">V-Up!</span> 綻放計畫！ 🌟 新任 VTuber「星野夢彩」出道紀念募資活動熱烈進行中！
+                感謝「星空騎士_阿龍」成為本週最大貢獻者！ </span>
         </div>
     </div>
 
@@ -419,10 +533,15 @@
                 style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);padding:6px 18px;border-radius:99px;font-size:0.87rem;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:1.5rem;">
                 <span
                     style="width:8px;height:8px;background:#10b981;border-radius:50%;animation:livePulse 1.5s infinite;display:inline-block;"></span>
-                284 位 VTuber正在策劃他們的全新舞台
+                5個全新舞台正在籌備中
             </div>
-            <h1 class="hero-title" id="front-h1">V-Up! 綻放計畫</h1>
-            <p class="hero-subtitle" id="front-sub" style="animation:fadeInUp 0.8s 0.15s ease both;">從孤軍奮戰，變成與粉絲一起共創成長
+            <h1 class="hero-title" id="front-h1"><span class="font-vup">V-Up!</span> 綻放計畫</h1>
+            <p
+                style="font-size: 1.1rem; margin-bottom: 0.5rem; color: rgba(255, 255, 255, 0.7); animation: fadeInUp 0.8s 0.12s ease both; font-weight: 500;">
+                全新企劃向里程碑斗內平台
+            </p>
+            <p class="hero-subtitle" id="front-sub">
+                從孤軍奮戰，變成與粉絲一起共創成長
             </p>
             <!-- 明確雙入口 -->
             <div class="hero-cta-group">
@@ -441,22 +560,13 @@
         </div>
     </header>
 
-    <!-- ── Stats ── -->
-    <div class="stats-bar">
-        <div class="stats-bar-inner">
-            <div><span class="stat-num">128+</span><span class="stat-name">閃耀 VTuber</span></div>
-            <div><span class="stat-num">15,200+</span><span class="stat-name">活躍粉絲</span></div>
-            <div><span class="stat-num">320</span><span class="stat-name">達成里程碑</span></div>
-            <div><span class="stat-num">$4.2M</span><span class="stat-name">累計募資 NTD</span></div>
-        </div>
-    </div>
 
     <!-- ── 探索 VTuber ── -->
     <section class="discover-section" id="discover">
         <div class="container">
             <div class="discover-header">
                 <span class="section-label">DISCOVER</span>
-                <h2>探索閃耀的 VTuber</h2>
+                <h2 class="font-vup">探索閃耀的 VTuber</h2>
                 <p>找到你的推，幫助他們達成下一個里程碑 ✨</p>
             </div>
 
@@ -469,67 +579,31 @@
             </div>
 
             <div class="vtuber-grid">
-                <!-- Card 1 -->
-                <a href="vtuber_profile.html" class="v-card" data-cat="music hot">
-                    <div class="v-card-banner">
-                        <div class="v-card-banner-bg"
-                            style="background:linear-gradient(135deg,#1a0533,#5b21b6 50%,#9d174d);"></div>
-                        <div class="v-card-banner-overlay"></div>
-                        <div class="live-badge"><span class="dot"></span> LIVE</div>
-                        <div class="category-badge"><i class="fas fa-music"></i> 歌手</div>
-                    </div>
-                    <div class="v-card-body">
-                        <div class="v-card-avatar-wrap">
-                            <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume&backgroundColor=b6e3f4"
-                                alt="星野夢彩" class="v-card-avatar">
-                            <div class="v-card-name-row">
-                                <h3>星野夢彩 <i class="fas fa-check-circle"
-                                        style="color:var(--accent);font-size:0.8rem;"></i></h3>
-                                <div class="v-card-followers"><i class="fas fa-users" style="font-size:0.65rem;"></i>
-                                    12.5K 粉絲</div>
-                            </div>
-                        </div>
-                        <div class="v-card-tags">
-                            <span class="tag"><i class="fas fa-music"></i> 歌姬</span>
-                            <span class="tag t-purple">ASMR</span>
-                            <span class="tag t-blue">直播</span>
-                        </div>
-                        <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
-                            夢想：錄音室設備升級，為大家帶來更頂級的歌回！</div>
-                        <div class="v-card-progress-wrap">
-                            <div class="v-card-progress-header">
-                                <span class="raised">15,000 / 20,000 點</span>
-                                <span class="pct">75%</span>
-                            </div>
-                            <div class="v-card-progress">
-                                <div class="v-card-progress-fill" style="width:75%;"></div>
-                            </div>
-                        </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持 TA 的夢想！</div>
-                    </div>
+                <!-- Card 1 (Placeholder) -->
+                <a href="dashboard.html" class="v-card-placeholder">
+                    <i class="fas fa-plus-circle"></i>
+                    <h3>期待更多夢想加入</h3>
+                    <p>你是也在尋找舞台的創作者嗎？<br>立即加入 V-Up! 綻放計畫</p>
                 </a>
 
                 <!-- Card 2 -->
                 <a href="vtuber_profile.html" class="v-card" data-cat="game hot">
                     <div class="v-card-banner">
-                        <div class="v-card-banner-bg"
-                            style="background:linear-gradient(135deg,#0f172a,#1d4ed8 50%,#7c3aed);"></div>
+                        <div class="v-card-banner-bg" style="background-image: url('image/banner2.png');"></div>
                         <div class="v-card-banner-overlay"></div>
                         <div class="category-badge"><i class="fas fa-gamepad"></i> 遊戲</div>
                     </div>
                     <div class="v-card-body">
                         <div class="v-card-avatar-wrap">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky&backgroundColor=ffd5dc"
-                                alt="電玩少女_小葵" class="v-card-avatar">
+                            <img src="image/v_head_ryusei.jpg" alt="電玩少女_小葵" class="v-card-avatar">
                             <div class="v-card-name-row">
-                                <h3>電玩少女_小葵</h3>
-                                <div class="v-card-followers"><i class="fas fa-users" style="font-size:0.65rem;"></i>
-                                    8.2K 粉絲</div>
+                                <h3>川雲爪日</h3>
+
                             </div>
                         </div>
                         <div class="v-card-tags">
                             <span class="tag"><i class="fas fa-gamepad"></i> 格鬥</span>
-                            <span class="tag t-purple">電競</span>
+                            <span class="tag t-blue-sub">電競</span>
                         </div>
                         <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
                             夢想：3D 總決賽特別企畫，向夢想衝刺！</div>
@@ -542,51 +616,28 @@
                                 <div class="v-card-progress-fill" style="width:42%;"></div>
                             </div>
                         </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持 TA 的夢想！</div>
+                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持這份夢想！</div>
                     </div>
                 </a>
 
-                <!-- Card 3 -->
-                <a href="vtuber_profile.html" class="v-card" data-cat="music">
-                    <div class="v-card-banner">
-                        <div class="v-card-banner-bg"
-                            style="background:linear-gradient(135deg,#0c0a1a,#4c1d95 60%,#6d28d9);"></div>
-                        <div class="v-card-banner-overlay"></div>
-                        <div class="category-badge"><i class="fas fa-star"></i> 新人</div>
-                    </div>
-                    <div class="v-card-body">
-                        <div class="v-card-avatar-wrap">
-                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Nala&backgroundColor=c0aede"
-                                alt="夜月_Nocturne" class="v-card-avatar">
-                            <div class="v-card-name-row">
-                                <h3>夜月_Nocturne</h3>
-                                <div class="v-card-followers"><i class="fas fa-users" style="font-size:0.65rem;"></i>
-                                    3.8K 粉絲</div>
-                            </div>
-                        </div>
-                        <div class="v-card-tags">
-                            <span class="tag t-purple"><i class="fas fa-moon"></i> 深夜</span>
-                            <span class="tag t-blue">歌唱</span>
-                        </div>
-                        <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
-                            夢想：首場線上 Live 演唱會開幕！</div>
-                        <div class="v-card-progress-wrap">
-                            <div class="v-card-progress-header">
-                                <span class="raised">8,400 / 30,000 點</span>
-                                <span class="pct">28%</span>
-                            </div>
-                            <div class="v-card-progress">
-                                <div class="v-card-progress-fill" style="width:28%;"></div>
-                            </div>
-                        </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持 TA 的夢想！</div>
-                    </div>
+                <!-- Card 3 (Placeholder) -->
+                <a href="dashboard.html" class="v-card-placeholder">
+                    <i class="fas fa-sparkles"></i>
+                    <h3>下一個明星就是你</h3>
+                    <p>連接 VTuber 與粉絲的夢想應援平台<br>讓每一份支持，都化作永恆的傳奇</p>
                 </a>
             </div>
 
-            <div style="text-align:center;margin-top:2.5rem;">
-                <a href="#" class="btn btn-outline" style="padding:0.75rem 2.5rem;font-size:1rem;">查看更多 VTuber <i
-                        class="fas fa-arrow-right"></i></a>
+            <!-- VTuber 發掘推薦專區預告 -->
+            <div class="discovery-teaser">
+                <span class="teaser-badge">COMING SOON</span>
+                <h3 class="teaser-title font-vup">VTuber 發掘推薦專區</h3>
+                <p class="teaser-desc">為你精選最具潛力的虛擬偶像，不讓任何一道光芒被埋沒。</p>
+                <div class="teaser-highlights">
+                    <div class="h-item"><i class="fas fa-magic"></i> AI 智能推薦</div>
+                    <div class="h-item"><i class="fas fa-search-plus"></i> 潛力新秀發掘</div>
+                    <div class="h-item"><i class="fas fa-bolt"></i> 即時夢想連動</div>
+                </div>
             </div>
         </div>
     </section>
@@ -611,7 +662,7 @@
                     <p>粉絲可以支持他們期待的明確目標，並得知最新進度消息，讓支持真正有意義。</p>
                 </div>
                 <div class="why-card" style="animation-delay:.08s">
-                    <div class="why-icon purple"><i class="fas fa-medal"></i></div>
+                    <div class="why-icon blue"><i class="fas fa-medal"></i></div>
                     <h3>永久貢獻榮耀記錄</h3>
                     <p>贊助即獲限定貢獻證明，解鎖限定回禮並登上排行，永久銘刻在 VTuber 的成長傳說中。</p>
                 </div>
@@ -625,7 +676,7 @@
         <div class="container">
             <div class="text-center">
                 <span class="section-label">HOW IT WORKS</span>
-                <h2 style="font-size:2.2rem;margin-bottom:0.5rem;">粉絲如何支持 VTuber？</h2>
+                <h2 class="font-vup" style="font-size:2.2rem;margin-bottom:0.5rem;">粉絲如何支持 VTuber？</h2>
                 <p class="text-muted">簡單三步驟，成為 VTuber 的守護傳說</p>
             </div>
             <div class="how-grid">
@@ -647,7 +698,7 @@
                 </div>
             </div>
             <div style="text-align:center;margin-top:2.5rem;">
-                <a href="fan_profile.html" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+                <a href="auth.html" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
                     <i class="fas fa-user-plus"></i> 立即建立粉絲帳號
                 </a>
             </div>
