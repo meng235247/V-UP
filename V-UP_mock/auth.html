@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V-Up! 平台登入與註冊</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body class="auth-bg">
+
+    <div class="auth-wrapper">
+        <div class="auth-card glass-card">
+            
+            <div class="auth-brand">
+                <span class="brand-v">V-Up!</span>
+                <p>綻放計畫・連接偶像與粉絲的奇蹟</p>
+            </div>
+
+            <!-- Toggle Auth Mode -->
+            <div class="auth-toggle">
+                <button class="toggle-btn active" id="btn-login" onclick="switchAuth('login')">登入</button>
+                <button class="toggle-btn" id="btn-register" onclick="switchAuth('register')">註冊</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form active-form" onsubmit="handleAuth(event, 'login')">
+                <div class="auth-role-select">
+                    <label class="role-option">
+                        <input type="radio" name="login-role" value="fan" checked>
+                        <div class="role-box">
+                            <i class="fas fa-heart highlight-gold"></i>
+                            <span>我是粉絲</span>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="login-role" value="vtuber">
+                        <div class="role-box">
+                            <i class="fas fa-microphone-alt text-primary"></i>
+                            <span>我是 VTuber</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" placeholder="電子郵件" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" placeholder="密碼" required>
+                </div>
+                
+                <div class="auth-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" checked>
+                        <span>記住我</span>
+                    </label>
+                    <a href="#" class="forgot-pwd">忘記密碼？</a>
+                </div>
+
+                <button type="submit" class="btn-primary full-width auth-submit">登入 V-Up! <i class="fas fa-arrow-right"></i></button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="register-form" class="auth-form" onsubmit="handleAuth(event, 'register')">
+                <div class="auth-role-select">
+                    <label class="role-option">
+                        <input type="radio" name="role" value="fan" checked>
+                        <div class="role-box">
+                            <i class="fas fa-heart highlight-gold"></i>
+                            <span>我是粉絲</span>
+                        </div>
+                    </label>
+                    <label class="role-option">
+                        <input type="radio" name="role" value="vtuber">
+                        <div class="role-box">
+                            <i class="fas fa-microphone-alt text-primary"></i>
+                            <span>我是 VTuber</span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="input-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" placeholder="顯示名稱" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" placeholder="電子郵件" required>
+                </div>
+                <div class="input-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" placeholder="設定密碼" required>
+                </div>
+                
+                <div class="security-notice">
+                    <i class="fas fa-shield-alt text-success"></i> 
+                    <span>V-Up! 採用點對點加密與二階段驗證 (2FA) 以保障您的資安。</span>
+                </div>
+
+                <button type="submit" class="btn-secondary full-width auth-submit">建立帳號</button>
+            </form>
+
+            <div class="social-login">
+                <p>或使用社群帳號登入</p>
+                <div class="social-btns">
+                    <button class="social-btn google"><i class="fab fa-google"></i></button>
+                    <button class="social-btn discord"><i class="fab fa-discord"></i></button>
+                    <button class="social-btn twitter"><i class="fab fa-twitter"></i></button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        function switchAuth(mode) {
+            const loginForm = document.getElementById('login-form');
+            const registerForm = document.getElementById('register-form');
+            const btnLogin = document.getElementById('btn-login');
+            const btnRegister = document.getElementById('btn-register');
+
+            if (mode === 'login') {
+                loginForm.classList.add('active-form');
+                registerForm.classList.remove('active-form');
+                btnLogin.classList.add('active');
+                btnRegister.classList.remove('active');
+            } else {
+                loginForm.classList.remove('active-form');
+                registerForm.classList.add('active-form');
+                btnLogin.classList.remove('active');
+                btnRegister.classList.add('active');
+            }
+        }
+
+        // Handle routing based on role selection
+        function handleAuth(event, type) {
+            event.preventDefault();
+            
+            if (type === 'login') {
+                const role = document.querySelector('input[name="login-role"]:checked').value;
+                if (role === 'vtuber') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'fan_profile.html';
+                }
+            } 
+            else if (type === 'register') {
+                const role = document.querySelector('input[name="role"]:checked').value; // 'fan' or 'vtuber'
+                localStorage.setItem('vup-temp-role', role); // Save for subsequent hypothetical logins
+                
+                if (role === 'vtuber') {
+                    window.location.href = 'dashboard.html';
+                } else {
+                    window.location.href = 'fan_profile.html';
+                }
+            }
+        }
+    </script>
+</body>
+</html>
