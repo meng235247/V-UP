@@ -121,6 +121,11 @@ body.fan-body {
     cursor: pointer;
 }
 
+/* User Menu Hover */
+.user-menu-nav:hover .user-dropdown {
+    display: block !important;
+}
+
 /* Container */
 .fan-container {
     max-width: 1000px;
