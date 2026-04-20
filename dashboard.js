@@ -73,6 +73,73 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 1200);
         });
     }
+
+    // --- Milestone modal interactive controls ---
+    const collabToggle = document.getElementById('ms-collab-toggle');
+    const collabArea = document.getElementById('ms-collab-area');
+    const collabAddBtn = document.getElementById('ms-collab-add-btn');
+    const collabSearch = document.getElementById('ms-collab-search');
+    const collabList = document.getElementById('ms-collab-list');
+
+    if (collabToggle) {
+        collabToggle.addEventListener('change', (e) => {
+            if (collabArea) collabArea.style.display = e.target.checked ? 'block' : 'none';
+        });
+    }
+
+    function addCollaboratorChip(value) {
+        if (!collabList || !value) return;
+        const exists = Array.from(collabList.querySelectorAll('.chip')).some(c => c.dataset.value === value);
+        if (exists) { showToast('已加入此合作對象', 'info'); return; }
+        const chip = document.createElement('span');
+        chip.className = 'chip';
+        chip.dataset.value = value;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'chip-remove';
+        removeBtn.title = '移除';
+        removeBtn.innerText = '×';
+        chip.appendChild(document.createTextNode(value));
+        chip.appendChild(removeBtn);
+        collabList.appendChild(chip);
+        removeBtn.addEventListener('click', () => chip.remove());
+    }
+
+    if (collabAddBtn) {
+        collabAddBtn.addEventListener('click', () => {
+            const v = (collabSearch && collabSearch.value) ? collabSearch.value.trim() : '';
+            if (!v) { showToast('請輸入合作對象名稱或 Email', 'error'); return; }
+            addCollaboratorChip(v);
+            if (collabSearch) collabSearch.value = '';
+        });
+    }
+
+    // award radio toggle
+    document.querySelectorAll('input[name="ms-award"]').forEach(r => {
+        r.addEventListener('change', (e) => {
+            const wrap = document.getElementById('ms-award-count-wrap');
+            if (wrap) wrap.style.display = e.target.value === 'yes' ? 'block' : 'none';
+        });
+    });
+
+    // badge preview
+    const badgeInput = document.getElementById('ms-badge-input');
+    const badgePreview = document.getElementById('ms-badge-preview');
+    const badgePlaceholder = document.getElementById('ms-badge-placeholder');
+    if (badgeInput) {
+        badgeInput.addEventListener('change', (e) => {
+            const f = e.target.files && e.target.files[0];
+            if (!f) { if (badgePreview) { badgePreview.src = ''; badgePreview.style.display='none'; } if (badgePlaceholder) badgePlaceholder.style.display='inline'; return; }
+            const fr = new FileReader();
+            fr.onload = function(ev) { if (badgePreview) { badgePreview.src = ev.target.result; badgePreview.style.display='block'; } if (badgePlaceholder) badgePlaceholder.style.display='none'; }
+            fr.readAsDataURL(f);
+        });
+    }
+
+    // submit binding (button)
+    const msSubmitBtn = document.getElementById('ms-submit-btn');
+    if (msSubmitBtn) msSubmitBtn.addEventListener('click', () => submitMilestone());
+
 });
 
 function switchTab(tabId) {
@@ -91,19 +158,55 @@ function switchTab(tabId) {
 // ---- Milestone Modal ----
 const milestoneModal = document.getElementById('milestone-modal');
 function openNewMilestoneModal() {
-    milestoneModal.classList.add('open');
+    if (milestoneModal) milestoneModal.classList.add('open');
 }
 function closeNewMilestoneModal() {
-    milestoneModal.classList.remove('open');
+    if (milestoneModal) milestoneModal.classList.remove('open');
 }
-function submitMilestone() {
-    const title = document.getElementById('ms-title').value.trim();
-    const goal  = document.getElementById('ms-goal').value.trim();
-    if (!title || !goal) { showToast('請填寫里程碑標題與目標點數', 'error'); return; }
-    closeNewMilestoneModal();
-    showToast(`里程碑「${title}」已建立，目標 ${Number(goal).toLocaleString()} 點`, 'success');
+async function submitMilestone() {
+    try {
+        const title = document.getElementById('ms-title')?.value?.trim();
+        const goalVal = document.getElementById('ms-goal')?.value;
+        const goal = Number(goalVal);
+        if (!title || !goal) { showToast('請填寫里程碑標題與目標點數', 'error'); return; }
+
+        const desc = document.getElementById('ms-desc')?.value?.trim() || '';
+        const isCollab = !!document.getElementById('ms-collab-toggle')?.checked;
+        const collabEls = document.querySelectorAll('#ms-collab-list .chip');
+        const collaborators = Array.from(collabEls).map(c => c.dataset.value);
+        const award = document.querySelector('input[name="ms-award"]:checked')?.value === 'yes';
+        const awardCount = award ? Number(document.getElementById('ms-award-count')?.value || 10) : 0;
+        const featured = !!document.getElementById('ms-featured')?.checked;
+        const hidden = !!document.getElementById('ms-hidden')?.checked;
+
+        // read badge file if provided
+        const badgeInputEl = document.getElementById('ms-badge-input');
+        let badgeDataUrl = null;
+        if (badgeInputEl && badgeInputEl.files && badgeInputEl.files[0]) {
+            badgeDataUrl = await new Promise((res, rej) => {
+                const fr = new FileReader();
+                fr.onload = () => res(fr.result);
+                fr.onerror = rej;
+                fr.readAsDataURL(badgeInputEl.files[0]);
+            });
+        }
+
+        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeDataUrl, createdAt: new Date().toISOString() };
+
+        // demo: persist locally
+        const list = JSON.parse(localStorage.getItem('vup-milestones') || '[]');
+        list.unshift(milestone);
+        localStorage.setItem('vup-milestones', JSON.stringify(list));
+
+        closeNewMilestoneModal();
+        showToast(`里程碑「${title}」已建立，目標 ${Number(goal).toLocaleString()} 點`, 'success');
+    } catch (err) {
+        console.error(err);
+        showToast('建立里程碑時發生錯誤', 'error');
+    }
 }
-window.addEventListener('click', e => { if (e.target === milestoneModal) closeNewMilestoneModal(); });
+
+window.addEventListener('click', e => { if (milestoneModal && e.target === milestoneModal) closeNewMilestoneModal(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNewMilestoneModal(); });
 
 // ---- Toast ----

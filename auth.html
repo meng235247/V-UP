@@ -30,7 +30,7 @@
             </div>
 
             <!-- Login Form -->
-            <form id="login-form" class="auth-form active-form" onsubmit="handleAuth(event, 'login')">
+            <form id="login-form" class="auth-form active-form">
                 <div class="auth-role-select">
                     <label class="role-option">
                         <input type="radio" name="login-role" value="fan" checked>
@@ -69,7 +69,7 @@
             </form>
 
             <!-- Register Form -->
-            <form id="register-form" class="auth-form" onsubmit="handleAuth(event, 'register')">
+            <form id="register-form" class="auth-form">
                 <div class="auth-role-select">
                     <label class="role-option">
                         <input type="radio" name="role" value="fan" checked>
@@ -108,20 +108,17 @@
                 <button type="submit" class="btn-secondary full-width auth-submit">建立帳號</button>
             </form>
 
-            <div class="social-login">
-                <p>或使用社群帳號登入</p>
-                <div class="social-btns">
-                    <button class="social-btn google"><i class="fab fa-google"></i></button>
-                    <button class="social-btn discord"><i class="fab fa-discord"></i></button>
-                    <button class="social-btn twitter"><i class="fab fa-twitter"></i></button>
-                </div>
+            <!-- Added Google Sign-In button -->
+            <div class="auth-container">
+                <h1>登入</h1>
+                <button id="google-signin-btn">使用 Google 登入</button>
             </div>
 
-        </div>
-    </div>
+    <script type="module">
+        import { authService } from './js/services/auth.service.js';
 
-    <script>
-        function switchAuth(mode) {
+        // 綁定 UI 的切換函式到全域，供 HTML onclick 使用
+        window.switchAuth = function(mode) {
             const loginForm = document.getElementById('login-form');
             const registerForm = document.getElementById('register-form');
             const btnLogin = document.getElementById('btn-login');
@@ -140,29 +137,106 @@
             }
         }
 
-        // Handle routing based on role selection
-        function handleAuth(event, type) {
-            event.preventDefault();
-            
-            if (type === 'login') {
-                const role = document.querySelector('input[name="login-role"]:checked').value;
-                if (role === 'vtuber') {
-                    window.location.href = 'dashboard.html';
-                } else {
-                    window.location.href = 'fan_profile.html';
-                }
-            } 
-            else if (type === 'register') {
-                const role = document.querySelector('input[name="role"]:checked').value; // 'fan' or 'vtuber'
-                localStorage.setItem('vup-temp-role', role); // Save for subsequent hypothetical logins
-                
-                if (role === 'vtuber') {
+        // 加入一個鎖，防止註冊途中資料庫還沒寫完，就被 onAuthChange 劫持
+        let isAuthActionInProgress = false;
+
+        // 檢查如果已經登入，自動跳轉到對應頁面 (僅限初次載入)
+        authService.onAuthChange(async (user) => {
+            if (user && !isAuthActionInProgress) {
+                const profile = await authService.getUserProfile(user.uid);
+                if (profile && profile.role === 'vtuber') {
                     window.location.href = 'dashboard.html';
                 } else {
                     window.location.href = 'fan_profile.html';
                 }
             }
+        });
+
+        // 共用的跳轉邏輯
+        async function redirectUser(user) {
+            const profile = await authService.getUserProfile(user.uid);
+            if (profile && profile.role === 'vtuber') {
+                window.location.href = 'dashboard.html';
+            } else {
+                window.location.href = 'fan_profile.html';
+            }
         }
+
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const email = loginForm.querySelector('input[type="email"]').value;
+            const password = loginForm.querySelector('input[type="password"]').value;
+            const submitBtn = loginForm.querySelector('.auth-submit');
+            
+            try {
+                isAuthActionInProgress = true;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登入中...';
+                const user = await authService.loginWithEmail(email, password);
+                await redirectUser(user);
+            } catch (error) {
+                isAuthActionInProgress = false;
+                alert(`登入失敗: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '登入 V-Up! <i class="fas fa-arrow-right"></i>';
+            }
+        });
+
+        const registerForm = document.getElementById('register-form');
+        registerForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const role = document.querySelector('input[name="role"]:checked').value;
+            const displayName = registerForm.querySelector('input[type="text"]').value;
+            const email = registerForm.querySelector('input[type="email"]').value;
+            const password = registerForm.querySelector('input[type="password"]').value;
+            const submitBtn = registerForm.querySelector('.auth-submit');
+
+            try {
+                isAuthActionInProgress = true;
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 註冊中...';
+                const user = await authService.registerWithEmail(email, password, displayName, role);
+                await redirectUser(user);
+            } catch (error) {
+                isAuthActionInProgress = false;
+                alert(`註冊失敗: ${error.message}`);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '建立帳號';
+            }
+        });
+
+        // 取代原本隨便寫的 Google Sign-In button
+        const googleBtn = document.getElementById('google-signin-btn');
+        if(googleBtn) {
+            googleBtn.addEventListener('click', async () => {
+                // 如果是透過登入表單上方的選項，判斷角色
+                const activeRoleInput = document.querySelector('.active-form input[type="radio"]:checked');
+                const role = activeRoleInput ? activeRoleInput.value : 'fan';
+                try {
+                    isAuthActionInProgress = true;
+                    const user = await authService.loginWithGoogle(role);
+                    await redirectUser(user);
+                } catch (error) {
+                    isAuthActionInProgress = false;
+                    alert(`Google 登入失敗: ${error.message}`);
+                }
+            });
+        }
+        
+        // 綁定社群圖示也吃一樣的邏輯
+        document.querySelector('.social-btn.google')?.addEventListener('click', async () => {
+            const activeRoleInput = document.querySelector('.active-form input[type="radio"]:checked');
+            const role = activeRoleInput ? activeRoleInput.value : 'fan';
+            try {
+                isAuthActionInProgress = true;
+                const user = await authService.loginWithGoogle(role);
+                await redirectUser(user);
+            } catch (error) {
+                isAuthActionInProgress = false;
+                alert(`Google 登入失敗: ${error.message}`);
+            }
+        });
     </script>
 </body>
 </html>

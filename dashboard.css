@@ -479,10 +479,44 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
     background: white;
     padding: 32px;
     border-radius: 24px;
-    width: 90%;
-    max-width: 520px;
+    width: 94%;
+    max-width: 920px;
     box-shadow: 0 25px 60px rgba(0,0,0,0.2);
     animation: fadeInUp 0.3s ease both;
+}
+
+/* Modal two-column grid and helpers */
+.modal-body.modal-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; max-height: 64vh; overflow: hidden; }
+.modal-col { min-height: 0; }
+.modal-col-main { overflow-y: auto; padding-right: 6px; }
+.modal-col-side { overflow-y: auto; padding-left: 6px; }
+.modal-body.modal-grid .form-group { margin-bottom: 12px; }
+
+.badge-preview img { display: block; max-width: 72px; max-height: 72px; border-radius: 8px; }
+
+/* Collaborator chips */
+.collab-list .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-weight: 700;
+}
+.collab-list .chip .chip-remove {
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+@media (max-width: 900px) {
+    .modal-body.modal-grid { grid-template-columns: 1fr; max-height: 56vh; }
+    .modal-content { padding: 20px; border-radius: 14px; }
 }
 
 .modal-header {

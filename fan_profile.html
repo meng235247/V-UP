@@ -39,8 +39,20 @@
                     </ul>
                 </div>
             </div>
-            <div class="user-menu-nav">
+            <div class="user-menu-nav" style="position: relative;">
                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar">
+                <div class="user-dropdown"
+                    style="display: none; position: absolute; top: calc(100% + 5px); right: 0; background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 140px; z-index: 100; padding: 5px 0;">
+                    <button onclick="openSettingsModal()"
+                        style="width:100%; text-align:left; background:transparent; border:none; padding:10px 15px; font-size:0.9rem; font-weight:600; color:var(--text-main); cursor:pointer; display:flex; align-items:center; gap:8px; transition: background 0.2s;"
+                        onmouseover="this.style.background='#F8FAFC'"
+                        onmouseout="this.style.background='transparent'"><i class="fa-solid fa-gear"></i> 個人設定</button>
+                    <button onclick="handleLogout()"
+                        style="width:100%; text-align:left; background:transparent; border:none; padding:10px 15px; font-size:0.9rem; font-weight:600; color:#EF4444; cursor:pointer; display:flex; align-items:center; gap:8px; transition: background 0.2s;"
+                        onmouseover="this.style.background='#F8FAFC'"
+                        onmouseout="this.style.background='transparent'"><i class="fa-solid fa-sign-out-alt"></i>
+                        登出</button>
+                </div>
             </div>
         </div>
     </nav>
@@ -970,6 +982,33 @@
             document.body.style.overflow = '';
         }
 
+    </script>
+    <script type="module">
+        import { authService } from './js/services/auth.service.js';
+
+        authService.onAuthChange(async (user) => {
+            if (!user) {
+                alert("請先登入！");
+                window.location.href = "auth.html";
+                return;
+            }
+
+            const profile = await authService.getUserProfile(user.uid);
+
+            // 替換畫面上的基本資訊
+            if (profile) {
+                const nameElements = document.querySelectorAll('.fan-name');
+                nameElements.forEach(el => el.textContent = profile.displayName || user.email);
+
+                const emailEle = document.getElementById('bound-google-email');
+                if (emailEle) emailEle.textContent = user.email;
+            }
+        });
+
+        window.handleLogout = async () => {
+            await authService.logout();
+            window.location.href = "index.html";
+        };
     </script>
 </body>
 

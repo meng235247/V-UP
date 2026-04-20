@@ -1021,5 +1021,35 @@
             renderFinanceTable();
         });
     </script>
+    <script type="module">
+        import { authService } from './js/services/auth.service.js';
+
+        // 進入頁面時強制檢查登入
+        authService.onAuthChange(async (user) => {
+            if (!user) {
+                alert("進入管理後台需要驗證身分！");
+                window.location.href = "admin_login.html";
+                return;
+            }
+            // 檢查是否是管理員
+            const profile = await authService.getUserProfile(user.uid);
+            if (!profile || profile.role !== 'admin') {
+                alert("您沒有權限進入管理後台！");
+                window.location.href = "index.html";
+                return;
+            }
+            // 由於前台已將全站顯示邏輯完成，可直接看到畫面
+        });
+
+        // 取代現有的登出按鈕
+        const logoutBtn = document.querySelector('a[href="admin_login.html"]');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await authService.logout();
+                window.location.href = "admin_login.html";
+            });
+        }
+    </script>
 </body>
 </html>
