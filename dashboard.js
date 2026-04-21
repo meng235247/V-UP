@@ -153,6 +153,11 @@ function switchTab(tabId) {
     const panel = document.getElementById('panel-' + tabId);
     if (panel) panel.classList.add('active');
     else showToast(`「${cfg.title}」頁面開發中，敬請期待！`, 'info');
+
+    if (tabId === 'posts') {
+        if (typeof window.refreshPostMilestoneOptions === 'function') window.refreshPostMilestoneOptions();
+        if (typeof window.renderPosts === 'function') window.renderPosts();
+    }
 }
 
 // ---- Render Milestones List ----
@@ -394,6 +399,10 @@ async function submitMilestone() {
         const featured = !!document.getElementById('ms-featured')?.checked;
         const hidden = !!document.getElementById('ms-hidden')?.checked;
 
+        const msSubmitBtnEl = document.getElementById('ms-submit-btn');
+        const originalBtnHtml = msSubmitBtnEl ? msSubmitBtnEl.innerHTML : null;
+        if (msSubmitBtnEl) { msSubmitBtnEl.disabled = true; msSubmitBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 儲存中...'; }
+
         // read badge file if provided — prefer uploading via storageService and store badgeUrl
         const badgeInputEl = document.getElementById('ms-badge-input');
         let badgeUrl = null;
@@ -405,7 +414,6 @@ async function submitMilestone() {
                 } catch (err) {
                     console.error('[Dashboard] badge upload failed', err);
                     showToast('徽章上傳失敗，請稍後再試', 'error');
-                    if (msSubmitBtnEl) { msSubmitBtnEl.disabled = false; msSubmitBtnEl.innerHTML = originalBtnHtml || '<i class="fas fa-check"></i> 建立里程碑'; }
                     return;
                 }
             } else {
@@ -421,10 +429,6 @@ async function submitMilestone() {
 
         const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeUrl };
 
-        // If editing existing milestone, call update, otherwise create draft
-        const msSubmitBtnEl = document.getElementById('ms-submit-btn');
-        const originalBtnHtml = msSubmitBtnEl ? msSubmitBtnEl.innerHTML : null;
-        if (msSubmitBtnEl) { msSubmitBtnEl.disabled = true; msSubmitBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 儲存中...'; }
         try {
             if (window._editingMilestoneId) {
                 await MilestonesService.update(window._editingMilestoneId, milestone);
@@ -438,6 +442,7 @@ async function submitMilestone() {
             }
             // refresh list
             if (typeof renderMilestones === 'function') renderMilestones();
+            if (typeof window.refreshPostMilestoneOptions === 'function') window.refreshPostMilestoneOptions();
         } catch (err) {
             console.error('[Dashboard] submitMilestone error:', err);
             showToast('建立或更新里程碑時發生錯誤，請稍後再試', 'error');

@@ -112,6 +112,11 @@
             <div class="auth-container">
                 <h1>登入</h1>
                 <button id="google-signin-btn">使用 Google 登入</button>
+
+                <!-- Dev quick-login (shown only on localhost) -->
+                <div id="dev-login" style="margin-top:12px; display:none;">
+                    <button id="dev-auto-login" class="btn-secondary full-width">快速登入測試創作者 (dev)</button>
+                </div>
             </div>
 
     <script type="module">
@@ -223,6 +228,36 @@
                 }
             });
         }
+        // Dev-only quick login button (visible on localhost)
+        (function() {
+            try {
+                const isLocal = window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+                if (!isLocal) return;
+
+                const devLoginDiv = document.getElementById('dev-login');
+                if (devLoginDiv) devLoginDiv.style.display = 'block';
+
+                const devBtn = document.getElementById('dev-auto-login');
+                if (!devBtn) return;
+
+                devBtn.addEventListener('click', async () => {
+                    try {
+                        isAuthActionInProgress = true;
+                        devBtn.disabled = true;
+                        devBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登入中...';
+                        const user = await authService.loginWithEmail('creator@test.local', 'TestPass123!');
+                        await redirectUser(user);
+                    } catch (err) {
+                        isAuthActionInProgress = false;
+                        alert('快速登入失敗: ' + (err.message || err));
+                        devBtn.disabled = false;
+                        devBtn.innerHTML = '快速登入測試創作者 (dev)';
+                    }
+                });
+            } catch (e) {
+                console.warn('[dev-login] initialization failed', e);
+            }
+        })();
         
         // 綁定社群圖示也吃一樣的邏輯
         document.querySelector('.social-btn.google')?.addEventListener('click', async () => {
