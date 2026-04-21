@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "vite"
+    "dev": "vite",
+    "upload-server": "node scripts/local-upload-server.js"
   },
   "repository": {
     "type": "git",

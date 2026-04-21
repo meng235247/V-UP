@@ -351,10 +351,23 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片網址 (Banner Image
-                                URL)</label>
+                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片 (Banner Image)</label>
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <input type="file" id="vt-banner-input" accept="image/*" class="form-control" style="padding:8px;">
+                                <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
+                                    <div style="width:220px; height:80px; border-radius:6px; overflow:hidden; background:#f8fafc; border:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
+                                        <img id="vt-banner-preview" src="" alt="Banner 預覽" style="max-width:100%; max-height:100%; display:none;">
+                                        <span id="vt-banner-placeholder" class="text-muted" style="font-size:0.85rem;">無</span>
+                                    </div>
+                                    <div style="display:flex; gap:8px;">
+                                        <button class="btn-outline" id="vt-banner-upload-btn" type="button"><i class="fas fa-upload"></i> 上傳</button>
+                                        <button class="btn-outline" id="vt-banner-clear-btn" type="button">清除</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <small class="text-muted" style="display:block;margin-top:8px;">或直接貼上圖片網址到下方欄位。</small>
                             <input type="text" id="vt-banner"
-                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;"
+                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;margin-top:8px;"
                                 placeholder="例如: https://example.com/banner.jpg">
                         </div>
                         <div class="form-group" style="margin-bottom: 20px;">
@@ -576,6 +589,7 @@
     <script type="module">
         import { authService } from './js/services/auth.service.js';
         import { vtuberService } from './js/services/vtuber.service.js';
+        import { storageService } from './js/services/storage.service.js';
 
         let currentUid = null;
 
@@ -720,6 +734,9 @@
             }, 600);
         };
 
+        // Expose storageService to non-module scripts (dashboard.js uses legacy code)
+        window.storageService = storageService;
+
         function renderPosts() {
             const list = document.getElementById('vt-post-list');
             if (!list) return;
@@ -747,6 +764,61 @@
             input.value = '';
             renderPosts();
             alert('成功發布給粉絲！');
+        }
+
+        // Banner upload controls (file input -> preview -> upload)
+        const vtBannerFileInput = document.getElementById('vt-banner-input');
+        const vtBannerTextInput = document.getElementById('vt-banner');
+        const vtBannerPreview = document.getElementById('vt-banner-preview');
+        const vtBannerPlaceholder = document.getElementById('vt-banner-placeholder');
+        const vtBannerUploadBtn = document.getElementById('vt-banner-upload-btn');
+        const vtBannerClearBtn = document.getElementById('vt-banner-clear-btn');
+
+        if (vtBannerFileInput) {
+            vtBannerFileInput.addEventListener('change', async (e) => {
+                const f = e.target.files && e.target.files[0];
+                if (!f) {
+                    if (vtBannerPreview) { vtBannerPreview.src = ''; vtBannerPreview.style.display = 'none'; }
+                    if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'inline';
+                    return;
+                }
+                // show preview
+                const fr = new FileReader();
+                fr.onload = function(ev) {
+                    if (vtBannerPreview) { vtBannerPreview.src = ev.target.result; vtBannerPreview.style.display = 'block'; }
+                    if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'none';
+                }
+                fr.readAsDataURL(f);
+            });
+        }
+
+        if (vtBannerUploadBtn) {
+            vtBannerUploadBtn.addEventListener('click', async (e) => {
+                const f = vtBannerFileInput && vtBannerFileInput.files && vtBannerFileInput.files[0];
+                if (!f) return showToast('請先選擇要上傳的圖片檔', 'error');
+                try {
+                    vtBannerUploadBtn.disabled = true;
+                    vtBannerUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上傳中...';
+                    const url = await storageService.uploadFile(f);
+                    if (vtBannerTextInput) vtBannerTextInput.value = url;
+                    showToast('橫幅圖片上傳完成', 'success');
+                } catch (err) {
+                    console.error('[Dashboard] banner upload error', err);
+                    showToast('橫幅上傳失敗', 'error');
+                } finally {
+                    vtBannerUploadBtn.disabled = false;
+                    vtBannerUploadBtn.innerHTML = '<i class="fas fa-upload"></i> 上傳';
+                }
+            });
+        }
+
+        if (vtBannerClearBtn) {
+            vtBannerClearBtn.addEventListener('click', () => {
+                if (vtBannerFileInput) { vtBannerFileInput.value = ''; }
+                if (vtBannerPreview) { vtBannerPreview.src = ''; vtBannerPreview.style.display = 'none'; }
+                if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'inline';
+                if (vtBannerTextInput) vtBannerTextInput.value = '';
+            });
         }
     </script>
 </body>

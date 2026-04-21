@@ -394,19 +394,32 @@ async function submitMilestone() {
         const featured = !!document.getElementById('ms-featured')?.checked;
         const hidden = !!document.getElementById('ms-hidden')?.checked;
 
-        // read badge file if provided
+        // read badge file if provided — prefer uploading via storageService and store badgeUrl
         const badgeInputEl = document.getElementById('ms-badge-input');
-        let badgeDataUrl = null;
+        let badgeUrl = null;
         if (badgeInputEl && badgeInputEl.files && badgeInputEl.files[0]) {
-            badgeDataUrl = await new Promise((res, rej) => {
-                const fr = new FileReader();
-                fr.onload = () => res(fr.result);
-                fr.onerror = rej;
-                fr.readAsDataURL(badgeInputEl.files[0]);
-            });
+            const file = badgeInputEl.files[0];
+            if (window.storageService && typeof window.storageService.uploadFile === 'function') {
+                try {
+                    badgeUrl = await window.storageService.uploadFile(file);
+                } catch (err) {
+                    console.error('[Dashboard] badge upload failed', err);
+                    showToast('徽章上傳失敗，請稍後再試', 'error');
+                    if (msSubmitBtnEl) { msSubmitBtnEl.disabled = false; msSubmitBtnEl.innerHTML = originalBtnHtml || '<i class="fas fa-check"></i> 建立里程碑'; }
+                    return;
+                }
+            } else {
+                // fallback to embedding data URL
+                badgeUrl = await new Promise((res, rej) => {
+                    const fr = new FileReader();
+                    fr.onload = () => res(fr.result);
+                    fr.onerror = rej;
+                    fr.readAsDataURL(file);
+                });
+            }
         }
 
-        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeDataUrl };
+        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeUrl };
 
         // If editing existing milestone, call update, otherwise create draft
         const msSubmitBtnEl = document.getElementById('ms-submit-btn');
