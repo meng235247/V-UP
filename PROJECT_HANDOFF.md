@@ -83,4 +83,32 @@
 
 ---
 
+## 6. 本地 Emulator 與索引建議 (Local testing & Indexes)
+
+若你在本機開發或驗證 Firestore 規則，建議使用 Firebase Emulator Suite：
+
+- 啟動 Emulator（Firestore + Auth）:
+```bash
+npx -y firebase-tools@latest emulators:start --only firestore,auth
+```
+
+- 若要在單次執行中啟動 emulators 並執行測試腳本（例如 `scripts/test-firestore-rules.js`），可使用：
+```bash
+npx -y firebase-tools@latest emulators:exec "node scripts/test-firestore-rules.js" --only firestore,auth
+```
+
+- 本專案的 `js/firebase-config.js` 已加入 emulator 偵測：當網頁在 `localhost` 或 localStorage `useEmulator` 設為 `true` 時，會自動連到 `localhost:8080/9099`（或依 emulator 設定調整）。若 emulator 使用不同 port，請調整或在 localStorage 設定對應 host。
+
+- **Composite index 建議**：在公開頁面我們使用類似的查詢：
+   - where('vtuberId', '==', vtuberId) + where('status', 'in', [...]) + orderBy('publishedAt', 'desc')
+   這類組合在正式 Firestore 環境可能需要建立複合索引。若在生產查詢時遇到 `FAILED_PRECONDITION` 或索引錯誤，請依錯誤訊息至 Firebase Console 建立以下索引（範例）：
+
+   - Fields: `vtuberId` (Ascending), `status` (Ascending), `publishedAt` (Descending)
+
+   Firebase Console 會在錯誤訊息中提供建立索引的建議，複製該建議來建立即可。
+
+以上為本地測試與部署前需注意的重點，若要我為你自動生成 `firestore.indexes.json` 範本，我可以基於目前的查詢自動產出一個初始檔案供上傳到 Console 或 `firebase deploy --only firestore:indexes`。
+
+---
+
 > **給新 AI 助手的提示**：閱讀完此份文件後，可直接透過 `view_file` 檢視 `dashboard.html` 與 `vtuber.service.js` 了解現有代碼風格，並向用戶詢問是否立刻開始進行 **Phase 2 (Milestone System)** 的開發準備。

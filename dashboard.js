@@ -155,13 +155,228 @@ function switchTab(tabId) {
     else showToast(`「${cfg.title}」頁面開發中，敬請期待！`, 'info');
 }
 
+// ---- Render Milestones List ----
+window.renderMilestones = async function() {
+    const panel = document.getElementById('panel-milestones');
+    if (!panel) return;
+    // show loading state
+    panel.innerHTML = `<div class="dashboard-section" style="text-align:center; padding:60px 30px;">載入中…</div>`;
+    try {
+        const list = await MilestonesService.getMilestones();
+        const visibleList = list || [];
+        if (!visibleList || visibleList.length === 0) {
+            panel.innerHTML = `
+                <div class="dashboard-section" style="text-align:center; padding:60px 30px;">
+                    <div style="font-size:3rem; margin-bottom:16px;">🎯</div>
+                    <h2 style="margin-bottom:8px;">里程碑管理</h2>
+                    <p class="text-muted" style="margin-bottom:24px;">在這裡建立、編輯和追蹤您所有的募資里程碑項目</p>
+                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i>
+                        建立第一個里程碑</button>
+                </div>`;
+            return;
+        }
+
+        // render list
+        const rows = visibleList.map(m => {
+            const goalVal = Number(m.goal || m.targetAmount || m.target || 0) || 0;
+            const progress = goalVal && m.currentAmount ? Math.min(100, Math.round((m.currentAmount / goalVal) * 100)) : 0;
+            return `
+            <div class="card" style="padding:1rem; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between;">
+                <div style="flex:1">
+                    <div style="font-weight:700; font-size:1.05rem;">${escapeHtml(m.title || '（無標題）')}</div>
+                    <div style="color:var(--text-muted); font-size:0.9rem; margin-top:6px;">狀態：${m.status || 'draft'} · 目標：<span class="font-mono">${Number(m.goal || 0).toLocaleString()}</span></div>
+                    <div style="margin-top:8px; width:220px;">
+                        <div class="progress-bar-bg" style="height:8px; background:var(--bg-subtle); border-radius:6px;">
+                            <div class="progress-bar-fill" style="width:${progress}%; height:8px; background:var(--primary); border-radius:6px;"></div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="ms-actions">
+                        <button class="btn-outline" onclick="openEditMilestone('${m.id}')"><i class="fas fa-edit"></i> 編輯</button>
+                        ${m.status === 'draft' ? `<button class="btn-danger" onclick="deleteMilestone('${m.id}', this)"><i class="fas fa-trash"></i> 刪除</button><button class="btn-primary" onclick="publishMilestone('${m.id}', this)"><i class="fas fa-upload"></i> 發布</button>` : ''}
+                    </div>
+            </div>`;
+        }).join('');
+
+        panel.innerHTML = `
+            <div class="dashboard-section">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                    <h2 style="margin:0;">我的里程碑</h2>
+                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> 新增里程碑</button>
+                </div>
+                <div id="milestones-list">${rows}</div>
+            </div>`;
+    } catch (err) {
+        console.error('[Dashboard] renderMilestones error:', err);
+        panel.innerHTML = `<div class="dashboard-section" style="text-align:center; padding:40px 20px;">讀取里程碑失敗，請稍後再試。</div>`;
+    }
+};
+// -- Custom confirm modal helper (returns Promise<boolean>)
+function openConfirmModal(message, title = '確認操作', okLabel = '確定', cancelLabel = '取消') {
+    return new Promise((resolve) => {
+        const modal = document.getElementById('confirm-modal');
+        const msg = document.getElementById('confirm-modal-message');
+        const ttl = document.getElementById('confirm-modal-title');
+        const okBtn = document.getElementById('confirm-ok-btn');
+        const cancelBtn = document.getElementById('confirm-cancel-btn');
+        if (!modal || !msg || !okBtn || !cancelBtn) return resolve(false);
+        msg.textContent = message;
+        ttl.textContent = title;
+        okBtn.textContent = okLabel;
+        cancelBtn.textContent = cancelLabel;
+        modal.classList.add('open');
+
+        function cleanup(result) {
+            modal.classList.remove('open');
+            okBtn.removeEventListener('click', onOk);
+            cancelBtn.removeEventListener('click', onCancel);
+            document.removeEventListener('keydown', onKey);
+            resolve(result);
+        }
+
+        function onOk() { cleanup(true); }
+        function onCancel() { cleanup(false); }
+        function onKey(e) { if (e.key === 'Escape') cleanup(false); }
+
+        okBtn.addEventListener('click', onOk);
+        cancelBtn.addEventListener('click', onCancel);
+        document.addEventListener('keydown', onKey);
+    });
+}
+
+function closeConfirmModal() {
+    const cancelBtn = document.getElementById('confirm-cancel-btn');
+    if (cancelBtn) { try { cancelBtn.click(); return; } catch (e) {} }
+    const modal = document.getElementById('confirm-modal');
+    if (modal) modal.classList.remove('open');
+}
+
+// (undo toast removed — deletions are now permanent/hard-delete)
+
+window.publishMilestone = async function(id, btn) {
+    const ok = await openConfirmModal('確定要發布該里程碑？發布後將對外公開。', '確認發布', '發布', '取消');
+    if (!ok) return;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 發布中'; }
+    try {
+        await MilestonesService.publish(id);
+        showToast('里程碑已發布', 'success');
+        // refresh list
+        await window.renderMilestones();
+    } catch (err) {
+        console.error('[Dashboard] publishMilestone error:', err);
+        showToast('發布失敗，請稍後再試', 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-upload"></i> 發布'; }
+    }
+};
+
+window.deleteMilestone = async function(id, btn) {
+    const ok = await openConfirmModal('確定要刪除此里程碑草稿？此操作無法復原。', '確認刪除', '刪除', '取消');
+    if (!ok) return;
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中'; }
+    try {
+        // fetch title for delete message
+        let title = '里程碑草稿';
+        try {
+            const all = await MilestonesService.getMilestones();
+            const m = (all || []).find(x => x.id === id);
+            if (m && m.title) title = `「${m.title}」`;
+        } catch (e) { /* ignore */ }
+        await MilestonesService.delete(id);
+        showToast(`${title} 已刪除。`, 'success');
+        await window.renderMilestones();
+    } catch (err) {
+        console.error('[Dashboard] deleteMilestone error:', err);
+        showToast('刪除失敗，請稍後再試', 'error');
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-trash"></i> 刪除'; }
+    }
+};
+
+// utility: simple escape for inserted text
+function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>"]+/g, function(ch) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]);
+    });
+}
+
+// Open modal and prefill fields for editing (basic, creates a new draft on save)
+window.openEditMilestone = async function(id) {
+    try {
+        const list = await MilestonesService.getMilestones();
+        const m = list.find(x => x.id === id);
+        if (!m) return showToast('找不到該里程碑', 'error');
+
+        // Prefill modal fields
+        document.getElementById('ms-title').value = m.title || '';
+        document.getElementById('ms-goal').value = m.goal || m.targetAmount || '';
+        document.getElementById('ms-desc').value = m.desc || '';
+        document.getElementById('ms-featured').checked = !!m.featured;
+        document.getElementById('ms-hidden').checked = !!m.hidden;
+
+        // collaborators
+        const collabList = document.getElementById('ms-collab-list');
+        if (collabList) {
+            collabList.innerHTML = '';
+            (m.collaborators || []).forEach(c => {
+                const chip = document.createElement('span');
+                chip.className = 'chip';
+                chip.dataset.value = c;
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'chip-remove';
+                removeBtn.title = '移除';
+                removeBtn.innerText = '×';
+                chip.appendChild(document.createTextNode(c));
+                chip.appendChild(removeBtn);
+                collabList.appendChild(chip);
+                removeBtn.addEventListener('click', () => chip.remove());
+            });
+        }
+
+        // badge preview
+        if (m.badgeDataUrl) {
+            const badgePreview = document.getElementById('ms-badge-preview');
+            const badgePlaceholder = document.getElementById('ms-badge-placeholder');
+            if (badgePreview) { badgePreview.src = m.badgeDataUrl; badgePreview.style.display = 'block'; }
+            if (badgePlaceholder) badgePlaceholder.style.display = 'none';
+        }
+
+        // set editing state and open modal without resetting fields
+        window._editingMilestoneId = id;
+        const modalTitle = document.getElementById('ms-modal-title'); if (modalTitle) modalTitle.textContent = '編輯里程碑募資項目';
+        const msSubmitBtnEl = document.getElementById('ms-submit-btn'); if (msSubmitBtnEl) msSubmitBtnEl.innerHTML = '<i class="fas fa-check"></i> 更新里程碑';
+        if (milestoneModal) milestoneModal.classList.add('open');
+        setTimeout(() => { const t = document.getElementById('ms-title'); if (t) t.focus(); }, 60);
+    } catch (err) {
+        console.error('[Dashboard] openEditMilestone error:', err);
+        showToast('無法載入里程碑資料', 'error');
+    }
+};
+
 // ---- Milestone Modal ----
 const milestoneModal = document.getElementById('milestone-modal');
 function openNewMilestoneModal() {
-    if (milestoneModal) milestoneModal.classList.add('open');
+    if (!milestoneModal) return;
+    // clear editing state and reset form fields for new milestone
+    window._editingMilestoneId = null;
+    const msTitle = document.getElementById('ms-title'); if (msTitle) msTitle.value = '';
+    const msGoal = document.getElementById('ms-goal'); if (msGoal) msGoal.value = '';
+    const msDesc = document.getElementById('ms-desc'); if (msDesc) msDesc.value = '';
+    const msCollabToggle = document.getElementById('ms-collab-toggle'); if (msCollabToggle) { msCollabToggle.checked = false; const area = document.getElementById('ms-collab-area'); if (area) area.style.display='none'; }
+    const collabList = document.getElementById('ms-collab-list'); if (collabList) collabList.innerHTML = '';
+    const msFeatured = document.getElementById('ms-featured'); if (msFeatured) msFeatured.checked = false;
+    const msHidden = document.getElementById('ms-hidden'); if (msHidden) msHidden.checked = false;
+    const badgePreview = document.getElementById('ms-badge-preview'); if (badgePreview) { badgePreview.src=''; badgePreview.style.display='none'; }
+    const badgePlaceholder = document.getElementById('ms-badge-placeholder'); if (badgePlaceholder) badgePlaceholder.style.display='inline';
+    const modalTitle = document.getElementById('ms-modal-title'); if (modalTitle) modalTitle.textContent = '新增里程碑募資項目';
+    const msSubmitBtnEl = document.getElementById('ms-submit-btn'); if (msSubmitBtnEl) msSubmitBtnEl.innerHTML = '<i class="fas fa-check"></i> 建立里程碑';
+    milestoneModal.classList.add('open');
+    setTimeout(() => { const t = document.getElementById('ms-title'); if (t) t.focus(); }, 60);
 }
 function closeNewMilestoneModal() {
     if (milestoneModal) milestoneModal.classList.remove('open');
+    // clear editing state when modal closed
+    window._editingMilestoneId = null;
 }
 async function submitMilestone() {
     try {
@@ -191,15 +406,31 @@ async function submitMilestone() {
             });
         }
 
-        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeDataUrl, createdAt: new Date().toISOString() };
+        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeDataUrl };
 
-        // demo: persist locally
-        const list = JSON.parse(localStorage.getItem('vup-milestones') || '[]');
-        list.unshift(milestone);
-        localStorage.setItem('vup-milestones', JSON.stringify(list));
-
-        closeNewMilestoneModal();
-        showToast(`里程碑「${title}」已建立，目標 ${Number(goal).toLocaleString()} 點`, 'success');
+        // If editing existing milestone, call update, otherwise create draft
+        const msSubmitBtnEl = document.getElementById('ms-submit-btn');
+        const originalBtnHtml = msSubmitBtnEl ? msSubmitBtnEl.innerHTML : null;
+        if (msSubmitBtnEl) { msSubmitBtnEl.disabled = true; msSubmitBtnEl.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 儲存中...'; }
+        try {
+            if (window._editingMilestoneId) {
+                await MilestonesService.update(window._editingMilestoneId, milestone);
+                closeNewMilestoneModal();
+                showToast(`里程碑「${title}」已更新`, 'success');
+                window._editingMilestoneId = null;
+            } else {
+                await MilestonesService.createDraft(milestone);
+                closeNewMilestoneModal();
+                showToast(`里程碑「${title}」已建立（草稿），目標 ${Number(goal).toLocaleString()} 點`, 'success');
+            }
+            // refresh list
+            if (typeof renderMilestones === 'function') renderMilestones();
+        } catch (err) {
+            console.error('[Dashboard] submitMilestone error:', err);
+            showToast('建立或更新里程碑時發生錯誤，請稍後再試', 'error');
+        } finally {
+            if (msSubmitBtnEl) { msSubmitBtnEl.disabled = false; msSubmitBtnEl.innerHTML = originalBtnHtml || '<i class="fas fa-check"></i> 建立里程碑'; }
+        }
     } catch (err) {
         console.error(err);
         showToast('建立里程碑時發生錯誤', 'error');

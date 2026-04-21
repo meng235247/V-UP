@@ -54,6 +54,23 @@
                         <span class="user-role">VTuber 創作者</span>
                     </div>
                 </div>
+
+                    <!-- Confirm Modal (custom) -->
+                    <div id="confirm-modal" class="modal-overlay" aria-hidden="true">
+                        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+                            <div class="modal-header">
+                                <h3 id="confirm-modal-title">確認操作</h3>
+                                <button class="btn-close" onclick="closeConfirmModal()"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="modal-body" style="padding:12px 0;">
+                                <p id="confirm-modal-message" style="margin:0; color:var(--text-muted);">訊息內容</p>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn-outline" id="confirm-cancel-btn">取消</button>
+                                <button class="btn-primary" id="confirm-ok-btn">確定</button>
+                            </div>
+                        </div>
+                    </div>
                 <a href="vtuber_profile.html" id="btn-view-public" class="btn-view-public" target="_blank"><i
                         class="fas fa-external-link-alt"></i> 前往公開頁面</a>
             </div>
@@ -471,7 +488,7 @@
     <div id="milestone-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>新增里程碑募資項目</h3>
+                <h3 id="ms-modal-title">新增里程碑募資項目</h3>
                 <button class="btn-close" onclick="closeNewMilestoneModal()"><i class="fas fa-times"></i></button>
             </div>
 
@@ -554,6 +571,7 @@
         </div>
     </div>
 
+    <script type="module" src="js/services/milestones.service.js"></script>
     <script src="dashboard.js"></script>
     <script type="module">
         import { authService } from './js/services/auth.service.js';
@@ -563,6 +581,7 @@
 
         // 進入頁面時強制檢查登入
         authService.onAuthChange(async (user) => {
+            console.log('[Dashboard] onAuthChange fired, user=', user);
             if (!user) {
                 alert("請先登入！");
                 window.location.href = "auth.html";
@@ -570,6 +589,7 @@
             }
             // 檢查是否是 VTuber
             const profile = await authService.getUserProfile(user.uid);
+            console.log('[Dashboard] loaded user profile:', profile);
             if (!profile || profile.role !== 'vtuber') {
                 alert("您沒有權限進入創作者後台！");
                 window.location.href = "fan_profile.html";
@@ -584,6 +604,7 @@
 
             // 從 Firestore 載入創作者頁面設定
             const vtProfile = await vtuberService.getProfile(user.uid);
+            console.log('[Dashboard] loaded vtProfile for uid=', user.uid, vtProfile);
             if (vtProfile) {
                 if (vtProfile.colorPrimary) document.getElementById('vt-color-primary').value = vtProfile.colorPrimary;
                 if (vtProfile.colorSecondary) document.getElementById('vt-color-secondary').value = vtProfile.colorSecondary;
@@ -606,7 +627,9 @@
                 }
             }
 
-            renderPosts();
+                renderPosts();
+                // Render milestones list after posts
+                if (typeof renderMilestones === 'function') renderMilestones();
         });
 
         // 登出綁定
@@ -638,6 +661,7 @@
                     handle: document.getElementById('vt-handle')?.value?.trim() || null,
                     displayName: document.getElementById('vt-name')?.value?.trim() || null,
                 });
+                    console.log('[Dashboard] saveProfile completed for uid=', currentUid, 'handle=', document.getElementById('vt-handle')?.value);
                 const toast = document.getElementById('save-toast');
                 if (toast) {
                     toast.style.display = 'block';
