@@ -1,3 +1,63 @@
+import PostsService from '../services/posts.service.js';
+import { auth } from '../firebase-config.js';
+
+const MEDIA_ICON_CLASS = {
+  image: 'fa-regular fa-image',
+  video: 'fa-solid fa-video',
+  audio: 'fa-solid fa-headphones',
+  file: 'fa-solid fa-paperclip',
+  text: 'fa-regular fa-file-lines'
+};
+
+const postModalCache = new Map();
+
+function esc(s) {
+  return s ? String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])) : '';
+}
+
+function toMillis(ts) {
+  if (!ts) return 0;
+  if (typeof ts.toMillis === 'function') return ts.toMillis();
+  if (typeof ts.seconds === 'number') return ts.seconds * 1000;
+  return 0;
+}
+
+function timeAgo(ts) {
+  const ms = toMillis(ts);
+  if (!ms) return '剛剛';
+  const diff = Date.now() - ms;
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+  if (diff < minute) return '剛剛';
+  if (diff < hour) return `${Math.floor(diff / minute)} 分鐘前`;
+  if (diff < day) return `${Math.floor(diff / hour)} 小時前`;
+  if (diff < 7 * day) return `${Math.floor(diff / day)} 天前`;
+  return new Date(ms).toLocaleDateString('zh-TW');
+}
+
+function getPostMediaType(post) {
+  if (post.primaryMediaType) return post.primaryMediaType;
+  const first = Array.isArray(post.attachments) ? post.attachments.find(a => a && a.type) : null;
+  return first ? first.type : 'text';
+}
+
+function getPostPrimaryMedia(post) {
+  const mediaType = getPostMediaType(post);
+  const attachments = Array.isArray(post.attachments) ? post.attachments : [];
+  const byType = attachments.find(a => a && a.type === mediaType) || attachments[0] || null;
+  if (!byType) return { mediaType: 'text', imageUrl: null, mediaUrl: null };
+  if (mediaType === 'image') return { mediaType, imageUrl: byType.url || null, mediaUrl: null };
+  if (mediaType === 'video' || mediaType === 'audio') return { mediaType, imageUrl: null, mediaUrl: byType.url || null };
+  return { mediaType: 'file', imageUrl: null, mediaUrl: null };
+}
+
+function buildPostTitle(post) {
+  if (post.title) return post.title;
+  if (post.content) return String(post.content).trim().split('\n').find(Boolean)?.slice(0, 64) || '未命名貼文';
+  return '未命名貼文';
+}
+
 // VTuber profile page controller
 const VtuberProfilePage = {
   init: async () => {
@@ -126,9 +186,6 @@ const VtuberProfilePage = {
       `;
       section.insertBefore(placeholder, section.firstChild);
     } else {
-      // For each milestone, generate a card
-      const esc = s => s ? String(s).replace(/[&<>\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])) : '';
-
       milestones.forEach(m => {
         const card = document.createElement('div');
         card.className = 'ms-card';
@@ -175,7 +232,15 @@ const VtuberProfilePage = {
             <div class="ms-exclusive" data-milestone-id="${m.id}">
               <div class="ms-exc-title"><i class="fa-solid fa-bullhorn text-pink"></i> 贊助者限定消息</div>
               <div class="ms-exclusive-content" data-milestone-id="${m.id}">
-                <div class="ms-lock-overlay"><i class="fa-solid fa-lock"></i><span>贊助此里程碑即可解鎖</span></div>
+                <div class="exc-post">
+                  <div class="exc-post-info">
+                    <div class="exc-tag"><i class="fa-regular fa-file-lines"></i></div>
+                    <div class="exc-text">
+                      <h4>載入貼文中...</h4>
+                      <p>請稍候</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -206,6 +271,19 @@ const VtuberProfilePage = {
             }
           } catch (e) { /* silently ignore rankings errors */ }
         })();
+
+        (async () => {
+          try {
+            const posts = await PostsService.getPublishedPostsByMilestone(m.id, {
+              limit: 12,
+              tryIncludeSupporters: true
+            });
+            VtuberProfilePage.renderMilestonePosts(card, m.id, posts);
+          } catch (e) {
+            console.warn('[VtuberProfilePage] load milestone posts failed:', m.id, e);
+            VtuberProfilePage.renderMilestonePosts(card, m.id, []);
+          }
+        })();
       });
     }
 
@@ -226,6 +304,96 @@ const VtuberProfilePage = {
         if (viewLogsBtn) viewLogsBtn.style.display = '';
       }
     }
+  },
+
+  renderMilestonePosts: (card, milestoneId, posts) => {
+    if (!card) return;
+    const container = card.querySelector(`.ms-exclusive-content[data-milestone-id="${milestoneId}"]`);
+    if (!container) return;
+
+    
+
+    const publishedPosts = Array.isArray(posts) ? posts.filter(p => p && p.status === 'published') : [];
+    if (publishedPosts.length === 0) {
+      container.innerHTML = `
+        ${lockHtml}
+        <div class="exc-post">
+          <div class="exc-post-info">
+            <div class="exc-tag"><i class="fa-regular fa-file-lines"></i></div>
+            <div class="exc-text">
+              <h4>尚未發布任何貼文</h4>
+              <p>發布後會顯示在這裡</p>
+            </div>
+          </div>
+          <button class="btn-read-more" type="button" disabled>待發布</button>
+        </div>
+      `;
+      return;
+    }
+
+    const renderRow = (post) => {
+      const title = buildPostTitle(post);
+      const time = timeAgo(post.publishedAt || post.updatedAt || post.createdAt);
+      const mediaType = getPostMediaType(post);
+      const iconClass = MEDIA_ICON_CLASS[mediaType] || MEDIA_ICON_CLASS.text;
+      const cacheKey = `${milestoneId}:${post.id}`;
+      const media = getPostPrimaryMedia(post);
+      postModalCache.set(cacheKey, {
+        title,
+        time,
+        iconType: mediaType,
+        body: post.content || '',
+        imageUrl: media.imageUrl,
+        mediaType: media.mediaType === 'text' || media.mediaType === 'file' ? null : media.mediaType,
+        mediaUrl: media.mediaUrl
+      });
+
+      const isSupporterOnly = post.visibility === 'supporters';
+      const viewerUid = auth && auth.currentUser ? auth.currentUser.uid : null;
+      const shouldLock = isSupporterOnly && !viewerUid;
+
+      return `
+        <div class="exc-post ${shouldLock ? 'locked' : ''}">
+          ${shouldLock ? '<div class="ms-lock-overlay"><i class="fa-solid fa-lock"></i><span>贊助此里程碑即可解鎖</span></div>' : ''}
+          <div class="exc-post-info">
+            <div class="exc-tag"><i class="${iconClass}"></i></div>
+            <div class="exc-text">
+              <h4>${esc(title)}</h4>
+              <p>${esc(time)}</p>
+            </div>
+          </div>
+          ${shouldLock ? '<button class="btn-read-more" type="button" disabled>贊助解鎖 <i class="fa-solid fa-lock"></i></button>' : `<button class="btn-read-more" type="button" data-open-post-key="${esc(cacheKey)}">展開閱讀 <i class="fa-solid fa-chevron-down"></i></button>`}
+        </div>
+      `;
+    };
+
+    const visible = publishedPosts.slice(0, 2).map(renderRow).join('');
+    const hidden = publishedPosts.slice(2).map(renderRow).join('');
+    const hasMore = publishedPosts.length > 2;
+    const moreId = `exc-more-${String(milestoneId).replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+
+    container.innerHTML = `
+      ${visible}
+      ${hasMore ? `<div class="exc-more-posts" id="${moreId}" style="display:none;">${hidden}</div>` : ''}
+      ${hasMore ? `<button class="btn-view-all" onclick="toggleExcMore('${moreId}', this)">查看更多 <i class="fa-solid fa-chevron-down"></i></button>` : ''}
+    `;
+
+    container.querySelectorAll('[data-open-post-key]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const cacheKey = btn.getAttribute('data-open-post-key');
+        const payload = postModalCache.get(cacheKey);
+        if (!payload || typeof window.openPostModal !== 'function') return;
+        window.openPostModal(
+          payload.title,
+          payload.time,
+          payload.iconType,
+          payload.body,
+          payload.imageUrl,
+          payload.mediaType,
+          payload.mediaUrl
+        );
+      });
+    });
   }
 };
 
