@@ -99,6 +99,37 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
     color: var(--primary);
 }
 
+/* Small action buttons inside the milestones list to keep rows aligned */
+#milestones-list .btn-primary,
+#milestones-list .btn-outline,
+#milestones-list .btn-danger {
+    padding: 8px 12px;
+    font-size: 0.92rem;
+    box-shadow: none;
+    border-radius: 8px;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #ef4444, #f87171);
+    color: white;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(239,68,68,0.12);
+    border: none;
+}
+.btn-danger:hover {
+    filter: brightness(0.95);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 22px rgba(239,68,68,0.18);
+}
+
+/* Helper class for action button container in milestone cards */
+.ms-actions { margin-left: 16px; display:flex; gap:8px; align-items:center; }
+
 .btn-icon {
     background: white;
     color: var(--text-muted);
@@ -486,7 +517,7 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
 }
 
 /* Modal two-column grid and helpers */
-.modal-body.modal-grid { display: grid; grid-template-columns: 1fr 320px; gap: 20px; max-height: 64vh; overflow: hidden; }
+.modal-body.modal-grid { display: grid; grid-template-columns: 1fr 320px; gap: 24px; max-height: 72vh; overflow: hidden; }
 .modal-col { min-height: 0; }
 .modal-col-main { overflow-y: auto; padding-right: 6px; }
 .modal-col-side { overflow-y: auto; padding-left: 6px; }
@@ -501,9 +532,11 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
     gap: 8px;
     background: var(--primary-light);
     color: var(--primary);
-    padding: 6px 10px;
+    padding: 8px 12px;
     border-radius: 999px;
     font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: 0 6px 16px rgba(138,43,226,0.04);
 }
 .collab-list .chip .chip-remove {
     background: transparent;
@@ -527,7 +560,7 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
     border-bottom: 1px solid var(--border);
     padding-bottom: 16px;
 }
-.modal-header h3 { font-weight: 900; color: var(--text-main); font-size: 1.35rem; }
+.modal-header h3 { font-weight: 900; color: var(--text-main); font-size: 1.45rem; }
 
 .btn-close {
     background: #f1f5f9;
@@ -666,3 +699,11 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
 .ds-toast-success { border-left: 4px solid #10b981; }
 .ds-toast-error   { border-left: 4px solid #ef4444; }
 .ds-toast-info    { border-left: 4px solid #3b82f6; }
+
+/* Undo toast (with action button) */
+
+
+/* Slightly stronger modal content width for confirm */
+#confirm-modal .modal-content { max-width: 520px; padding: 20px; }
+#confirm-modal .modal-body { padding: 16px 0; }
+#confirm-modal .modal-footer { padding-top: 12px; }

@@ -1,7 +1,7 @@
 import { db } from '../firebase-config.js';
 import { doc, getDoc, setDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 
-const COLLECTION = 'vtuber_profiles';
+const COLLECTION = 'vtubers';
 const HANDLES_COLLECTION = 'handles';
 
 class VtuberService {
@@ -67,12 +67,23 @@ class VtuberService {
      */
     async getProfileByHandle(handle) {
         try {
+            if (!handle) return null;
+
+            // First try the handles reverse-index (preferred)
             const handleRef = doc(db, HANDLES_COLLECTION, handle);
             const handleSnap = await getDoc(handleRef);
-            if (!handleSnap.exists()) return null;
+            if (handleSnap.exists()) {
+                const { uid } = handleSnap.data();
+                return await this.getProfile(uid);
+            }
 
-            const { uid } = handleSnap.data();
-            return await this.getProfile(uid);
+            // Fallback: if the handles index is missing or the caller passed a raw uid,
+            // try to read the profile document directly by id.
+            const profileRef = doc(db, COLLECTION, handle);
+            const profileSnap = await getDoc(profileRef);
+            if (profileSnap.exists()) return profileSnap.data();
+
+            return null;
         } catch (err) {
             console.error('[VtuberService] getProfileByHandle error:', err);
             throw err;

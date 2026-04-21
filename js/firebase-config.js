@@ -1,7 +1,7 @@
 // Firebase SDK — Modular API (v9+)
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getAnalytics } from "firebase/analytics";
 
 // Firebase configuration using environment variables from Vite
@@ -22,5 +22,27 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 const analytics = getAnalytics(app);
+
+// Optional: connect to local emulators when developing locally.
+// Detection supports hostname localhost / 127.0.0.1, a localStorage override, or Vite env flag `VITE_USE_EMULATOR=true`.
+try {
+    const isBrowser = (typeof window !== 'undefined' && typeof window.location !== 'undefined');
+    const host = isBrowser ? window.location.hostname : null;
+    const envFlag = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR === 'true');
+    const localFlag = isBrowser && localStorage.getItem('useEmulator') === 'true';
+    const hostnameMatch = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
+    const useEmulator = isBrowser && (hostnameMatch || localFlag || envFlag);
+
+    if (useEmulator) {
+        // Firestore emulator port 8081, Auth emulator port 9099 (matches firebase.json)
+        connectFirestoreEmulator(db, '127.0.0.1', 8081);
+        connectAuthEmulator(auth, 'http://127.0.0.1:9099');
+        console.info('[firebase-config] connected to local emulators (firestore@8081, auth@9099)');
+    } else {
+        console.info('[firebase-config] not connecting to emulators', { host, envFlag, localFlag });
+    }
+} catch (e) {
+    console.warn('[firebase-config] emulator connect skipped:', e && e.message ? e.message : e);
+}
 
 export { app, db, auth, analytics };

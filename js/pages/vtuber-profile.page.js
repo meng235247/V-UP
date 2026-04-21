@@ -17,7 +17,7 @@ const VtuberProfilePage = {
         if (!vtuber) throw new Error('VTuber not found');
         VtuberProfilePage.renderVtuber(vtuber);
 
-        const milestones = await MilestonesService.getMilestones(vtuber.uid || vtuberHandle);
+        const milestones = await MilestonesService.getPublicMilestones(vtuber.uid || vtuberHandle);
         VtuberProfilePage.renderMilestones(milestones);
       } catch (error) {
         console.error('Error loading VTuber profile:', error);
@@ -104,58 +104,125 @@ const VtuberProfilePage = {
   },
 
   renderMilestones: (milestones) => {
-    // Target the active milestones section without wiping the entire page
     const section = document.querySelector('#milestones');
-    if (!section) {
-      console.warn('[VtuberProfilePage] no #milestones section found to render into');
-      return;
-    }
+    if (!section) return console.warn('[VtuberProfilePage] no #milestones section found to render into');
 
-    const activeCards = Array.from(section.querySelectorAll('.ms-card')).filter(c => !c.classList.contains('placeholder'));
-    const existingPlaceholder = section.querySelector('.ms-card.placeholder');
+    // remove previously generated dynamic cards
+    Array.from(section.querySelectorAll('.ms-card[data-generated]')).forEach(n => n.remove());
 
+    // hide existing static cards while rendering dynamic ones
+    const staticCards = Array.from(section.querySelectorAll('.ms-card:not([data-generated])'));
+    staticCards.forEach(c => c.style.display = 'none');
+
+    // no milestones -> show placeholder
     if (!milestones || milestones.length === 0) {
-      // Hide existing active cards and show a single placeholder card
-      activeCards.forEach(c => { c.style.display = 'none'; });
-      if (!existingPlaceholder) {
-        const placeholder = document.createElement('div');
-        placeholder.className = 'ms-card placeholder';
-        placeholder.innerHTML = `
-          <div class="ms-main" style="display:flex; align-items:center; justify-content:center; padding:60px;">
-            <div style="text-align:center; font-weight:900; font-size:1.6rem; color:var(--text-muted);">夢想緒力中……!</div>
+      const placeholder = document.createElement('div');
+      placeholder.className = 'ms-card placeholder';
+      placeholder.dataset.generated = 'true';
+      placeholder.innerHTML = `
+        <div class="ms-main" style="display:flex; align-items:center; justify-content:center; padding:60px;">
+          <div style="text-align:center; font-weight:900; font-size:1.6rem; color:var(--text-muted);">夢想緒力中……!</div>
+        </div>
+      `;
+      section.insertBefore(placeholder, section.firstChild);
+    } else {
+      // For each milestone, generate a card
+      const esc = s => s ? String(s).replace(/[&<>\"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch])) : '';
+
+      milestones.forEach(m => {
+        const card = document.createElement('div');
+        card.className = 'ms-card';
+        card.dataset.generated = 'true';
+        card.dataset.milestoneId = m.id;
+
+        const current = Number(m.currentAmount || m.current || 0);
+        const goal = Number(m.goal || m.targetAmount || m.target || 0);
+        const pct = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+        const badge = m.badgeDataUrl || m.badgeImageUrl || (m.badgeUrl || 'https://picsum.photos/seed/badge/80/80');
+        const statusLabel = (m.status === 'published' || m.status === 'active') ? '進行中!' : (m.status === 'achieved' ? '已達成' : (m.status || '公開'));
+
+        card.innerHTML = `
+          <div class="ms-main">
+            <div class="ms-floating-badge">
+              <img src="${esc(badge)}" alt="徽章" class="ms-badge-img">
+            </div>
+            <div class="ms-top-header">
+              <span class="ms-status-badge">${esc(statusLabel)}</span>
+              <h2 class="ms-title">${esc(m.title || '（無標題）')}</h2>
+            </div>
+            <p class="ms-desc">${esc(m.desc || m.description || '')}</p>
+
+            <div class="ms-support-box">
+              <div class="ms-progress-wrap">
+                <div class="ms-progress-labels">
+                  <div class="current">當前進度: <span data-bind="progress-pct">${pct}%</span></div>
+                  <div class="target">目標: <span data-bind="progress-target">${goal ? Number(goal).toLocaleString() + ' NTD' : '—'}</span></div>
+                </div>
+                <div class="ms-progress-bar">
+                  <div class="ms-progress-fill ms-progress-animated" data-bind="progress-bar" style="width: ${pct}%;"></div>
+                </div>
+              </div>
+
+              <div class="ms-payment-row">
+                <div class="ms-input-wrap">
+                  <span class="ms-input-icon">NTD</span>
+                  <input type="number" class="ms-input" placeholder="輸入金額" value="">
+                </div>
+                <button class="btn-support-now" onclick="openPaymentModal('${esc(m.title || '')}', '${m.id}', this)"><i class="fa-solid fa-heart"></i> 立刻支持</button>
+              </div>
+            </div>
+
+            <div class="ms-exclusive" data-milestone-id="${m.id}">
+              <div class="ms-exc-title"><i class="fa-solid fa-bullhorn text-pink"></i> 贊助者限定消息</div>
+              <div class="ms-exclusive-content" data-milestone-id="${m.id}">
+                <div class="ms-lock-overlay"><i class="fa-solid fa-lock"></i><span>贊助此里程碑即可解鎖</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ms-ranking" data-milestone-id="${m.id}">
+            <div class="ranking-header"><i class="fa-solid fa-medal"></i><h3>本階段貢獻榜</h3></div>
+            <div class="rank-list" id="rank-list-${m.id}" data-milestone-id="${m.id}">
+              <div class="rank-item"><div class="r-avatar" style="background:#E2E8F0;"></div><div class="r-info"><span class="r-name">—</span><span class="r-amt">—</span></div></div>
+            </div>
           </div>
         `;
-        section.insertBefore(placeholder, section.firstChild);
-      } else {
-        existingPlaceholder.style.display = '';
-      }
-    } else {
-      // Remove placeholder if present and show active cards
-      if (existingPlaceholder) existingPlaceholder.remove();
-      activeCards.forEach(c => { c.style.display = ''; });
-      // Note: existing static cards remain; dynamic mapping may be added later.
+
+        // insert at top
+        section.insertBefore(card, section.firstChild);
+
+        // async populate rankings
+        (async () => {
+          try {
+            const rankList = await MilestonesService.getRankings(m.id, 5);
+            const rl = card.querySelector(`#rank-list-${m.id}`);
+            if (rl) {
+              rl.innerHTML = rankList.map(r => `
+                <div class="rank-item">
+                  <img src="${esc(r.avatarUrl || 'https://i.pravatar.cc/100?u=' + (r.id || Math.random()))}" class="r-avatar" alt="User">
+                  <div class="r-info"><span class="r-name">${esc(r.displayName || r.name || '匿名')}</span><span class="r-amt">${Number(r.totalAmount || 0).toLocaleString()} NTD</span></div>
+                </div>
+              `).join('');
+            }
+          } catch (e) { /* silently ignore rankings errors */ }
+        })();
+      });
     }
 
-    // Handle achieved section empty-state
+    // Achieved section logic: show placeholder if no achieved items
     const achievedContainer = document.getElementById('milestones-achieved');
     const achievedTimeline = document.querySelector('.achieved-timeline');
     const viewLogsBtn = document.querySelector('.btn-view-logs');
     if (achievedContainer) {
       const hasAchieved = milestones && milestones.some(m => m.status === 'achieved' || m.status === 'completed' || m.isAchieved);
       if (!hasAchieved) {
-        // Show a friendly placeholder and hide timeline items + "view logs" button
         achievedContainer.innerHTML = `<div style="padding:40px; text-align:center; font-weight:900; color:var(--text-muted);">期待夢想成真的那天</div>`;
         if (achievedTimeline) {
-          const items = achievedTimeline.querySelector('.timeline-items');
-          if (items) items.style.display = 'none';
+          const items = achievedTimeline.querySelector('.timeline-items'); if (items) items.style.display = 'none';
         }
         if (viewLogsBtn) viewLogsBtn.style.display = 'none';
       } else {
-        // Ensure timeline items and button are visible when there are achieved items
-        if (achievedTimeline) {
-          const items = achievedTimeline.querySelector('.timeline-items');
-          if (items) items.style.display = '';
-        }
+        if (achievedTimeline) { const items = achievedTimeline.querySelector('.timeline-items'); if (items) items.style.display = ''; }
         if (viewLogsBtn) viewLogsBtn.style.display = '';
       }
     }
