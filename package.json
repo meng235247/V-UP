@@ -6,7 +6,13 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "vite",
-    "upload-server": "node scripts/local-upload-server.js"
+    "upload-server": "node scripts/local-upload-server.js",
+    "local:start": "powershell -ExecutionPolicy Bypass -File scripts/start-local-dev.ps1",
+    "local:stop": "powershell -ExecutionPolicy Bypass -File scripts/stop-local-dev.ps1",
+    "local:doctor": "powershell -ExecutionPolicy Bypass -File scripts/local-doctor.ps1",
+    "local:smoke": "node scripts/local-smoke-check.js",
+    "local:reset": "npm run local:stop && npm run local:start && npm run seed:vtuber && npm run local:smoke",
+    "seed:vtuber": "node scripts/seed-vtuber-emulator.js"
   },
   "repository": {
     "type": "git",
