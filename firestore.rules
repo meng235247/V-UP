@@ -78,10 +78,23 @@ service cloud.firestore {
     // - server-controlled fields: currentAmount, totalSupporters, achievedAt, archivedAt
     // ----------------------------
     match /milestones/{mid} {
+      function hasPublicMilestoneStatus() {
+        return resource.data.get('status', '__missing__') in ['published','active','achieved','archived'];
+      }
+
+      function isMilestoneOwner() {
+        return isSignedIn() && request.auth.uid == resource.data.get('vtuberId', '__missing__');
+      }
+
+      function isMilestoneCollaborator() {
+        return isSignedIn() && (request.auth.uid in resource.data.get('collaborators', []));
+      }
+
       // read: published/active/achieved/archived are readable by anyone; owner/admin can also read drafts
-      allow read: if (resource.data.status in ['published','active','achieved','archived'])
+      allow read: if hasPublicMilestoneStatus()
                    || isAdmin()
-                   || (isSignedIn() && request.auth.uid == resource.data.vtuberId);
+                   || isMilestoneOwner()
+                   || isMilestoneCollaborator();
 
       // create: owner (vtuberId) or admin can create; ensure server-controlled aggregations are not prefilled
       allow create: if isSignedIn()
@@ -92,8 +105,8 @@ service cloud.firestore {
 
       // update: admin can do anything; owner can update allowed non-server fields and may set status -> draft|published only
       allow update: if isAdmin()
-                    || (isSignedIn() && request.auth.uid == resource.data.vtuberId
-                        && ( !('vtuberId' in request.resource.data) || request.resource.data.vtuberId == resource.data.vtuberId)
+                    || (isSignedIn() && request.auth.uid == resource.data.get('vtuberId', '__missing__')
+                        && ( !('vtuberId' in request.resource.data) || request.resource.data.vtuberId == resource.data.get('vtuberId', '__missing__'))
 
                         // owner must not change server-controlled fields
                         && ( (!('currentAmount' in request.resource.data) || request.resource.data.currentAmount == resource.data.currentAmount)
@@ -103,11 +116,11 @@ service cloud.firestore {
                         )
 
                         // owner may only set status to draft or published (cannot mark achieved/archived)
-                        && ( !('status' in request.resource.data) || request.resource.data.status in ['draft','published'] || request.resource.data.status == resource.data.status)
+                        && ( !('status' in request.resource.data) || request.resource.data.status in ['draft','published'] || request.resource.data.status == resource.data.get('status', '__missing__'))
                        );
 
       // delete: allow admin, owner can delete drafts only
-      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.vtuberId && resource.data.status == 'draft');
+      allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.get('vtuberId', '__missing__') && resource.data.get('status', '__missing__') == 'draft');
     }
 
     // ----------------------------
