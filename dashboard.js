@@ -34,11 +34,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
     navItems.forEach(item => {
         item.addEventListener('click', e => {
+            if (item.getAttribute('href') && item.getAttribute('href') !== '#') {
+                return; // Let standard links navigate normally
+            }
             e.preventDefault();
             navItems.forEach(n => n.classList.remove('active'));
             item.classList.add('active');
             const tab = item.dataset.tab;
-            switchTab(tab);
+            if (tab) switchTab(tab);
         });
     });
 
@@ -87,19 +90,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function addCollaboratorChip(value) {
-        if (!collabList || !value) return;
-        const exists = Array.from(collabList.querySelectorAll('.chip')).some(c => c.dataset.value === value);
+    function addCollaboratorChip(collabObj) {
+        if (!collabList || !collabObj || !collabObj.uid) return;
+        const exists = Array.from(collabList.querySelectorAll('.chip')).some(c => c.dataset.uid === collabObj.uid);
         if (exists) { showToast('已加入此合作對象', 'info'); return; }
         const chip = document.createElement('span');
         chip.className = 'chip';
-        chip.dataset.value = value;
+        chip.dataset.uid = collabObj.uid;
+        chip.dataset.name = collabObj.name || collabObj.uid;
+        if (collabObj.avatarUrl) chip.dataset.avatar = collabObj.avatarUrl;
+
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
         removeBtn.className = 'chip-remove';
         removeBtn.title = '移除';
         removeBtn.innerText = '×';
-        chip.appendChild(document.createTextNode(value));
+        chip.appendChild(document.createTextNode(chip.dataset.name));
         chip.appendChild(removeBtn);
         collabList.appendChild(chip);
         removeBtn.addEventListener('click', () => chip.remove());
@@ -109,7 +115,16 @@ document.addEventListener('DOMContentLoaded', () => {
         collabAddBtn.addEventListener('click', () => {
             const v = (collabSearch && collabSearch.value) ? collabSearch.value.trim() : '';
             if (!v) { showToast('請輸入合作對象名稱或 Email', 'error'); return; }
-            addCollaboratorChip(v);
+            
+            // Mock 搜尋邏輯
+            let mockResult = { uid: v, name: v, avatarUrl: '' }; // fallback
+            if (v.toLowerCase().includes('vtuber2')) {
+                mockResult = { uid: 'vtuber2', name: 'VTuber Two', avatarUrl: 'image/v_head_ryusei.jpg' };
+            } else if (v.toLowerCase().includes('ume')) {
+                mockResult = { uid: 'ume_123', name: 'UME', avatarUrl: 'image/v_head_ryusei.jpg' };
+            }
+
+            addCollaboratorChip(mockResult);
             if (collabSearch) collabSearch.value = '';
         });
     }
@@ -322,16 +337,21 @@ window.openEditMilestone = async function(id) {
         const collabList = document.getElementById('ms-collab-list');
         if (collabList) {
             collabList.innerHTML = '';
-            (m.collaborators || []).forEach(c => {
+            // 支持從舊的 collaborators string array 或新的 collaboratorsMeta 回填
+            const metaList = m.collaboratorsMeta || (m.collaborators || []).map(uid => ({ uid, name: uid }));
+            metaList.forEach(c => {
                 const chip = document.createElement('span');
                 chip.className = 'chip';
-                chip.dataset.value = c;
+                chip.dataset.uid = c.uid;
+                chip.dataset.name = c.name || c.uid;
+                if (c.avatarUrl) chip.dataset.avatar = c.avatarUrl;
+                
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'chip-remove';
                 removeBtn.title = '移除';
                 removeBtn.innerText = '×';
-                chip.appendChild(document.createTextNode(c));
+                chip.appendChild(document.createTextNode(chip.dataset.name));
                 chip.appendChild(removeBtn);
                 collabList.appendChild(chip);
                 removeBtn.addEventListener('click', () => chip.remove());
@@ -393,7 +413,12 @@ async function submitMilestone() {
         const desc = document.getElementById('ms-desc')?.value?.trim() || '';
         const isCollab = !!document.getElementById('ms-collab-toggle')?.checked;
         const collabEls = document.querySelectorAll('#ms-collab-list .chip');
-        const collaborators = Array.from(collabEls).map(c => c.dataset.value);
+        const collaborators = Array.from(collabEls).map(c => c.dataset.uid);
+        const collaboratorsMeta = Array.from(collabEls).map(c => ({
+            uid: c.dataset.uid,
+            name: c.dataset.name,
+            avatarUrl: c.dataset.avatar || null
+        }));
         const award = document.querySelector('input[name="ms-award"]:checked')?.value === 'yes';
         const awardCount = award ? Number(document.getElementById('ms-award-count')?.value || 10) : 0;
         const featured = !!document.getElementById('ms-featured')?.checked;
@@ -427,7 +452,7 @@ async function submitMilestone() {
             }
         }
 
-        const milestone = { title, goal, desc, isCollab, collaborators, award, awardCount, featured, hidden, badgeUrl };
+        const milestone = { title, goal, desc, isCollab, collaborators, collaboratorsMeta, award, awardCount, featured, hidden, badgeUrl };
 
         try {
             if (window._editingMilestoneId) {
@@ -473,3 +498,158 @@ function showToast(msg, type = 'info') {
     clearTimeout(t._timer);
     t._timer = setTimeout(() => t.classList.remove('show'), 3500);
 }
+
+// ==== CRM Logic ====
+let crmData = [];
+let crmMilestoneMap = {};
+
+window.renderCRM = async () => {
+    const tbody = document.getElementById('crm-tbody');
+    const milestoneSelect = document.getElementById('crm-filter-milestone');
+    
+    if (!tbody) return;
+    
+    try {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">載入資料中...</td></tr>`;
+        
+        if (!window.currentUid) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">尚未登入</td></tr>`;
+            return;
+        }
+
+        if (!window.PaymentService) {
+            console.warn('[renderCRM] PaymentService is not loaded yet');
+            return;
+        }
+
+        const txs = await window.PaymentService.getTransactions(window.currentUid);
+        const milestones = await window.MilestonesService.getMilestones(window.currentUid);
+        
+        crmMilestoneMap = {};
+        let milestoneOptions = '<option value="">所有里程碑</option>';
+        milestones.forEach(m => {
+            crmMilestoneMap[m.id] = m.title || `里程碑 ${m.id}`;
+            milestoneOptions += `<option value="${m.id}">${crmMilestoneMap[m.id]}</option>`;
+        });
+        
+        if (milestoneSelect && milestoneSelect.options.length <= 1) {
+            milestoneSelect.innerHTML = milestoneOptions;
+        }
+
+        crmData = txs.map(tx => ({
+            ...tx,
+            milestoneTitle: crmMilestoneMap[tx.milestoneId] || tx.milestoneId || '無特定里程碑',
+            fanName: tx.fanName || tx.fanUid || '匿名粉絲'
+        }));
+        
+        applyCRMFilters();
+    } catch (err) {
+        console.error('[renderCRM] error:', err);
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: red;">無法載入 CRM 資料</td></tr>`;
+    }
+};
+
+window.applyCRMFilters = () => {
+    const searchVal = document.getElementById('crm-search')?.value.toLowerCase() || '';
+    const filterMs = document.getElementById('crm-filter-milestone')?.value || '';
+    const sortVal = document.getElementById('crm-sort')?.value || 'date-desc';
+    const tbody = document.getElementById('crm-tbody');
+    
+    if (!tbody) return;
+
+    let filtered = crmData.filter(tx => {
+        const matchSearch = tx.fanName.toLowerCase().includes(searchVal) || 
+                            (tx.message && tx.message.toLowerCase().includes(searchVal)) || 
+                            tx.fanUid?.toLowerCase().includes(searchVal);
+        const matchMs = filterMs ? tx.milestoneId === filterMs : true;
+        return matchSearch && matchMs;
+    });
+
+    filtered.sort((a, b) => {
+        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        const amtA = Number(a.amount) || 0;
+        const amtB = Number(b.amount) || 0;
+
+        if (sortVal === 'date-desc') return timeB - timeA;
+        if (sortVal === 'date-asc') return timeA - timeB;
+        if (sortVal === 'amount-desc') return amtB - amtA;
+        if (sortVal === 'amount-asc') return amtA - amtB;
+        return 0;
+    });
+
+    if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px; color: #64748b;">暫無符合條件的贊助紀錄</td></tr>`;
+        return;
+    }
+
+    tbody.innerHTML = filtered.map(tx => {
+        const dateStr = tx.createdAt && tx.createdAt.toDate ? tx.createdAt.toDate().toLocaleString('zh-TW', {
+            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute:'2-digit'
+        }) : '未知日期';
+        
+        let statusTag = '';
+        if (tx.status === 'success') statusTag = '<span class="tag t-blue" style="font-size:0.75rem;">成功</span>';
+        else if (tx.status === 'pending') statusTag = '<span class="tag t-purple" style="font-size:0.75rem;">處理中</span>';
+        else statusTag = `<span class="tag" style="background:#e2e8f0;font-size:0.75rem;">${tx.status||'不明'}</span>`;
+
+        return `
+            <tr>
+                <td>${tx.fanName}</td>
+                <td>${tx.milestoneTitle}</td>
+                <td class="text-primary font-mono">${Number(tx.amount || 0).toLocaleString()}</td>
+                <td>${dateStr}</td>
+                <td>${statusTag}</td>
+                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${tx.message || ''}">
+                    ${tx.message || '<span style="color:#cbd5e1;">無留言</span>'}
+                </td>
+            </tr>
+        `;
+    }).join('');
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    // CRM Events
+    document.getElementById('crm-search')?.addEventListener('input', applyCRMFilters);
+    document.getElementById('crm-filter-milestone')?.addEventListener('change', applyCRMFilters);
+    document.getElementById('crm-sort')?.addEventListener('change', applyCRMFilters);
+    
+    document.getElementById('btn-export-crm')?.addEventListener('click', () => {
+        if (window.PaymentService && typeof window.PaymentService.exportToCSV === 'function') {
+            const searchVal = document.getElementById('crm-search')?.value.toLowerCase() || '';
+            const filterMs = document.getElementById('crm-filter-milestone')?.value || '';
+            const sortVal = document.getElementById('crm-sort')?.value || 'date-desc';
+            
+            let filtered = crmData.filter(tx => {
+                const matchSearch = tx.fanName.toLowerCase().includes(searchVal) || 
+                                    (tx.message && tx.message.toLowerCase().includes(searchVal)) || 
+                                    tx.fanUid?.toLowerCase().includes(searchVal);
+                const matchMs = filterMs ? tx.milestoneId === filterMs : true;
+                return matchSearch && matchMs;
+            });
+            filtered.sort((a, b) => {
+                const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                const amtA = Number(a.amount) || 0;
+                const amtB = Number(b.amount) || 0;
+                if (sortVal === 'date-desc') return timeB - timeA;
+                if (sortVal === 'date-asc') return timeA - timeB;
+                if (sortVal === 'amount-desc') return amtB - amtA;
+                if (sortVal === 'amount-asc') return amtA - amtB;
+                return 0;
+            });
+            window.PaymentService.exportToCSV(filtered, 'V-UP_Sponsors_Report.csv');
+        } else {
+            showToast('匯出服務未準備好', 'error');
+        }
+    });
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (e.target.dataset.tab === 'panel-crm') {
+                if (typeof window.renderCRM === 'function') window.renderCRM();
+            }
+        });
+    });
+});
+

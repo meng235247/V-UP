@@ -265,37 +265,40 @@
             <!-- ===== TAB: CRM ===== -->
             <div class="tab-panel" id="panel-crm">
                 <div class="dashboard-section">
-                    <div class="section-header">
+                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <h2>👥 粉絲關係管理 (CRM)</h2>
+                        <button class="btn-primary" id="btn-export-crm" style="padding: 8px 16px;"><i class="fas fa-download"></i> 匯出報表</button>
                     </div>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="crm-controls" style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
+                        <input type="text" id="crm-search" class="form-control" placeholder="搜尋粉絲名稱..." style="flex: 1; min-width: 200px;">
+                        <select id="crm-filter-milestone" class="form-control" style="flex: 1; min-width: 200px;">
+                            <option value="">所有里程碑</option>
+                        </select>
+                        <select id="crm-sort" class="form-control" style="flex: 1; min-width: 150px;">
+                            <option value="date-desc">日期 (新到舊)</option>
+                            <option value="date-asc">日期 (舊到新)</option>
+                            <option value="amount-desc">金額 (高到低)</option>
+                            <option value="amount-asc">金額 (低到高)</option>
+                        </select>
+                    </div>
+
                     <div class="card">
                         <div class="card-table-wrap">
-                            <table class="data-table">
+                            <table class="data-table" id="crm-table">
                                 <thead>
                                     <tr>
                                         <th>粉絲名稱</th>
-                                        <th>累計贊助點數</th>
-                                        <th>會員等級</th>
-                                        <th>操作</th>
+                                        <th>貢獻項目 (里程碑)</th>
+                                        <th>贊助金額</th>
+                                        <th>贊助日期</th>
+                                        <th>狀態</th>
+                                        <th>留言</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>星空騎士_阿龍</td>
-                                        <td class="text-primary font-mono">15,000</td>
-                                        <td><span class="tag t-purple" style="font-size:0.75rem;">鉑金推</span></td>
-                                        <td><button class="btn-outline" style="padding:4px 12px;"
-                                                onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>深海的貓</td>
-                                        <td class="text-primary font-mono">3,200</td>
-                                        <td><span class="tag t-blue" style="font-size:0.75rem;">黃金推</span></td>
-                                        <td><button class="btn-outline" style="padding:4px 12px;"
-                                                onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button>
-                                        </td>
-                                    </tr>
+                                <tbody id="crm-tbody">
+                                    <tr><td colspan="6" style="text-align:center; padding: 20px;">載入資料中...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -633,6 +636,7 @@
         import { storageService } from './js/services/storage.service.js';
         import PostsService from './js/services/posts.service.js';
         import MilestonesService from './js/services/milestones.service.js';
+        import PaymentService from './js/services/payment.service.js';
 
         let currentUid = null;
 
@@ -1063,6 +1067,7 @@
         window.renderPosts = renderPosts;
         window.clearPostComposer = clearPostComposer;
         window.refreshPostMilestoneOptions = loadPostComposerMilestones;
+        window.MilestonesService = MilestonesService;
 
         if (postAttachmentInput) {
             postAttachmentInput.addEventListener('change', renderComposerAttachmentPreview);

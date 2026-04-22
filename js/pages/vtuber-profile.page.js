@@ -60,28 +60,35 @@ function buildPostTitle(post) {
 
 // VTuber profile page controller
 const VtuberProfilePage = {
+  _currentVtuber: null,
   init: async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const vtuberHandle = urlParams.get('id');
+    console.log('[VtuberProfilePage] init started with handle=', vtuberHandle);
 
     if (vtuberHandle === 'demo') {
       // Use seed data for demo mode
+      VtuberProfilePage._currentVtuber = seedData.vtuber;
       VtuberProfilePage.renderVtuber(seedData.vtuber);
       VtuberProfilePage.renderMilestones(seedData.milestones);
       document.body.insertAdjacentHTML('afterbegin', '<div class="demo-banner">🎭 Demo 展示模式</div>');
     } else {
       try {
-        // 使用 vtuberService 從 vtuber_profiles 集合讀取最新的設定資料
-        // (這是dashboard更新的數據所在位置)
+        // 使用 vtuberService 從 vtubers 集合讀取最新的設定資料
         const vtuber = await vtuberService.getProfileByHandle(vtuberHandle);
+        console.log('[VtuberProfilePage] loaded vtuber profile:', vtuber);
         if (!vtuber) throw new Error('VTuber not found');
+        VtuberProfilePage._currentVtuber = vtuber;
         VtuberProfilePage.renderVtuber(vtuber);
 
-        const milestones = await MilestonesService.getPublicMilestones(vtuber.uid || vtuberHandle);
+        const vtuberId = vtuber.uid || vtuberHandle;
+        console.log('[VtuberProfilePage] fetching public milestones for vtuberId=', vtuberId);
+        const milestones = await MilestonesService.getPublicMilestones(vtuberId);
+        console.log('[VtuberProfilePage] received milestones:', milestones);
         VtuberProfilePage.renderMilestones(milestones);
       } catch (error) {
         console.error('Error loading VTuber profile:', error);
-        alert('無法載入 VTuber 資料');
+        alert('無法載入 VTuber 資料：' + (error.message || error));
       }
     }
   },
@@ -198,12 +205,34 @@ const VtuberProfilePage = {
         const badge = m.badgeDataUrl || m.badgeImageUrl || (m.badgeUrl || 'https://picsum.photos/seed/badge/80/80');
         const statusLabel = (m.status === 'published' || m.status === 'active') ? '進行中!' : (m.status === 'achieved' ? '已達成' : (m.status || '公開'));
 
+        let collabHtml = '';
+        if (m.isCollab && m.collaboratorsMeta && m.collaboratorsMeta.length > 0) {
+          const vt = VtuberProfilePage._currentVtuber || {};
+          const ownerName = vt.displayName || vt.name || '本頻道';
+          const ownerAvatar = vt.avatarUrl || 'https://i.pravatar.cc/100';
+          const avatarsHtml = m.collaboratorsMeta.map(c => `<img src="${esc(c.avatarUrl || 'https://i.pravatar.cc/100?u='+c.uid)}" alt="${esc(c.name)}">`).join('');
+          const namesHtml = m.collaboratorsMeta.map(c => `<span class="vt-name-ume" style="font-weight:bold;">${esc(c.name)}</span>`).join('、');
+          
+          collabHtml = `
+            <div class="ms-joint-collab" style="flex-basis: 100%; margin-bottom: 8px;">
+                <div class="collab-avatars">
+                    <img src="${esc(ownerAvatar)}" alt="${esc(ownerName)}">
+                    ${avatarsHtml}
+                </div>
+                <div class="collab-text">
+                    <span class="vt-name-sakura" style="font-weight:bold;">${esc(ownerName)}</span> 和 ${namesHtml} 的聯合企劃
+                </div>
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div class="ms-main">
             <div class="ms-floating-badge">
               <img src="${esc(badge)}" alt="徽章" class="ms-badge-img">
             </div>
-            <div class="ms-top-header">
+            <div class="ms-top-header" style="flex-wrap: wrap;">
+              ${collabHtml}
               <span class="ms-status-badge">${esc(statusLabel)}</span>
               <h2 class="ms-title">${esc(m.title || '（無標題）')}</h2>
             </div>
@@ -316,7 +345,6 @@ const VtuberProfilePage = {
     const publishedPosts = Array.isArray(posts) ? posts.filter(p => p && p.status === 'published') : [];
     if (publishedPosts.length === 0) {
       container.innerHTML = `
-        ${lockHtml}
         <div class="exc-post">
           <div class="exc-post-info">
             <div class="exc-tag"><i class="fa-regular fa-file-lines"></i></div>
@@ -350,7 +378,18 @@ const VtuberProfilePage = {
 
       const isSupporterOnly = post.visibility === 'supporters';
       const viewerUid = auth && auth.currentUser ? auth.currentUser.uid : null;
-      const shouldLock = isSupporterOnly && !viewerUid;
+      const vtuberUid = VtuberProfilePage._currentVtuber && VtuberProfilePage._currentVtuber.uid
+        ? VtuberProfilePage._currentVtuber.uid
+        : null;
+      const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
+      const canReadSupporterPost = !!viewerUid && (
+        (vtuberUid && viewerUid === vtuberUid)
+        || allowList.includes(viewerUid)
+        || post.viewerUnlocked === true
+      );
+      const shouldLock = isSupporterOnly && !canReadSupporterPost;
+      const visibilityLabel = isSupporterOnly ? '限定' : '公開';
+      const visibilityClass = isSupporterOnly ? 'is-supporters' : 'is-public';
 
       return `
         <div class="exc-post ${shouldLock ? 'locked' : ''}">
@@ -358,7 +397,7 @@ const VtuberProfilePage = {
           <div class="exc-post-info">
             <div class="exc-tag"><i class="${iconClass}"></i></div>
             <div class="exc-text">
-              <h4>${esc(title)}</h4>
+              <h4>${esc(title)} <span class="exc-visibility-badge ${visibilityClass}">${visibilityLabel}</span></h4>
               <p>${esc(time)}</p>
             </div>
           </div>

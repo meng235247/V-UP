@@ -715,6 +715,28 @@ body {
     text-overflow: ellipsis;
 }
 
+.exc-visibility-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    vertical-align: middle;
+}
+
+.exc-visibility-badge.is-public {
+    background: #E8F7EE;
+    color: #0F7A3D;
+}
+
+.exc-visibility-badge.is-supporters {
+    background: #FFF1E6;
+    color: #B54708;
+}
+
 .exc-text p {
     margin: 0;
     font-size: 0.8rem;
