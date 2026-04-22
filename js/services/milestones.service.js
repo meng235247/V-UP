@@ -14,24 +14,9 @@ const MilestonesService = {
       }
 
       const colRef = collection(db, COLLECTION);
-      const qOwner = query(colRef, where('vtuberId', '==', vtuberId));
-      const qCollab = query(colRef, where('collaborators', 'array-contains', vtuberId));
-      
-      const [snapOwner, snapCollab] = await Promise.all([getDocs(qOwner), getDocs(qCollab)]);
-      const map = new Map();
-      snapOwner.docs.forEach(d => map.set(d.id, { id: d.id, ...d.data() }));
-      snapCollab.docs.forEach(d => {
-        if (!map.has(d.id)) { map.set(d.id, { id: d.id, ...d.data() }); }
-      });
-      
-      const result = Array.from(map.values());
-      // sort by createdAt desc if available
-      result.sort((a, b) => {
-        const tA = (a.createdAt?.toMillis ? a.createdAt.toMillis() : 0);
-        const tB = (b.createdAt?.toMillis ? b.createdAt.toMillis() : 0);
-        return tB - tA;
-      });
-      return result;
+      const q = query(colRef, where('vtuberId', '==', vtuberId));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (err) {
       console.error('[MilestonesService] getMilestones error:', err);
       throw err;
@@ -65,42 +50,12 @@ const MilestonesService = {
         return await MilestonesService.getMilestones(vtuberId);
       }
 
-      // Public viewers only see published/active/achieved/archived statuses.
-      // Include status constraint in Firestore query so rules can authorize list reads.
+      // Public viewers only see published/active/achieved/archived statuses
       const colRef = collection(db, COLLECTION);
       const publicStatuses = ['published', 'active', 'achieved', 'archived'];
-      const qOwner = query(
-        colRef,
-        where('vtuberId', '==', vtuberId),
-        where('status', 'in', publicStatuses)
-      );
-      
-      try {
-        const snapOwner = await getDocs(qOwner);
-        const result = [];
-        
-        snapOwner.docs.forEach(d => {
-          const data = d.data();
-          // Handle missing status field (treat as draft, which is not public)
-          const status = data.status || 'draft';
-          if (publicStatuses.includes(status)) {
-            result.push({ id: d.id, ...data, status });
-          }
-        });
-
-        // sort by publishedAt explicitly
-        result.sort((a, b) => {
-          const tA = (a.publishedAt?.toMillis ? a.publishedAt.toMillis() : 0);
-          const tB = (b.publishedAt?.toMillis ? b.publishedAt.toMillis() : 0);
-          return tB - tA;
-        });
-        console.log('[MilestonesService] getPublicMilestones returning', result.length, 'milestones for vtuberId=', vtuberId);
-        return result;
-      } catch (queryErr) {
-        console.error('[MilestonesService] query error:', queryErr);
-        // Return empty array if query fails (e.g., no documents match)
-        return [];
-      }
+      const q = query(colRef, where('vtuberId', '==', vtuberId), where('status', 'in', publicStatuses), orderBy('publishedAt', 'desc'));
+      const snap = await getDocs(q);
+      return snap.docs.map(d => ({ id: d.id, ...d.data() }));
     } catch (err) {
       console.error('[MilestonesService] getPublicMilestones error:', err);
       throw err;

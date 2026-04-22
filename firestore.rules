@@ -36,13 +36,13 @@ service cloud.firestore {
       // public read (profile pages are public)
       allow read: if true;
 
-      // create: signed-in user can create a profile that they own (document id equals creator uid)
-      allow create: if isSignedIn() && (request.auth.uid == vtuberId || isAdmin());
+      // create: signed-in user can create a profile that they own
+      allow create: if isSignedIn() && (( 'id' in request.resource.data && request.auth.uid == request.resource.data.id) || isAdmin());
 
-        // update: owner can update most fields but must be the document owner (vtuberId)
+        // update: owner can update most fields but should not change ownership/id
         allow update: if isAdmin() || (isSignedIn()
-          && request.auth.uid == vtuberId
-          && ( !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid));
+          && request.auth.uid == resource.data.id
+          && ( !('id' in request.resource.data) || request.resource.data.id == resource.data.id));
 
       allow delete: if isAdmin();
     }
@@ -149,48 +149,17 @@ service cloud.firestore {
 
     // ----------------------------
     // posts under milestone
-    // - owner/admin can read all statuses (including drafts)
-    // - only published posts can be read by public/supporters
+    // - public posts readable by anyone
+    // - exclusive posts readable only by fans who unlocked the milestone or owner/admin
     // ----------------------------
     match /milestones/{mid}/posts/{postId} {
-      function isMilestoneOwner() {
-        return isSignedIn()
-          && exists(/databases/$(database)/documents/milestones/$(mid))
-          && request.auth.uid == get(/databases/$(database)/documents/milestones/$(mid)).data.vtuberId;
-      }
-
-      function isSupporterAllowed() {
-        return isSignedIn()
-          && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-          && (
-            (('allowedUids' in resource.data) && (request.auth.uid in resource.data.allowedUids))
-            || (('unlockedMilestones' in userDoc(request.auth.uid).data) && (mid in userDoc(request.auth.uid).data.unlockedMilestones))
-          );
-      }
-
-      function isPublicPost() {
-        return resource.data.status == 'published'
-          && (
-            (('visibility' in resource.data) && resource.data.visibility == 'public')
-            || (!('visibility' in resource.data) && (!('isExclusive' in resource.data) || resource.data.isExclusive == false))
-          );
-      }
-
-      function isSupporterPost() {
-        return resource.data.status == 'published'
-          && (
-            (('visibility' in resource.data) && resource.data.visibility == 'supporters')
-            || (!('visibility' in resource.data) && ('isExclusive' in resource.data) && resource.data.isExclusive == true)
-          );
-      }
-
-      allow read: if isAdmin()
-                   || isMilestoneOwner()
-                   || isPublicPost()
-                   || (isSupporterPost() && isSupporterAllowed());
+        allow read: if (!('isExclusive' in resource.data) || resource.data.isExclusive == false)
+               || (isSignedIn() && (isAdmin()
+                 || (exists(/databases/$(database)/documents/milestones/$(mid)) && request.auth.uid == get(/databases/$(database)/documents/milestones/$(mid)).data.vtuberId)
+                 || ( exists(/databases/$(database)/documents/users/$(request.auth.uid)) && (request.auth.uid in userDoc(request.auth.uid).data.unlockedMilestones) )));
 
       // create/update/delete: only vtuber owner or admin
-      allow create, update, delete: if isAdmin() || isMilestoneOwner();
+      allow create, update, delete: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/milestones/$(mid)) && request.auth.uid == get(/databases/$(database)/documents/milestones/$(mid)).data.vtuberId);
     }
 
     // ----------------------------

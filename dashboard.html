@@ -83,7 +83,7 @@
                     <h1 id="page-title-h1">總覽數據 (Overview)</h1>
                     <p id="page-title-desc" class="text-muted">追蹤您的募資進度與粉絲互動狀況</p>
                 </div>
-                <div class="topbar-actions" style="display:flex;align-items:center;gap:12px;">
+                <div class="topbar-actions">
                     <button class="theme-toggle" id="theme-btn" title="深淺色模式" onclick="toggleTheme()">
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </button>
@@ -94,11 +94,6 @@
                     <button class="btn-primary" onclick="openNewMilestoneModal()">
                         <i class="fas fa-plus"></i> 新增里程碑
                     </button>
-                    <div id="navbar-user-info" style="display:flex;align-items:center;gap:8px;margin-left:16px;">
-                        <img id="navbar-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Yume&backgroundColor=b6e3f4" alt="Avatar" style="width:32px;height:32px;border-radius:50%;object-fit:cover;">
-                        <span id="navbar-username" style="font-weight:600;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">使用者</span>
-                        <button class="btn-outline" id="navbar-logout-btn" style="padding:6px 14px;font-size:0.95rem;" title="登出"><i class="fas fa-sign-out-alt"></i> 登出</button>
-                    </div>
                 </div>
             </header>
 
@@ -265,40 +260,37 @@
             <!-- ===== TAB: CRM ===== -->
             <div class="tab-panel" id="panel-crm">
                 <div class="dashboard-section">
-                    <div class="section-header" style="display: flex; justify-content: space-between; align-items: center;">
+                    <div class="section-header">
                         <h2>👥 粉絲關係管理 (CRM)</h2>
-                        <button class="btn-primary" id="btn-export-crm" style="padding: 8px 16px;"><i class="fas fa-download"></i> 匯出報表</button>
                     </div>
-
-                    <!-- Search & Filter Controls -->
-                    <div class="crm-controls" style="display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;">
-                        <input type="text" id="crm-search" class="form-control" placeholder="搜尋粉絲名稱..." style="flex: 1; min-width: 200px;">
-                        <select id="crm-filter-milestone" class="form-control" style="flex: 1; min-width: 200px;">
-                            <option value="">所有里程碑</option>
-                        </select>
-                        <select id="crm-sort" class="form-control" style="flex: 1; min-width: 150px;">
-                            <option value="date-desc">日期 (新到舊)</option>
-                            <option value="date-asc">日期 (舊到新)</option>
-                            <option value="amount-desc">金額 (高到低)</option>
-                            <option value="amount-asc">金額 (低到高)</option>
-                        </select>
-                    </div>
-
                     <div class="card">
                         <div class="card-table-wrap">
-                            <table class="data-table" id="crm-table">
+                            <table class="data-table">
                                 <thead>
                                     <tr>
                                         <th>粉絲名稱</th>
-                                        <th>貢獻項目 (里程碑)</th>
-                                        <th>贊助金額</th>
-                                        <th>贊助日期</th>
-                                        <th>狀態</th>
-                                        <th>留言</th>
+                                        <th>累計贊助點數</th>
+                                        <th>會員等級</th>
+                                        <th>操作</th>
                                     </tr>
                                 </thead>
-                                <tbody id="crm-tbody">
-                                    <tr><td colspan="6" style="text-align:center; padding: 20px;">載入資料中...</td></tr>
+                                <tbody>
+                                    <tr>
+                                        <td>星空騎士_阿龍</td>
+                                        <td class="text-primary font-mono">15,000</td>
+                                        <td><span class="tag t-purple" style="font-size:0.75rem;">鉑金推</span></td>
+                                        <td><button class="btn-outline" style="padding:4px 12px;"
+                                                onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>深海的貓</td>
+                                        <td class="text-primary font-mono">3,200</td>
+                                        <td><span class="tag t-blue" style="font-size:0.75rem;">黃金推</span></td>
+                                        <td><button class="btn-outline" style="padding:4px 12px;"
+                                                onclick="alert('已發送私訊')"><i class="fas fa-envelope"></i> 聯絡</button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -344,22 +336,15 @@
 
                         <div class="form-group" style="margin: 16px 0 0;">
                             <label style="display:block;margin-bottom:8px;font-weight:bold;">發布給粉絲的最新動態</label>
-                            <textarea id="vt-post-input" class="form-control"
-                                style="width:100%;padding:12px;border-radius:8px;font-family:inherit;"
-                                rows="4" placeholder="今天有什麼新鮮事想跟粉絲分享？（先儲存草稿，再從下方發布）"></textarea>
+                            <textarea id="vt-post-input"
+                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-family:inherit;"
+                                rows="4" placeholder="今天有什麼新鮮事想跟粉絲分享？"></textarea>
                         </div>
-
-                        <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
-                            <button class="btn-outline" type="button" onclick="clearPostComposer()">清空</button>
-                            <button class="btn-primary" type="button" id="vt-post-save-btn" onclick="savePostDraft()"><i class="fas fa-save"></i>
-                                儲存草稿</button>
-                        </div>
+                        <button class="btn-primary" onclick="publishPost()"><i class="fas fa-paper-plane"></i>
+                            立即發布</button>
                     </div>
                     <div style="margin-top: 2rem;">
-                        <div class="post-history-toolbar">
-                            <h3 style="margin:0;">過往貼文（草稿 / 已發布）</h3>
-                            <button class="btn-outline" type="button" onclick="renderPosts()"><i class="fas fa-rotate-right"></i> 重新整理</button>
-                        </div>
+                        <h3 style="margin-bottom: 1rem;">已發布文章</h3>
                         <div id="vt-post-list" style="display:flex; flex-direction:column; gap:1rem;">
                             <!-- JS渲染此處 -->
                         </div>
@@ -395,23 +380,10 @@
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片 (Banner Image)</label>
-                            <div style="display:flex; gap:12px; align-items:center;">
-                                <input type="file" id="vt-banner-input" accept="image/*" class="form-control" style="padding:8px;">
-                                <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
-                                    <div style="width:220px; height:80px; border-radius:6px; overflow:hidden; background:#f8fafc; border:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
-                                        <img id="vt-banner-preview" src="" alt="Banner 預覽" style="max-width:100%; max-height:100%; display:none;">
-                                        <span id="vt-banner-placeholder" class="text-muted" style="font-size:0.85rem;">無</span>
-                                    </div>
-                                    <div style="display:flex; gap:8px;">
-                                        <button class="btn-outline" id="vt-banner-upload-btn" type="button"><i class="fas fa-upload"></i> 上傳</button>
-                                        <button class="btn-outline" id="vt-banner-clear-btn" type="button">清除</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <small class="text-muted" style="display:block;margin-top:8px;">或直接貼上圖片網址到下方欄位。</small>
+                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片網址 (Banner Image
+                                URL)</label>
                             <input type="text" id="vt-banner"
-                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;margin-top:8px;"
+                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;"
                                 placeholder="例如: https://example.com/banner.jpg">
                         </div>
                         <div class="form-group" style="margin-bottom: 20px;">
@@ -633,10 +605,6 @@
     <script type="module">
         import { authService } from './js/services/auth.service.js';
         import { vtuberService } from './js/services/vtuber.service.js';
-        import { storageService } from './js/services/storage.service.js';
-        import PostsService from './js/services/posts.service.js';
-        import MilestonesService from './js/services/milestones.service.js';
-        import PaymentService from './js/services/payment.service.js';
 
         let currentUid = null;
 
@@ -662,19 +630,6 @@
             // 已登入，將用戶名稱替換到 UI
             const displayName = document.querySelector('.user-profile .user-name');
             if (displayName) displayName.textContent = profile.displayName || user.displayName || user.email;
-            // Navbar user info
-            const navbarName = document.getElementById('navbar-username');
-            if (navbarName) navbarName.textContent = profile.displayName || user.displayName || user.email;
-            const navbarAvatar = document.getElementById('navbar-avatar');
-            if (navbarAvatar && profile.avatarUrl) navbarAvatar.src = profile.avatarUrl;
-        // Navbar logout button
-        const navbarLogoutBtn = document.getElementById('navbar-logout-btn');
-        if (navbarLogoutBtn) {
-            navbarLogoutBtn.onclick = async () => {
-                await authService.logout();
-                window.location.href = "auth.html";
-            };
-        }
 
             // 從 Firestore 載入創作者頁面設定
             const vtProfile = await vtuberService.getProfile(user.uid);
@@ -701,8 +656,7 @@
                 }
             }
 
-        await loadPostComposerMilestones();
-        await renderPosts();
+                renderPosts();
                 // Render milestones list after posts
                 if (typeof renderMilestones === 'function') renderMilestones();
         });
@@ -795,338 +749,33 @@
             }, 600);
         };
 
-        // Expose storageService to non-module scripts (dashboard.js uses legacy code)
-        window.storageService = storageService;
-
-        const postMilestoneSelect = document.getElementById('vt-post-milestone');
-        const postVisibilitySelect = document.getElementById('vt-post-visibility');
-        const postTitleInput = document.getElementById('vt-post-title');
-        const postInput = document.getElementById('vt-post-input');
-        const postAttachmentInput = document.getElementById('vt-post-attachment');
-        const postAttachmentPreview = document.getElementById('vt-post-attachment-preview');
-        const postSaveBtn = document.getElementById('vt-post-save-btn');
-
-        function postEscapeHtml(s) {
-            if (!s) return '';
-            return String(s).replace(/[&<>"]/g, (ch) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
-        }
-
-        function postTimestampToMillis(ts) {
-            if (!ts) return 0;
-            if (typeof ts.toMillis === 'function') return ts.toMillis();
-            if (typeof ts.seconds === 'number') return ts.seconds * 1000;
-            return 0;
-        }
-
-        function formatPostDate(ts) {
-            const ms = postTimestampToMillis(ts);
-            if (!ms) return '剛剛';
-            return new Date(ms).toLocaleString('zh-TW', {
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function getAttachmentType(file) {
-            if (!file || !file.type) return 'file';
-            if (file.type.startsWith('image/')) return 'image';
-            if (file.type.startsWith('video/')) return 'video';
-            return 'file';
-        }
-
-        function renderComposerAttachmentPreview() {
-            if (!postAttachmentPreview || !postAttachmentInput) return;
-            const files = Array.from(postAttachmentInput.files || []);
-            if (files.length === 0) {
-                postAttachmentPreview.classList.add('text-muted');
-                postAttachmentPreview.textContent = '尚未選擇附件';
-                return;
-            }
-            postAttachmentPreview.classList.remove('text-muted');
-            postAttachmentPreview.innerHTML = files
-                .map((f) => `<span class="post-composer-file-chip">${postEscapeHtml(f.name)}</span>`)
-                .join('');
-        }
-
-        async function loadPostComposerMilestones(selectedId = null) {
-            if (!postMilestoneSelect) return;
-            try {
-                const milestones = await MilestonesService.getMilestones();
-                const sorted = (milestones || []).slice().sort((a, b) => {
-                    return postTimestampToMillis(b.createdAt) - postTimestampToMillis(a.createdAt);
-                });
-
-                if (sorted.length === 0) {
-                    postMilestoneSelect.innerHTML = '<option value="">尚無里程碑，請先建立</option>';
-                    return;
-                }
-
-                const currentValue = selectedId || postMilestoneSelect.value;
-                postMilestoneSelect.innerHTML = `
-                    <option value="">請選擇發布里程碑</option>
-                    ${sorted.map((m) => `<option value="${m.id}">${postEscapeHtml(m.title || '未命名里程碑')} (${m.status || 'draft'})</option>`).join('')}
-                `;
-
-                const fallback = sorted[0].id;
-                const matched = sorted.some((m) => m.id === currentValue);
-                postMilestoneSelect.value = matched ? currentValue : fallback;
-            } catch (err) {
-                console.error('[Dashboard] loadPostComposerMilestones error:', err);
-                postMilestoneSelect.innerHTML = '<option value="">讀取里程碑失敗</option>';
-            }
-        }
-
-        function clearPostComposer({ keepMilestone = true } = {}) {
-            const selectedMilestone = postMilestoneSelect ? postMilestoneSelect.value : '';
-            if (postTitleInput) postTitleInput.value = '';
-            if (postInput) postInput.value = '';
-            if (postAttachmentInput) postAttachmentInput.value = '';
-            if (postVisibilitySelect) postVisibilitySelect.value = 'public';
-            renderComposerAttachmentPreview();
-            if (keepMilestone && postMilestoneSelect) postMilestoneSelect.value = selectedMilestone;
-        }
-
-        function renderPostAttachments(attachments = []) {
-            if (!Array.isArray(attachments) || attachments.length === 0) return '';
-            return `
-                <div class="post-attachment-grid">
-                    ${attachments.map((a) => {
-                        const url = postEscapeHtml(a.url || '');
-                        const name = postEscapeHtml(a.name || '附件');
-                        if (a.type === 'image') {
-                            return `<img src="${url}" alt="${name}" class="post-attachment-image" loading="lazy">`;
-                        }
-                        if (a.type === 'video') {
-                            return `<video class="post-attachment-video" controls preload="metadata"><source src="${url}"></video>`;
-                        }
-                        return `<a href="${url}" target="_blank" rel="noopener" class="post-attachment-link"><i class="fas fa-paperclip"></i> ${name}</a>`;
-                    }).join('')}
-                </div>
-            `;
-        }
-
-        async function renderPosts() {
+        function renderPosts() {
             const list = document.getElementById('vt-post-list');
-            if (!list || !currentUid) return;
-
-            list.innerHTML = '<div class="text-muted">貼文載入中...</div>';
-            try {
-                const posts = await PostsService.listCreatorPosts({ includeDrafts: true, limitPerMilestone: 100 });
-                if (posts.length === 0) {
-                    list.innerHTML = '<div class="text-muted">目前還沒有草稿或已發布貼文。</div>';
-                    return;
-                }
-
-                list.innerHTML = posts.map((p) => {
-                    const isDraft = p.status !== 'published';
-                    const statusLabel = isDraft ? '草稿' : '已發布';
-                    const statusClass = isDraft ? 'post-pill-draft' : 'post-pill-published';
-                    const visibilityLabel = p.visibility === 'supporters' ? '贊助者限定' : '公開';
-                    const timestamp = isDraft ? (p.updatedAt || p.createdAt) : (p.publishedAt || p.updatedAt || p.createdAt);
-                    const timeLabel = isDraft ? '草稿更新時間' : '發布時間';
-
-                    return `
-                        <div class="post-history-card">
-                            <div class="post-history-head">
-                                <div class="post-history-meta">
-                                    <span class="post-pill ${statusClass}">${statusLabel}</span>
-                                    <span class="post-pill post-pill-visibility">${visibilityLabel}</span>
-                                    <span class="text-muted">里程碑：${postEscapeHtml(p.milestoneTitle || p.milestoneId || '未指定')}</span>
-                                </div>
-                                <div class="text-muted" style="font-size:0.82rem;">${timeLabel}：${formatPostDate(timestamp)}</div>
-                            </div>
-
-                            <div style="font-weight:800; margin-bottom:8px;">${postEscapeHtml(p.title || '未命名貼文')}</div>
-                            <div class="post-history-content">${postEscapeHtml(p.content || '').replace(/\n/g, '<br>')}</div>
-                            ${renderPostAttachments(p.attachments)}
-
-                            <div class="post-history-actions">
-                                ${isDraft ? `<button class="btn-primary" onclick="publishPostDraft('${p.milestoneId}', '${p.id}', this)"><i class="fas fa-upload"></i> 發布</button>` : ''}
-                                <button class="btn-outline" onclick="deletePostDraft('${p.milestoneId}', '${p.id}', this)"><i class="fas fa-trash"></i> 刪除</button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            } catch (err) {
-                console.error('[Dashboard] renderPosts error:', err);
-                list.innerHTML = '<div class="text-muted">讀取貼文失敗，請稍後重試。</div>';
-            }
-        }
-
-        async function savePostDraft() {
-            if (!currentUid) return alert('請先登入');
-
-            const milestoneId = postMilestoneSelect?.value?.trim();
-            const visibility = postVisibilitySelect?.value || 'public';
-            const title = postTitleInput?.value?.trim() || '';
-            const content = postInput?.value?.trim() || '';
-            const files = Array.from(postAttachmentInput?.files || []);
-
-            if (!milestoneId) {
-                showToast('請先選擇要發布的里程碑', 'error');
+            if (!list) return;
+            const posts = JSON.parse(localStorage.getItem('vt-posts') || '[]');
+            if (posts.length === 0) {
+                list.innerHTML = '<div class="text-muted">目前還沒有發布任何內容。</div>';
                 return;
             }
-            if (!content && files.length === 0) {
-                showToast('請輸入貼文內容或上傳附件', 'error');
-                return;
-            }
-
-            const originalBtnHtml = postSaveBtn ? postSaveBtn.innerHTML : '';
-            if (postSaveBtn) {
-                postSaveBtn.disabled = true;
-                postSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 草稿儲存中...';
-            }
-
-            try {
-                const attachments = [];
-                for (const file of files) {
-                    const url = await storageService.uploadFile(file);
-                    attachments.push({
-                        type: getAttachmentType(file),
-                        url,
-                        name: file.name,
-                        contentType: file.type || null
-                    });
-                }
-
-                await PostsService.createDraft(milestoneId, {
-                    title,
-                    content,
-                    visibility,
-                    attachments
-                });
-
-                clearPostComposer();
-                await renderPosts();
-                showToast('貼文草稿已儲存，請到下方清單點擊發布。', 'success');
-            } catch (err) {
-                console.error('[Dashboard] savePostDraft error:', err);
-                showToast('儲存草稿失敗，請稍後再試', 'error');
-            } finally {
-                if (postSaveBtn) {
-                    postSaveBtn.disabled = false;
-                    postSaveBtn.innerHTML = originalBtnHtml || '<i class="fas fa-save"></i> 儲存草稿';
-                }
-            }
+            list.innerHTML = posts.map(p => `
+                <div class="card" style="padding:1.5rem; background:var(--bg-subtle);">
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:8px;">${p.date}</div>
+                    <div style="white-space: pre-wrap; line-height:1.6;">${p.content}</div>
+                </div>
+            `).join('');
         }
 
-        async function publishPostDraft(milestoneId, postId, btn) {
-            const ok = await openConfirmModal('確定要發布這則貼文嗎？發布後粉絲即可看到。', '確認發布貼文', '發布', '取消');
-            if (!ok) return;
-
-            const originalBtnHtml = btn ? btn.innerHTML : '';
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 發布中';
-            }
-
-            try {
-                await PostsService.publish(milestoneId, postId);
-                await renderPosts();
-                showToast('貼文已發布', 'success');
-            } catch (err) {
-                console.error('[Dashboard] publishPostDraft error:', err);
-                showToast('發布失敗，請稍後再試', 'error');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalBtnHtml || '<i class="fas fa-upload"></i> 發布';
-                }
-            }
-        }
-
-        async function deletePostDraft(milestoneId, postId, btn) {
-            const ok = await openConfirmModal('確定要刪除此貼文嗎？此操作無法復原。', '確認刪除貼文', '刪除', '取消');
-            if (!ok) return;
-
-            const originalBtnHtml = btn ? btn.innerHTML : '';
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 刪除中';
-            }
-
-            try {
-                await PostsService.delete(milestoneId, postId);
-                await renderPosts();
-                showToast('貼文已刪除', 'success');
-            } catch (err) {
-                console.error('[Dashboard] deletePostDraft error:', err);
-                showToast('刪除失敗，請稍後再試', 'error');
-                if (btn) {
-                    btn.disabled = false;
-                    btn.innerHTML = originalBtnHtml || '<i class="fas fa-trash"></i> 刪除';
-                }
-            }
-        }
-
-        window.savePostDraft = savePostDraft;
-        window.publishPostDraft = publishPostDraft;
-        window.deletePostDraft = deletePostDraft;
-        window.renderPosts = renderPosts;
-        window.clearPostComposer = clearPostComposer;
-        window.refreshPostMilestoneOptions = loadPostComposerMilestones;
-        window.MilestonesService = MilestonesService;
-
-        if (postAttachmentInput) {
-            postAttachmentInput.addEventListener('change', renderComposerAttachmentPreview);
-            renderComposerAttachmentPreview();
-        }
-
-        // Banner upload controls (file input -> preview -> upload)
-        const vtBannerFileInput = document.getElementById('vt-banner-input');
-        const vtBannerTextInput = document.getElementById('vt-banner');
-        const vtBannerPreview = document.getElementById('vt-banner-preview');
-        const vtBannerPlaceholder = document.getElementById('vt-banner-placeholder');
-        const vtBannerUploadBtn = document.getElementById('vt-banner-upload-btn');
-        const vtBannerClearBtn = document.getElementById('vt-banner-clear-btn');
-
-        if (vtBannerFileInput) {
-            vtBannerFileInput.addEventListener('change', async (e) => {
-                const f = e.target.files && e.target.files[0];
-                if (!f) {
-                    if (vtBannerPreview) { vtBannerPreview.src = ''; vtBannerPreview.style.display = 'none'; }
-                    if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'inline';
-                    return;
-                }
-                // show preview
-                const fr = new FileReader();
-                fr.onload = function(ev) {
-                    if (vtBannerPreview) { vtBannerPreview.src = ev.target.result; vtBannerPreview.style.display = 'block'; }
-                    if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'none';
-                }
-                fr.readAsDataURL(f);
-            });
-        }
-
-        if (vtBannerUploadBtn) {
-            vtBannerUploadBtn.addEventListener('click', async (e) => {
-                const f = vtBannerFileInput && vtBannerFileInput.files && vtBannerFileInput.files[0];
-                if (!f) return showToast('請先選擇要上傳的圖片檔', 'error');
-                try {
-                    vtBannerUploadBtn.disabled = true;
-                    vtBannerUploadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 上傳中...';
-                    const url = await storageService.uploadFile(f);
-                    if (vtBannerTextInput) vtBannerTextInput.value = url;
-                    showToast('橫幅圖片上傳完成', 'success');
-                } catch (err) {
-                    console.error('[Dashboard] banner upload error', err);
-                    showToast('橫幅上傳失敗', 'error');
-                } finally {
-                    vtBannerUploadBtn.disabled = false;
-                    vtBannerUploadBtn.innerHTML = '<i class="fas fa-upload"></i> 上傳';
-                }
-            });
-        }
-
-        if (vtBannerClearBtn) {
-            vtBannerClearBtn.addEventListener('click', () => {
-                if (vtBannerFileInput) { vtBannerFileInput.value = ''; }
-                if (vtBannerPreview) { vtBannerPreview.src = ''; vtBannerPreview.style.display = 'none'; }
-                if (vtBannerPlaceholder) vtBannerPlaceholder.style.display = 'inline';
-                if (vtBannerTextInput) vtBannerTextInput.value = '';
-            });
+        window.publishPost = function () {
+            const input = document.getElementById('vt-post-input');
+            const content = input.value.trim();
+            if (!content) return alert('請輸入文章內容');
+            const post = { content: content, date: new Date().toLocaleString() };
+            let posts = JSON.parse(localStorage.getItem('vt-posts') || '[]');
+            posts.unshift(post);
+            localStorage.setItem('vt-posts', JSON.stringify(posts));
+            input.value = '';
+            renderPosts();
+            alert('成功發布給粉絲！');
         }
     </script>
 </body>

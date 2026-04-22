@@ -41,6 +41,7 @@ class VtuberService {
 
             await setDoc(ref, {
                 ...data,
+                uid,
                 updatedAt: serverTimestamp()
             }, { merge: true });
 
@@ -73,21 +74,14 @@ class VtuberService {
             const handleSnap = await getDoc(handleRef);
             if (handleSnap.exists()) {
                 const { uid } = handleSnap.data();
-                const profile = await this.getProfile(uid);
-                // Ensure uid is included in returned profile
-                if (profile) {
-                    return { ...profile, uid };
-                }
-                return null;
+                return await this.getProfile(uid);
             }
 
             // Fallback: if the handles index is missing or the caller passed a raw uid,
             // try to read the profile document directly by id.
             const profileRef = doc(db, COLLECTION, handle);
             const profileSnap = await getDoc(profileRef);
-            if (profileSnap.exists()) {
-                return { ...profileSnap.data(), uid: handle };
-            }
+            if (profileSnap.exists()) return profileSnap.data();
 
             return null;
         } catch (err) {
