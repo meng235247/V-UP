@@ -17,7 +17,15 @@ const MilestonesService = {
       const qOwner = query(colRef, where('vtuberId', '==', vtuberId));
       const qCollab = query(colRef, where('collaborators', 'array-contains', vtuberId));
       
-      const [snapOwner, snapCollab] = await Promise.all([getDocs(qOwner), getDocs(qCollab)]);
+      const [ownerResult, collabResult] = await Promise.allSettled([getDocs(qOwner), getDocs(qCollab)]);
+      const snapOwner = ownerResult.status === 'fulfilled' ? ownerResult.value : { docs: [] };
+      const snapCollab = collabResult.status === 'fulfilled' ? collabResult.value : { docs: [] };
+      if (ownerResult.status === 'rejected') {
+        console.warn('[MilestonesService] owner milestones query failed:', ownerResult.reason);
+      }
+      if (collabResult.status === 'rejected') {
+        console.warn('[MilestonesService] collaborator milestones query failed:', collabResult.reason);
+      }
       const map = new Map();
       snapOwner.docs.forEach(d => map.set(d.id, { id: d.id, ...d.data() }));
       snapCollab.docs.forEach(d => {
