@@ -7,8 +7,9 @@ const HOST = '127.0.0.1';
 
 const requiredPorts = [5173, 5176, 8081, 9099];
 const testUsers = [
-  'vtuber.aurora@test.local',
-  'vtuber.nova@test.local'
+  { email: 'vtuber.aurora@test.local', type: 'vtuber' },
+  { email: 'vtuber.nova@test.local', type: 'vtuber' },
+  { email: 'fan.test@test.local', type: 'fan' }
 ];
 
 function checkPort(port, timeoutMs = 1200) {
@@ -65,6 +66,7 @@ async function main() {
   assertStatus('auth', await requestStatus('http://127.0.0.1:5173/auth.html'), [200]);
   assertStatus('dashboard', await requestStatus('http://127.0.0.1:5173/dashboard.html'), [200]);
   assertStatus('public profile', await requestStatus('http://127.0.0.1:5173/vtuber_profile.html?id=auroramizu'), [200]);
+  assertStatus('fan profile', await requestStatus('http://127.0.0.1:5173/fan_profile.html'), [200]);
   const uploadPreflight = await requestStatus('http://127.0.0.1:5176/upload', 'OPTIONS');
   assertStatus('upload preflight', uploadPreflight, [200, 204]);
 
@@ -79,15 +81,18 @@ async function main() {
   const auth = admin.auth();
   const db = admin.firestore();
 
-  for (const email of testUsers) {
-    const user = await auth.getUserByEmail(email);
+  for (const u of testUsers) {
+    const user = await auth.getUserByEmail(u.email);
     const userDoc = await db.collection('users').doc(user.uid).get();
-    const vtDoc = await db.collection('vtubers').doc(user.uid).get();
-    if (!userDoc.exists) throw new Error(`[smoke] missing users/${user.uid} for ${email}`);
-    if (!vtDoc.exists) throw new Error(`[smoke] missing vtubers/${user.uid} for ${email}`);
-    const handle = vtDoc.data().handle;
-    const handleDoc = await db.collection('handles').doc(handle).get();
-    if (!handleDoc.exists) throw new Error(`[smoke] missing handles/${handle} for ${email}`);
+    if (!userDoc.exists) throw new Error(`[smoke] missing users/${user.uid} for ${u.email}`);
+    
+    if (u.type === 'vtuber') {
+      const vtDoc = await db.collection('vtubers').doc(user.uid).get();
+      if (!vtDoc.exists) throw new Error(`[smoke] missing vtubers/${user.uid} for ${u.email}`);
+      const handle = vtDoc.data().handle;
+      const handleDoc = await db.collection('handles').doc(handle).get();
+      if (!handleDoc.exists) throw new Error(`[smoke] missing handles/${handle} for ${u.email}`);
+    }
   }
 
   const ms = await db.collection('milestones').doc('ms_demo_aurora').get();

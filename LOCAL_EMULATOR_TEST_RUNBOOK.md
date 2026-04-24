@@ -39,11 +39,13 @@ If this command succeeds, environment is considered ready.
 
 1. `vtuber.aurora@test.local` / `VtuberTest123!` (handle: `auroramizu`)
 2. `vtuber.nova@test.local` / `VtuberTest123!` (handle: `novakaze`)
+3. `fan.test@test.local` / `FanTest123!` (role: `fan`)
 
 These are created/updated by `scripts/seed-vtuber-emulator.js`.
 
 ## Manual End-to-End Validation Checklist
 
+### Part 1: VTuber Dashboard & Publishing Flow
 Use one seeded VTuber account and verify:
 
 1. Open `index.html` and navigate to `auth.html`.
@@ -55,6 +57,13 @@ Use one seeded VTuber account and verify:
 7. Create a public post and (optional) supporters-only post.
 8. Open public page with handle (`vtuber_profile.html?id=<handle>`) and verify rendered content.
 9. Logout and reopen public page; public content must remain visible.
+
+### Part 2: Fan Sponsorship & Profile Verification
+1. Login with seeded Fan credentials (`fan.test@test.local`).
+2. Visit `vtuber_profile.html?id=auroramizu`.
+3. Click "Sponsor" on the demo milestone and submit a simulated payment.
+4. Verify that the milestone progress bar updates immediately without reloading the page.
+5. Navigate to `fan_profile.html` and verify the sponsorship record, supported VTuber, and badge appear in the UI.
 
 If browser appears to cache stale code, close old tabs and hard refresh (`Ctrl+F5`).
 
