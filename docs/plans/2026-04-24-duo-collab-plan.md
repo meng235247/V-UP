@@ -103,9 +103,19 @@ initiate: async (milestoneId, amount, method, message) => {
 
   // 模擬付款成功
   await updateDoc(txRef, { status: 'success', confirmedAt: serverTimestamp() });
+  
+  // 組合獲得的徽章
+  const newBadge = {
+    milestoneId: milestoneId,
+    name: milestoneTitle || '贊助者',
+    icon: '🏅',
+    awardedAt: new Date().toISOString()
+  };
+
   await updateDoc(doc(db, 'users', user.uid), {
     unlockedMilestones: arrayUnion(milestoneId),
     supportedVtubers: arrayUnion(vtuberId),
+    badges: arrayUnion(newBadge),
     updatedAt: serverTimestamp()
   });
 
@@ -399,7 +409,7 @@ git checkout -b feat/fan-profile-ui
 ```js
 import { auth, db } from '../firebase-config.js';
 import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 
 function renderHero(user, userDoc) {
   const el = (id) => document.getElementById(id);
@@ -449,27 +459,27 @@ function renderTransactions(txList = []) {
 }
 
 async function initFanProfile() {
-  onAuthStateChanged(auth, async (user) => {
+  onAuthStateChanged(auth, (user) => {
     if (!user) { window.location.href = 'auth.html'; return; }
 
-    let userDocData = {};
-    try {
-      const snap = await getDoc(doc(db, 'users', user.uid));
-      if (snap.exists()) userDocData = snap.data();
-    } catch (e) { console.warn('無法讀取 user doc', e); }
+    // 1. 即時監聽 User Document (更新徽章、頭像、支援的 VTuber)
+    onSnapshot(doc(db, 'users', user.uid), async (snap) => {
+      if (snap.exists()) {
+        const userDocData = snap.data();
+        renderHero(user, userDocData);
+        renderBadges(userDocData.badges || []);
+        await renderSupportedVtubers(userDocData.supportedVtubers || []);
+      }
+    });
 
-    renderHero(user, userDocData);
-    renderBadges(userDocData.badges || []);
-    await renderSupportedVtubers(userDocData.supportedVtubers || []);
-
-    try {
-      const q = query(collection(db, 'transactions'), where('fanUid', '==', user.uid), orderBy('createdAt', 'desc'));
-      const snap = await getDocs(q);
+    // 2. 即時監聽 Transactions (贊助紀錄)
+    const q = query(collection(db, 'transactions'), where('fanUid', '==', user.uid), orderBy('createdAt', 'desc'));
+    onSnapshot(q, (snap) => {
       renderTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-    } catch (e) {
+    }, (e) => {
       console.warn('無法讀取 transactions，可能缺少索引', e);
       renderTransactions([]);
-    }
+    });
   });
 }
 
