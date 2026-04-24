@@ -15,14 +15,22 @@ const users = [
     password: 'VtuberTest123!',
     displayName: 'Aurora Mizu',
     handle: 'auroramizu',
-    colorPrimary: '#ff4f8b'
+    colorPrimary: '#ff4f8b',
+    role: 'vtuber'
   },
   {
     email: 'vtuber.nova@test.local',
     password: 'VtuberTest123!',
     displayName: 'Nova Kaze',
     handle: 'novakaze',
-    colorPrimary: '#4f9dff'
+    colorPrimary: '#4f9dff',
+    role: 'vtuber'
+  },
+  {
+    email: 'fan.test@test.local',
+    password: 'FanTest123!',
+    displayName: 'Test Fan',
+    role: 'fan'
   }
 ];
 
@@ -46,26 +54,30 @@ async function ensureUser(u) {
   await db.collection('users').doc(user.uid).set({
     uid: user.uid,
     email: u.email,
-    role: 'vtuber',
+    role: u.role || 'vtuber',
     displayName: u.displayName,
     isPublic: true,
     updatedAt: admin.firestore.FieldValue.serverTimestamp()
   }, { merge: true });
 
-  await db.collection('vtubers').doc(user.uid).set({
-    uid: user.uid,
-    id: user.uid,
-    displayName: u.displayName,
-    name: u.displayName,
-    handle: u.handle,
-    bio: `${u.displayName} emulator profile`,
-    avatarUrl: `https://i.pravatar.cc/300?u=${user.uid}`,
-    colorPrimary: u.colorPrimary,
-    updatedAt: admin.firestore.FieldValue.serverTimestamp()
-  }, { merge: true });
+  if (u.role !== 'fan') {
+    await db.collection('vtubers').doc(user.uid).set({
+      uid: user.uid,
+      id: user.uid,
+      displayName: u.displayName,
+      name: u.displayName,
+      handle: u.handle,
+      bio: `${u.displayName} emulator profile`,
+      avatarUrl: `https://i.pravatar.cc/300?u=${user.uid}`,
+      colorPrimary: u.colorPrimary,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
 
-  await db.collection('handles').doc(u.handle).set({ uid: user.uid }, { merge: true });
-  return { uid: user.uid, email: u.email, handle: u.handle };
+    await db.collection('handles').doc(u.handle).set({ uid: user.uid }, { merge: true });
+    return { uid: user.uid, email: u.email, handle: u.handle };
+  }
+
+  return { uid: user.uid, email: u.email, role: 'fan' };
 }
 
 async function seedDemoMilestone(owner) {
