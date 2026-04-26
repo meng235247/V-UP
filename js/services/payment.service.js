@@ -1,17 +1,101 @@
 import { db, auth } from '../firebase-config.js';
-import { collection, query, where, getDocs, orderBy } from 'firebase/firestore';
+import {
+  collection, doc, query, where, getDocs, orderBy,
+  runTransaction, serverTimestamp, updateDoc, arrayUnion
+} from 'firebase/firestore';
 
 const PaymentService = {
-  initiate: (milestoneId, amount, method, message) => {
-    // Placeholder for initiating a payment
-    console.log('[Payment Initiated]', { milestoneId, amount, method, message });
-    return Promise.resolve({ txId: 'mockTxId123', status: 'pending' });
+  /**
+   * 模擬贊助流程（寫入 Firestore）
+   * 使用 runTransaction 確保里程碑進度與交易紀錄同時寫入（原子操作）。
+   * 交易完成後，為粉絲更新 unlockedMilestones、supportedVtubers 與 badges。
+   *
+   * @param {string} milestoneId - 里程碑 document ID
+   * @param {number} amount - 贊助金額
+   * @param {string} method - 付款方式（模擬用）
+   * @param {string} message - 粉絲留言
+   * @returns {{ txId: string, status: 'success' }}
+   */
+  initiate: async (milestoneId, amount, method, message) => {
+    const user = auth.currentUser;
+    if (!user) throw new Error('請先登入');
+    if (!milestoneId) throw new Error('缺少里程碑 ID');
+    if (!(Number(amount) > 0)) throw new Error('贊助金額必須大於 0');
+
+    const milestoneRef = doc(db, 'milestones', milestoneId);
+    // 預先建立 txRef，讓 txId 在 transaction 外也能取用
+    const txRef = doc(collection(db, 'transactions'));
+
+    let vtuberId = '';
+    let milestoneTitle = '';
+
+    // --- 原子操作：同時更新里程碑進度 + 建立交易紀錄 ---
+    await runTransaction(db, async (t) => {
+      const msSnap = await t.get(milestoneRef);
+      if (!msSnap.exists()) throw new Error('里程碑不存在');
+
+      const msData = msSnap.data();
+      vtuberId = msData.vtuberId || '';
+      milestoneTitle = msData.title || '';
+
+      const prevAmount = typeof msData.currentAmount === 'number' ? msData.currentAmount : 0;
+      const prevSupporters = typeof msData.totalSupporters === 'number' ? msData.totalSupporters : 0;
+
+      // 更新里程碑累積金額與支持者數
+      t.update(milestoneRef, {
+        currentAmount: prevAmount + Number(amount),
+        totalSupporters: prevSupporters + 1,
+        updatedAt: serverTimestamp()
+      });
+
+      // 建立交易紀錄（直接以 status:'success' 寫入，因為這是模擬流程）
+      t.set(txRef, {
+        fanUid: user.uid,
+        fanName: user.displayName || '匿名粉絲',
+        vtuberId,
+        milestoneId,
+        milestoneTitle,
+        amount: Number(amount),
+        method: method || 'simulated',
+        message: message || '',
+        status: 'success',        // 模擬：直接成功，不走 pending→success 兩段式
+        createdAt: serverTimestamp()
+      });
+    });
+
+    // --- 原子操作外：更新粉絲個人資料 ---
+    // （user doc 的更新不在 transaction 內，因為 rules 允許粉絲自己 update）
+    const newBadge = {
+      milestoneId,
+      name: milestoneTitle || '贊助者',
+      icon: '🏅',
+      awardedAt: new Date().toISOString()
+    };
+
+    await updateDoc(doc(db, 'users', user.uid), {
+      unlockedMilestones: arrayUnion(milestoneId),
+      supportedVtubers: arrayUnion(vtuberId),
+      badges: arrayUnion(newBadge),
+      updatedAt: serverTimestamp()
+    });
+
+    console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount });
+    return { txId: txRef.id, status: 'success' };
   },
 
-  getStatus: (txId) => {
-    // Placeholder for checking payment status
-    console.log('[Get Payment Status]', { txId });
-    return Promise.resolve({ txId, status: 'success' });
+  /**
+   * 查詢單筆交易狀態（目前為 Firestore 直讀，保留供未來擴充）
+   */
+  getStatus: async (txId) => {
+    try {
+      const { getDoc } = await import('firebase/firestore');
+      const snap = await getDoc(doc(db, 'transactions', txId));
+      if (!snap.exists()) return { txId, status: 'not_found' };
+      return { txId, status: snap.data().status };
+    } catch (err) {
+      console.error('[PaymentService] getStatus error:', err);
+      return { txId, status: 'error' };
+    }
   },
 
   getTransactions: async (vtuberId) => {

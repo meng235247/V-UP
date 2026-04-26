@@ -39,10 +39,10 @@ service cloud.firestore {
       // create: signed-in user can create a profile that they own (document id equals creator uid)
       allow create: if isSignedIn() && (request.auth.uid == vtuberId || isAdmin());
 
-        // update: owner can update most fields but must be the document owner (vtuberId)
-        allow update: if isAdmin() || (isSignedIn()
-          && request.auth.uid == vtuberId
-          && ( !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid));
+      // update: owner can update most fields but must be the document owner (vtuberId)
+      allow update: if isAdmin() || (isSignedIn()
+        && request.auth.uid == vtuberId
+        && ( !('uid' in request.resource.data) || request.resource.data.uid == resource.data.uid));
 
       allow delete: if isAdmin();
     }
@@ -103,20 +103,27 @@ service cloud.firestore {
             && (!('totalSupporters' in request.resource.data) || request.resource.data.totalSupporters == 0)
             && ( !('status' in request.resource.data) || request.resource.data.status in ['draft','published']);
 
-      // update: admin can do anything; owner can update allowed non-server fields and may set status -> draft|published only
+      // update: admin can do anything; owner can update allowed non-server fields
       allow update: if isAdmin()
+                    // 1) VTuber Owner update
                     || (isSignedIn() && request.auth.uid == resource.data.get('vtuberId', '__missing__')
                         && ( !('vtuberId' in request.resource.data) || request.resource.data.vtuberId == resource.data.get('vtuberId', '__missing__'))
-
                         // owner must not change server-controlled fields
                         && ( (!('currentAmount' in request.resource.data) || request.resource.data.currentAmount == resource.data.currentAmount)
                           && (!('totalSupporters' in request.resource.data) || request.resource.data.totalSupporters == resource.data.totalSupporters)
                           && (!('achievedAt' in request.resource.data) || request.resource.data.achievedAt == resource.data.achievedAt)
                           && (!('archivedAt' in request.resource.data) || request.resource.data.archivedAt == resource.data.archivedAt)
                         )
-
                         // owner may only set status to draft or published (cannot mark achieved/archived)
                         && ( !('status' in request.resource.data) || request.resource.data.status in ['draft','published'] || request.resource.data.status == resource.data.get('status', '__missing__'))
+                       )
+                    // 2) Fan sponsor update
+                    || (isSignedIn() && request.auth.uid != resource.data.get('vtuberId', '__missing__')
+                        // fan can only touch these specific fields during sponsorship
+                        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentAmount', 'totalSupporters', 'updatedAt'])
+                        // ensure they only increment
+                        && request.resource.data.currentAmount >= resource.data.get('currentAmount', 0)
+                        && request.resource.data.totalSupporters >= resource.data.get('totalSupporters', 0)
                        );
 
       // delete: allow admin, owner can delete drafts only
@@ -140,12 +147,12 @@ service cloud.firestore {
             && ('amount' in request.resource.data && (request.resource.data.amount is number) && request.resource.data.amount > 0);
 
       // update: admin can update; contributor can only update non-sensitive fields (e.g., message) but not amount/status/userId
-          allow update: if isAdmin()
-                || (isSignedIn() && request.auth.uid == resource.data.userId
-                  && ( !('userId' in request.resource.data) || request.resource.data.userId == resource.data.userId)
-                  && ( !('amount' in request.resource.data) || request.resource.data.amount == resource.data.amount)
-                  && ( !('status' in request.resource.data) || request.resource.data.status == resource.data.status)
-                   );
+      allow update: if isAdmin()
+            || (isSignedIn() && request.auth.uid == resource.data.userId
+              && ( !('userId' in request.resource.data) || request.resource.data.userId == resource.data.userId)
+              && ( !('amount' in request.resource.data) || request.resource.data.amount == resource.data.amount)
+              && ( !('status' in request.resource.data) || request.resource.data.status == resource.data.status)
+               );
 
       // delete: admin or contributor (only pending) can delete
       allow delete: if isAdmin() || (isSignedIn() && request.auth.uid == resource.data.userId && resource.data.status == 'pending');
@@ -208,17 +215,20 @@ service cloud.firestore {
 
     // ----------------------------
     // transactions (payment records)
-    // - clients may create pending transactions; only admin/server can update status/rawPayload
+    // - 粉絲可建立自己名下的交易（status 允許 pending 或 success，模擬用）
+    // - status / rawPayload 的更新保留給 admin（未來接上真實付款 webhook）
     // ----------------------------
     match /transactions/{txId} {
-      allow read: if isAdmin() || (isSignedIn() && (resource.data.fanUid == request.auth.uid || resource.data.vtuberId == request.auth.uid));
+      // 為了支援 A-Task 2b 的前端排行榜即時監聽，開放讀取成功的交易
+      allow read: if isAdmin() 
+                  || (isSignedIn() && (resource.data.fanUid == request.auth.uid || resource.data.vtuberId == request.auth.uid))
+                  || (resource.data.status == 'success');
 
       allow create: if isSignedIn()
             && ('fanUid' in request.resource.data && request.auth.uid == request.resource.data.fanUid)
-            && ('status' in request.resource.data && request.resource.data.status == 'pending')
+            && ('status' in request.resource.data && request.resource.data.status in ['pending', 'success'])
             && ('amount' in request.resource.data && (request.resource.data.amount is number && request.resource.data.amount > 0));
 
-      // updates to status/rawPayload are admin/server-only
       allow update: if isAdmin();
       allow delete: if isAdmin();
     }
