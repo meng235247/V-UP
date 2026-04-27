@@ -34,6 +34,10 @@ const PaymentService = {
       const msSnap = await t.get(milestoneRef);
       if (!msSnap.exists()) throw new Error('里程碑不存在');
 
+      // [修正] 從 users 集合讀取最新的 displayName，而非僅依賴 auth.currentUser
+      const userSnap = await t.get(doc(db, 'users', user.uid));
+      const fanDisplayName = userSnap.exists() ? userSnap.data().displayName : (user.displayName || '匿名粉絲');
+
       const msData = msSnap.data();
       vtuberId = msData.vtuberId || '';
       milestoneTitle = msData.title || '';
@@ -51,7 +55,7 @@ const PaymentService = {
       // 建立交易紀錄（直接以 status:'success' 寫入，因為這是模擬流程）
       t.set(txRef, {
         fanUid: user.uid,
-        fanName: user.displayName || '匿名粉絲',
+        fanName: fanDisplayName,
         vtuberId,
         milestoneId,
         milestoneTitle,

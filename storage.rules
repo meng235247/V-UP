@@ -1,0 +1,11 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /uploads/{allPaths=**} {
+      // 允許任何人讀取上傳的圖片 (為了讓公開頁面能顯示)
+      allow read: if true;
+      // 僅限登入使用者上傳
+      allow write: if request.auth != null;
+    }
+  }
+}
