@@ -14,9 +14,11 @@
 - ⬜ `fan_profile.html` 幾乎是空殼（只有 auth 跳轉）
 - ⬜ 贊助流程尚未真正寫入 Firestore / 更新進度條
 - ⬜ 徽章、稱號、解鎖限定貼文邏輯尚未接通
+- ⬜ 贊助後排行榜欄位更新（粉絲累積金額顯示）尚未串接 ← 計畫新增
+- ⬜ 贊助後限定貼文解鎖（允許粉絲讀取 supporters-only 貼文）尚未串接 ← 計畫新增
 - ⬜ Firebase 線上雲端尚未連線（現在 `.env` 是 `demo-key`）
 - ⬜ 網站尚未部署
-
+@
 ---
 
 ## 分工總覽
@@ -157,6 +159,191 @@ function listenMilestoneProgress(vtuberId, renderFn) {
 將原本的 `getMilestones()` 或 `getPublicMilestones()` 呼叫改為呼叫 `listenMilestoneProgress()`，並在 `window.addEventListener('beforeunload', () => unsubscribe())` 清理。
 
 **驗收：** 開兩個瀏覽器分頁，一個看公開頁面，另一個模擬贊助，確認第一個分頁進度條自動更新。
+
+---
+
+### A-Task 2b：贊助後排行榜即時更新（粉絲累積金額）⬅ 新增
+
+> **背景**：`vtuber_profile.html` 右方排行榜目前只在頁面載入時讀取一次。贊助後排行榜需要自動反映粉絲的累積金額。
+
+**設計思路：**
+- 每筆成功交易寫入 `transactions` 集合（已由 A-Task 1 完成）。
+- 後端彙整：在 `milestones.service.js` 新增 `getRankingsLive(milestoneId, limit)` 函數，使用 `onSnapshot` 監聽 `transactions`，依 `milestoneId` 過濾，在客戶端彙整每位粉絲的 `totalAmount`，排序後取前 N 名回傳。
+- 前端：在 `vtuber-profile.page.js` 的每個 milestone card 中，呼叫 `getRankingsLive()` 並在 callback 中重繪排行榜。
+
+**要修改的檔案：** `js/services/milestones.service.js`
+
+在 `MilestonesService` 物件中新增：
+
+```js
+/**
+ * 即時監聽里程碑排行榜（依 transactions 彙整粉絲累積金額）
+ * @param {string} milestoneId
+ * @param {number} limit - 顯示前幾名
+ * @param {function} callback - (rankList) => void
+ *   rankList 每項：{ fanUid, displayName, totalAmount }
+ * @returns unsubscribe function
+ */
+listenRankings: (milestoneId, limit = 10, callback) => {
+  const { onSnapshot, collection, query, where } = await import('firebase/firestore');
+  // 注意：service 頂部已 import，此處用靜態 import
+  const q = query(
+    collection(db, 'transactions'),
+    where('milestoneId', '==', milestoneId),
+    where('status', '==', 'success')
+  );
+  return onSnapshot(q, (snap) => {
+    // 依 fanUid 彙整
+    const map = {};
+    snap.docs.forEach(d => {
+      const tx = d.data();
+      if (!map[tx.fanUid]) {
+        map[tx.fanUid] = { fanUid: tx.fanUid, displayName: tx.fanName || '匿名', totalAmount: 0 };
+      }
+      map[tx.fanUid].totalAmount += (tx.amount || 0);
+    });
+    const sorted = Object.values(map)
+      .sort((a, b) => b.totalAmount - a.totalAmount)
+      .slice(0, limit);
+    callback(sorted);
+  }, (err) => {
+    console.warn('[listenRankings] error:', err);
+    callback([]);
+  });
+},
+```
+
+> ⚠️ **注意**：此函數已使用靜態 import（頂部已有），請勿在函數體內使用 `await import()`。需把上方 snippet 中的 `await import` 改為直接呼叫已 import 的函數。請確認 `milestones.service.js` 頂部已有：
+> ```js
+> import { onSnapshot, collection, query, where } from 'firebase/firestore';
+> ```
+
+**要修改的檔案：** `js/pages/vtuber-profile.page.js`
+
+在 `renderMilestones()` 中每個 milestone card 建立完畢後（目前的 `(async () => getRankings...)()` 區塊），替換為呼叫 `listenRankings()`：
+
+```js
+// 改為即時監聽排行榜（取代舊的一次性 getRankings）
+const unsubRank = MilestonesService.listenRankings(m.id, 10, (rankList) => {
+  const rl = card.querySelector(`#rank-list-${m.id}`);
+  if (!rl) return;
+  if (!rankList.length) {
+    rl.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
+    return;
+  }
+  rl.innerHTML = rankList.map((r, i) => `
+    <div class="rank-item">
+      <span class="r-rank">${i + 1}</span>
+      <img src="https://i.pravatar.cc/100?u=${r.fanUid}" class="r-avatar" alt="${r.displayName}">
+      <div class="r-info">
+        <span class="r-name">${r.displayName}</span>
+        <span class="r-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
+      </div>
+    </div>
+  `).join('');
+});
+// 頁面卸載時清理
+window.addEventListener('beforeunload', unsubRank, { once: true });
+```
+
+**驗收：**
+1. 登入粉絲帳號後贊助一個里程碑。
+2. 確認該里程碑右方排行榜**自動出現或更新**粉絲名稱與累積金額。
+3. 再次贊助（同一里程碑），確認金額**累加**（不是出現兩筆重複紀錄）。
+
+---
+
+### A-Task 2c：贊助後限定貼文解鎖 ⬅ 新增
+
+> **背景**：`vtuber-profile.page.js` 的 `renderMilestonePosts()` 目前判斷是否顯示鎖定狀態的邏輯是：
+> ```js
+> const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
+> const canReadSupporterPost = !!viewerUid && (
+>   (vtuberUid && viewerUid === vtuberUid)
+>   || allowList.includes(viewerUid)
+>   || post.viewerUnlocked === true
+> );
+> ```
+> 此邏輯依賴 `post.allowedUids`（包含粉絲 UID 的白名單），但目前 `PaymentService.initiate()` 只更新了 `users/{uid}.unlockedMilestones`，並**沒有把粉絲 UID 寫入每篇限定貼文的 `allowedUids` 陣列**。
+
+**解法：兩層解鎖判斷（推薦）**
+
+解鎖判斷改為：  
+①先看 `users/{uid}.unlockedMilestones` 是否包含此 `milestoneId` → 包含即為贊助者  
+②不需要逐篇更新 `posts.allowedUids`（可選保留作白名單的備用機制）
+
+**步驟 1 — 在 `vtuber-profile.page.js` 中，`init()` 函數內加入粉絲解鎖狀態讀取：**
+
+```js
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase-config.js';
+
+// 在 init() 函數頂部取得目前登入者的已解鎖里程碑
+let viewerUnlockedMilestones = [];
+if (auth.currentUser) {
+  try {
+    const userSnap = await getDoc(doc(db, 'users', auth.currentUser.uid));
+    if (userSnap.exists()) {
+      viewerUnlockedMilestones = userSnap.data().unlockedMilestones || [];
+    }
+  } catch (e) {
+    console.warn('[VtuberProfilePage] failed to load viewer unlock list', e);
+  }
+}
+// 掛在全域 page controller 上，供 renderMilestonePosts 使用
+VtuberProfilePage._viewerUnlockedMilestones = viewerUnlockedMilestones;
+```
+
+**步驟 2 — 修改 `renderMilestonePosts()` 中的解鎖判斷邏輯（約第 385 行）：**
+
+```js
+// 原有：
+// const canReadSupporterPost = !!viewerUid && (
+//   (vtuberUid && viewerUid === vtuberUid)
+//   || allowList.includes(viewerUid)
+//   || post.viewerUnlocked === true
+// );
+
+// 更新為（新增第三個條件）：
+const unlockedMilestones = VtuberProfilePage._viewerUnlockedMilestones || [];
+const canReadSupporterPost = !!viewerUid && (
+  (vtuberUid && viewerUid === vtuberUid)          // VTuber 本人
+  || allowList.includes(viewerUid)                 // 舊白名單（保留相容）
+  || post.viewerUnlocked === true                  // 伺服器回傳旗標（保留相容）
+  || unlockedMilestones.includes(milestoneId)      // ← 新增：贊助者解鎖判斷
+);
+```
+
+**步驟 3 — 贊助完成後觸發 UI 刷新（在 `vtuber_profile.html` 的 `simulatePaymentAPI` 成功 callback 中新增）：**
+
+```js
+await window.PaymentService.initiate(currentMilestoneId, amount, selectedMethod, msg);
+
+// ← 新增：更新本地解鎖狀態並重繪此里程碑的貼文
+if (window.VtuberProfilePage) {
+  if (!window.VtuberProfilePage._viewerUnlockedMilestones) {
+    window.VtuberProfilePage._viewerUnlockedMilestones = [];
+  }
+  // 將剛剛贊助的里程碑加入本地快取（避免重新讀取 Firestore）
+  if (!window.VtuberProfilePage._viewerUnlockedMilestones.includes(currentMilestoneId)) {
+    window.VtuberProfilePage._viewerUnlockedMilestones.push(currentMilestoneId);
+  }
+  // 重新渲染此里程碑的貼文（解除鎖定）
+  const milestoneCard = document.querySelector(`.ms-card[data-milestone-id="${currentMilestoneId}"]`);
+  if (milestoneCard) {
+    import('./js/services/posts.service.js').then(({ default: PostsService }) => {
+      PostsService.getPublishedPostsByMilestone(currentMilestoneId, { limit: 12, tryIncludeSupporters: true })
+        .then(posts => window.VtuberProfilePage.renderMilestonePosts(milestoneCard, currentMilestoneId, posts));
+    });
+  }
+}
+```
+
+**驗收：**
+1. 用粉絲帳號開啟 `vtuber_profile.html?id=auroramizu`。
+2. 確認限定貼文顯示「贊助解鎖 🔒」按鈕（尚未贊助）。
+3. 完成贊助後，同一頁面的限定貼文應**自動切換為「展開閱讀」**，不需要手動重整。
+4. 登出再登入（重新整理），確認已贊助的粉絲仍然可以看到解鎖狀態（從 Firestore `users.unlockedMilestones` 讀取）。
 
 ---
 
