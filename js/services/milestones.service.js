@@ -1,5 +1,5 @@
 import { db, auth } from '../firebase-config.js';
-import { collection, query, where, getDocs, orderBy, limit as _limit, addDoc, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { collection, query, where, getDocs, orderBy, limit as _limit, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const COLLECTION = 'milestones';
 
@@ -56,7 +56,72 @@ const MilestonesService = {
       console.error('[MilestonesService] getRankings error:', err);
       throw err;
     }
+  },
+
+  /**
+   * 即時監聽里程碑進度（onSnapshot）
+   * @param {string} vtuberId
+   * @param {function} callback - (milestones[]) => void
+   * @param {string[]} statuses - 要監聽的狀態，預設公開狀態
+   * @returns unsubscribe function
+   */
+  listenPublicMilestones: (vtuberId, callback, statuses = ['published', 'active', 'achieved']) => {
+    const q = query(
+      collection(db, COLLECTION),
+      where('vtuberId', '==', vtuberId),
+      where('status', 'in', statuses)
+    );
+    return onSnapshot(q, (snap) => {
+      const milestones = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      milestones.sort((a, b) => {
+        const tA = a.publishedAt?.toMillis ? a.publishedAt.toMillis() : 0;
+        const tB = b.publishedAt?.toMillis ? b.publishedAt.toMillis() : 0;
+        return tB - tA;
+      });
+      callback(milestones);
+    }, (err) => {
+      console.warn('[MilestonesService] listenPublicMilestones error:', err);
+    });
+  },
+
+  /**
+   * 即時監聽排行榜（依 transactions 集合彙整粉絲累積金額）
+   * @param {string} milestoneId
+   * @param {number} lim - 前幾名
+   * @param {function} callback - (rankList[]) => void，每項 { fanUid, displayName, totalAmount }
+   * @returns unsubscribe function
+   */
+  listenRankings: (milestoneId, lim = 10, callback) => {
+    const q = query(
+      collection(db, 'transactions'),
+      where('milestoneId', '==', milestoneId),
+      where('status', '==', 'success')
+    );
+    return onSnapshot(q, (snap) => {
+      const map = {};
+      snap.docs.forEach(d => {
+        const tx = d.data();
+        if (!map[tx.fanUid]) {
+          map[tx.fanUid] = { fanUid: tx.fanUid, displayName: tx.fanName || '匿名', totalAmount: 0 };
+        }
+        map[tx.fanUid].totalAmount += (Number(tx.amount) || 0);
+      });
+      const sorted = Object.values(map)
+        .sort((a, b) => b.totalAmount - a.totalAmount)
+        .slice(0, lim);
+        
+      let myAmount = 0;
+      const user = auth.currentUser;
+      if (user && map[user.uid]) {
+        myAmount = map[user.uid].totalAmount;
+      }
+      callback(sorted, myAmount);
+    }, (err) => {
+      console.warn('[MilestonesService] listenRankings error:', err);
+      callback([], 0);
+    });
   }
+
 
   , getPublicMilestones: async (vtuberId = null) => {
     try {

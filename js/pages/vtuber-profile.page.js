@@ -1,5 +1,7 @@
 import PostsService from '../services/posts.service.js';
-import { auth } from '../firebase-config.js';
+import { doc, getDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth, db } from '../firebase-config.js';
 
 const MEDIA_ICON_CLASS = {
   image: 'fa-regular fa-image',
@@ -61,10 +63,42 @@ function buildPostTitle(post) {
 // VTuber profile page controller
 const VtuberProfilePage = {
   _currentVtuber: null,
+  _unsubMilestones: null,
+  _unsubRankings: [],
+  _viewerUnlockedMilestones: [],
   init: async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const vtuberHandle = urlParams.get('id');
     console.log('[VtuberProfilePage] init started with handle=', vtuberHandle);
+
+    // [修正] 監聽 Auth 狀態，確保登入後能從 Firestore 讀取已解鎖清單
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        console.log('[VtuberProfilePage] Auth settled: user=', user.uid);
+        try {
+          const userSnap = await getDoc(doc(db, 'users', user.uid));
+          if (userSnap.exists()) {
+            const data = userSnap.data();
+            VtuberProfilePage._viewerUnlockedMilestones = data.unlockedMilestones || [];
+            console.log('[VtuberProfilePage] Loaded unlocked milestones:', VtuberProfilePage._viewerUnlockedMilestones);
+            
+            // 重新渲染當前頁面上的所有里程碑貼文區塊，以反映解鎖狀態
+            const cards = document.querySelectorAll('.ms-card');
+            cards.forEach(card => {
+              const mid = card.dataset.milestoneId;
+              // 重新讀取並渲染貼文
+              PostsService.getPublishedPostsByMilestone(mid, { limit: 12, tryIncludeSupporters: true })
+                .then(posts => VtuberProfilePage.renderMilestonePosts(card, mid, posts))
+                .catch(err => console.warn('[VtuberProfilePage] Auth-refresh posts error:', mid, err));
+            });
+          }
+        } catch (e) {
+          console.warn('[VtuberProfilePage] failed to fetch viewer doc', e);
+        }
+      } else {
+        VtuberProfilePage._viewerUnlockedMilestones = [];
+      }
+    });
 
     if (vtuberHandle === 'demo') {
       // Use seed data for demo mode
@@ -82,10 +116,20 @@ const VtuberProfilePage = {
         VtuberProfilePage.renderVtuber(vtuber);
 
         const vtuberId = vtuber.uid || vtuberHandle;
-        console.log('[VtuberProfilePage] fetching public milestones for vtuberId=', vtuberId);
-        const milestones = await MilestonesService.getPublicMilestones(vtuberId);
-        console.log('[VtuberProfilePage] received milestones:', milestones);
-        VtuberProfilePage.renderMilestones(milestones);
+        console.log('[VtuberProfilePage] 開始監聽里程碑即時變更 vtuberId=', vtuberId);
+
+        if (VtuberProfilePage._unsubMilestones) VtuberProfilePage._unsubMilestones();
+        VtuberProfilePage._unsubMilestones = MilestonesService.listenPublicMilestones(
+          vtuberId,
+          (milestones) => {
+            console.log('[VtuberProfilePage] 里程碑即時更新 count:', milestones.length);
+            VtuberProfilePage.renderMilestones(milestones);
+          }
+        );
+        window.addEventListener('beforeunload', () => {
+          if (VtuberProfilePage._unsubMilestones) VtuberProfilePage._unsubMilestones();
+          VtuberProfilePage._unsubRankings.forEach(fn => fn());
+        });
       } catch (error) {
         console.error('Error loading VTuber profile:', error);
         alert('無法載入 VTuber 資料：' + (error.message || error));
@@ -285,21 +329,44 @@ const VtuberProfilePage = {
         // insert at top
         section.insertBefore(card, section.firstChild);
 
-        // async populate rankings
-        (async () => {
-          try {
-            const rankList = await MilestonesService.getRankings(m.id, 5);
-            const rl = card.querySelector(`#rank-list-${m.id}`);
-            if (rl) {
-              rl.innerHTML = rankList.map(r => `
-                <div class="rank-item">
-                  <img src="${esc(r.avatarUrl || 'https://i.pravatar.cc/100?u=' + (r.id || Math.random()))}" class="r-avatar" alt="User">
-                  <div class="r-info"><span class="r-name">${esc(r.displayName || r.name || '匿名')}</span><span class="r-amt">${Number(r.totalAmount || 0).toLocaleString()} NTD</span></div>
+        // A-Task 2b: 即時監聽排行榜（依 transactions 彙整粉絲累積金額）
+        const unsubRank = MilestonesService.listenRankings(m.id, 10, (rankList, myAmount) => {
+          const rl = card.querySelector(`#rank-list-${m.id}`);
+          if (!rl) return;
+          
+          let html = '';
+          if (!rankList.length) {
+            html += '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
+          } else {
+            html += rankList.map((r, i) => `
+              <div class="rank-item">
+                <span class="r-rank" style="min-width:1.5rem;font-weight:bold;color:var(--vt-pink,#e91e8c)">${i + 1}</span>
+                <img src="${esc('https://i.pravatar.cc/100?u=' + r.fanUid)}" class="r-avatar" alt="${esc(r.displayName)}">
+                <div class="r-info">
+                  <span class="r-name">${esc(r.displayName)}</span>
+                  <span class="r-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
                 </div>
-              `).join('');
-            }
-          } catch (e) { /* silently ignore rankings errors */ }
-        })();
+              </div>
+            `).join('');
+          }
+
+          // A-Task 2b: 顯示該用戶在此里程碑的累計金額
+          const user = auth.currentUser;
+          if (user) {
+            html += `
+              <div class="rank-item you" style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
+                <img src="${esc('https://i.pravatar.cc/100?u=' + user.uid)}" class="r-avatar" alt="您">
+                <div class="r-info">
+                  <span class="r-name">您目前的累計贊助</span>
+                  <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(myAmount || 0).toLocaleString()} NTD</span>
+                </div>
+              </div>
+            `;
+          }
+          
+          rl.innerHTML = html;
+        });
+        VtuberProfilePage._unsubRankings.push(unsubRank);
 
         (async () => {
           try {
@@ -382,10 +449,12 @@ const VtuberProfilePage = {
         ? VtuberProfilePage._currentVtuber.uid
         : null;
       const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
+      const unlockedMilestones = VtuberProfilePage._viewerUnlockedMilestones || [];
       const canReadSupporterPost = !!viewerUid && (
         (vtuberUid && viewerUid === vtuberUid)
         || allowList.includes(viewerUid)
         || post.viewerUnlocked === true
+        || unlockedMilestones.includes(milestoneId)
       );
       const shouldLock = isSupporterOnly && !canReadSupporterPost;
       const visibilityLabel = isSupporterOnly ? '限定' : '公開';
