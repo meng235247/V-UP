@@ -984,30 +984,20 @@
 
     </script>
     <script type="module">
+        /* ── fan-profile.page.js ──────────────────────────────────────────
+           Firebase Auth + Firestore 即時整合
+           由 js/pages/fan-profile.page.js 負責：
+             · onAuthStateChanged → 未登入跳轉
+             · onSnapshot(users/{uid}) → 名稱、頭像、徽章、稱號、統計
+             · onSnapshot(transactions where fanUid==uid) → 贊助明細
+        ──────────────────────────────────────────────────────────────── */
+        import './js/pages/fan-profile.page.js';
+
+        /* handleLogout 需要掛在 window 供 onclick 使用 */
         import { authService } from './js/services/auth.service.js';
-
-        authService.onAuthChange(async (user) => {
-            if (!user) {
-                alert("請先登入！");
-                window.location.href = "auth.html";
-                return;
-            }
-
-            const profile = await authService.getUserProfile(user.uid);
-
-            // 替換畫面上的基本資訊
-            if (profile) {
-                const nameElements = document.querySelectorAll('.fan-name');
-                nameElements.forEach(el => el.textContent = profile.displayName || user.email);
-
-                const emailEle = document.getElementById('bound-google-email');
-                if (emailEle) emailEle.textContent = user.email;
-            }
-        });
-
         window.handleLogout = async () => {
             await authService.logout();
-            window.location.href = "index.html";
+            window.location.href = 'index.html';
         };
     </script>
 </body>
