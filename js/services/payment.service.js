@@ -29,14 +29,19 @@ const PaymentService = {
     let vtuberId = '';
     let milestoneTitle = '';
 
-    // --- 原子操作：同時更新里程碑進度 + 建立交易紀錄 ---
+    // --- 原子操作：同時更新里程碑進度 + 建立交易紀錄 + 更新使用者資料 ---
     await runTransaction(db, async (t) => {
       const msSnap = await t.get(milestoneRef);
       if (!msSnap.exists()) throw new Error('里程碑不存在');
 
-      // [修正] 從 users 集合讀取最新的 displayName，而非僅依賴 auth.currentUser
-      const userSnap = await t.get(doc(db, 'users', user.uid));
-      const fanDisplayName = userSnap.exists() ? userSnap.data().displayName : (user.displayName || '匿名粉絲');
+      // 從 users 集合讀取最新的資料
+      const userDocRef = doc(db, 'users', user.uid);
+      const userSnap = await t.get(userDocRef);
+      const userData = userSnap.exists() ? userSnap.data() : {};
+      
+      const fanDisplayName = userData.displayName || (user.displayName || '匿名粉絲');
+      const unlockedMilestones = userData.unlockedMilestones || [];
+      const isFirstTime = !unlockedMilestones.includes(milestoneId);
 
       const msData = msSnap.data();
       vtuberId = msData.vtuberId || '';
@@ -45,14 +50,14 @@ const PaymentService = {
       const prevAmount = typeof msData.currentAmount === 'number' ? msData.currentAmount : 0;
       const prevSupporters = typeof msData.totalSupporters === 'number' ? msData.totalSupporters : 0;
 
-      // 更新里程碑累積金額與支持者數
+      // 1. 更新里程碑累積金額與支持者數
       t.update(milestoneRef, {
         currentAmount: prevAmount + Number(amount),
         totalSupporters: prevSupporters + 1,
         updatedAt: serverTimestamp()
       });
 
-      // 建立交易紀錄（直接以 status:'success' 寫入，因為這是模擬流程）
+      // 2. 建立交易紀錄
       t.set(txRef, {
         fanUid: user.uid,
         fanName: fanDisplayName,
@@ -62,25 +67,30 @@ const PaymentService = {
         amount: Number(amount),
         method: method || 'simulated',
         message: message || '',
-        status: 'success',        // 模擬：直接成功，不走 pending→success 兩段式
+        status: 'success',
         createdAt: serverTimestamp()
       });
-    });
 
-    // --- 原子操作外：更新粉絲個人資料 ---
-    // （user doc 的更新不在 transaction 內，因為 rules 允許粉絲自己 update）
-    const newBadge = {
-      milestoneId,
-      name: milestoneTitle || '贊助者',
-      icon: '🏅',
-      awardedAt: new Date().toISOString()
-    };
+      // 3. 更新粉絲個人資料（僅在第一次贊助此里程碑時發放徽章）
+      const userUpdates = {
+        unlockedMilestones: arrayUnion(milestoneId),
+        supportedVtubers: arrayUnion(vtuberId),
+        updatedAt: serverTimestamp()
+      };
 
-    await updateDoc(doc(db, 'users', user.uid), {
-      unlockedMilestones: arrayUnion(milestoneId),
-      supportedVtubers: arrayUnion(vtuberId),
-      badges: arrayUnion(newBadge),
-      updatedAt: serverTimestamp()
+      if (isFirstTime) {
+        const newBadge = {
+          milestoneId,
+          name: milestoneTitle || '贊助者',
+          icon: '🏅',
+          badgeUrl: msData.badgeUrl || '', // [新增] 從里程碑資料中取得徽章圖網址
+          awardedAt: new Date().toISOString()
+        };
+        userUpdates.badges = arrayUnion(newBadge);
+        console.log('[PaymentService] First time sponsor! Awarding badge with URL:', msData.badgeUrl);
+      }
+
+      t.update(userDocRef, userUpdates);
     });
 
     console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount });
