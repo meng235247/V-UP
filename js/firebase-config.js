@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
 
 // Firebase configuration using environment variables from Vite
@@ -21,6 +22,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize services using Modular SDK functions
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 let analytics = null;
 
 // Optional: connect to local emulators when developing locally.
@@ -28,10 +30,17 @@ let analytics = null;
 try {
     const isBrowser = (typeof window !== 'undefined' && typeof window.location !== 'undefined');
     const host = isBrowser ? window.location.hostname : null;
-    const envFlag = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR === 'true');
+    const envFlag = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR);
     const localFlag = isBrowser && localStorage.getItem('useEmulator') === 'true';
     const hostnameMatch = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
-    const useEmulator = isBrowser && (hostnameMatch || localFlag || envFlag);
+    
+    // 預設如果是在 localhost 或是 env 設定 true 就開啟 Emulator
+    let useEmulator = isBrowser && (hostnameMatch || localFlag || envFlag === 'true');
+    
+    // 但是如果 .env 裡面明確寫了 false，就強制連上雲端，無視 localhost
+    if (envFlag === 'false') {
+        useEmulator = false;
+    }
 
     if (useEmulator) {
         // Firestore emulator port 8081, Auth emulator port 9099 (matches firebase.json)
@@ -54,4 +63,4 @@ try {
     console.warn('[firebase-config] emulator connect skipped:', e && e.message ? e.message : e);
 }
 
-export { app, db, auth, analytics };
+export { app, db, auth, storage, analytics };
