@@ -282,18 +282,16 @@
 
                         <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:14px;">
                             <button class="btn-outline" type="button" onclick="clearPostComposer()">清空</button>
-                            <button class="btn-primary" type="button" id="vt-post-save-btn" onclick="savePostDraft()"><i class="fas fa-save"></i>
-                                儲存草稿</button>
+                            <button id="vt-post-save-btn" class="btn-primary" type="button" onclick="savePostDraft()">儲存草稿</button>
+                            <button id="vt-post-publish-btn" class="btn-primary" type="button" onclick="saveAndPublishPost()"><i class="fas fa-paper-plane"></i> 立即發布</button>
                         </div>
                     </div>
-                    <div style="margin-top: 2rem;">
-                        <div class="post-history-toolbar">
-                            <h3 style="margin:0;">過往貼文（草稿 / 已發布）</h3>
-                            <button class="btn-outline" type="button" onclick="renderPosts()"><i class="fas fa-rotate-right"></i> 重新整理</button>
-                        </div>
-                        <div id="vt-post-list" style="display:flex; flex-direction:column; gap:1rem;">
-                            <!-- JS渲染此處 -->
-                        </div>
+
+                    <div class="section-header" style="margin-top:40px;">
+                        <h3>歷史貼文</h3>
+                    </div>
+                    <div id="posts-history-list" class="posts-history-list">
+                        <div style="text-align:center; padding:40px; color:var(--text-muted);">尚未發布任何內容。</div>
                     </div>
                 </div>
             </div>
@@ -305,79 +303,64 @@
                         <h2>🎨 專屬頁面自訂</h2>
                         <button class="btn-primary" onclick="saveVProfile()"><i class="fas fa-save"></i> 儲存設定</button>
                     </div>
-                    <div class="card">
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">頁面視覺色調</label>
-                            <div style="display:flex; gap: 30px; align-items: center;">
-                                <div>
-                                    <label
-                                        style="display:block; font-size:0.82rem; color:var(--text-muted); margin-bottom:5px;">主色調（對應粉紅系）</label>
-                                    <input type="color" id="vt-color-primary"
-                                        style="width:80px;height:46px;padding:2px;cursor:pointer;border-radius:8px;"
-                                        value="#FF85B2">
-                                </div>
-                                <div>
-                                    <label
-                                        style="display:block; font-size:0.82rem; color:var(--text-muted); margin-bottom:5px;">副色調（對應粉藍系）</label>
-                                    <input type="color" id="vt-color-secondary"
-                                        style="width:80px;height:46px;padding:2px;cursor:pointer;border-radius:8px;"
-                                        value="#70DDF1">
-                                </div>
-                            </div>
+                    
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>頁面主色調 (粉紅系)</label>
+                            <input type="color" id="vt-color-primary" class="form-control" style="height: 50px; padding: 4px;" value="#FF85B2">
                         </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">橫幅圖片 (Banner Image)</label>
-                            <div style="display:flex; gap:12px; align-items:center;">
-                                <input type="file" id="vt-banner-input" accept="image/*" class="form-control" style="padding:8px;">
-                                <div style="display:flex; flex-direction:column; gap:8px; align-items:flex-start;">
-                                    <div style="width:220px; height:80px; border-radius:6px; overflow:hidden; background:#f8fafc; border:1px solid var(--border); display:flex; align-items:center; justify-content:center;">
-                                        <img id="vt-banner-preview" src="" alt="Banner 預覽" style="max-width:100%; max-height:100%; display:none;">
-                                        <span id="vt-banner-placeholder" class="text-muted" style="font-size:0.85rem;">無</span>
+                        <div class="form-group">
+                            <label>頁面副色調 (粉藍系)</label>
+                            <input type="color" id="vt-color-secondary" class="form-control" style="height: 50px; padding: 4px;" value="#70DDF1">
+                        </div>
+                        
+                        <div class="form-group form-grid-full">
+                            <label>橫幅圖片 (Banner Image)</label>
+                            <div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+                                <div style="flex: 1; min-width: 300px;">
+                                    <input type="file" id="vt-banner-input" accept="image/*" class="form-control">
+                                    <input type="text" id="vt-banner" class="form-control" style="margin-top: 12px;" placeholder="或輸入圖片網址：https://example.com/banner.jpg">
+                                </div>
+                                <div style="width: 240px;">
+                                    <div style="aspect-ratio: 16/6; border-radius: 8px; overflow: hidden; background: var(--bg-dark); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;">
+                                        <img id="vt-banner-preview" src="" alt="Banner 預覽" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                                        <span id="vt-banner-placeholder" class="text-muted">預覽區</span>
                                     </div>
-                                    <div style="display:flex; gap:8px;">
-                                        <button class="btn-outline" id="vt-banner-upload-btn" type="button"><i class="fas fa-upload"></i> 上傳</button>
+                                    <div style="display: flex; gap: 8px; margin-top: 12px;">
+                                        <button class="btn-outline" id="vt-banner-upload-btn" type="button" style="flex: 1;"><i class="fas fa-upload"></i> 上傳</button>
                                         <button class="btn-outline" id="vt-banner-clear-btn" type="button">清除</button>
                                     </div>
                                 </div>
                             </div>
-                            <small class="text-muted" style="display:block;margin-top:8px;">或直接貼上圖片網址到下方欄位。</small>
-                            <input type="text" id="vt-banner"
-                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;margin-top:8px;"
-                                placeholder="例如: https://example.com/banner.jpg">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">頻道招呼語 (Catchphrase)</label>
-                            <input type="text" id="vt-catchphrase"
-                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;"
-                                placeholder="輸入一句代表您的特色短語">
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom: 20px;">
-                            <div class="form-group">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">YouTube 頻道網址</label>
-                                <input type="text" id="vt-youtube"
-                                    style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;"
-                                    placeholder="https://youtube.com/...">
-                            </div>
-                            <div class="form-group">
-                                <label style="display:block;margin-bottom:8px;font-weight:bold;">Twitter (X) 網址</label>
-                                <input type="text" id="vt-twitter"
-                                    style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;"
-                                    placeholder="https://twitter.com/...">
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <label style="display:block;margin-bottom:8px;font-weight:bold;">詳細自我介紹 (Bio)</label>
-                            <textarea id="vt-bio"
-                                style="width:100%;padding:12px;border:1px solid var(--border-color);border-radius:8px;min-height:100px;"
-                                placeholder="詳細介紹您的頻道特色..."></textarea>
                         </div>
 
-                        <div id="save-toast"
-                            style="display:none; background:#10b981; color:white; padding:12px; border-radius:8px; text-align:center; font-weight:bold; margin-bottom:15px;">
-                            設定已成功儲存並同步至前台！</div>
-                        <button class="btn-primary full-width" onclick="saveVProfile(event)"><i
-                                class="fas fa-check"></i> 儲存並更新到前台</button>
+                        <div class="form-group form-grid-full">
+                            <label>頻道招呼語 (Catchphrase)</label>
+                            <input type="text" id="vt-catchphrase" class="form-control" placeholder="輸入一句代表您的特色短語">
+                        </div>
+
+                        <div class="form-group">
+                            <label>YouTube 頻道網址</label>
+                            <input type="text" id="vt-youtube" class="form-control" placeholder="https://youtube.com/...">
+                        </div>
+                        <div class="form-group">
+                            <label>Twitter (X) 網址</label>
+                            <input type="text" id="vt-twitter" class="form-control" placeholder="https://twitter.com/...">
+                        </div>
+
+                        <div class="form-group form-grid-full">
+                            <label>詳細自我介紹 (Bio)</label>
+                            <textarea id="vt-bio" class="form-control" rows="5" placeholder="詳細介紹您的頻道特色..."></textarea>
+                        </div>
                     </div>
+
+                    <div id="save-toast" style="display:none; background:var(--success); color:white; padding:16px; border-radius:12px; text-align:center; font-weight:bold; margin-bottom:24px; animation: fadeInUp 0.3s ease;">
+                        ✨ 設定已成功儲存並同步至前台！
+                    </div>
+                    
+                    <button class="btn-primary full-width" onclick="saveVProfile(event)" style="padding: 16px;">
+                        <i class="fas fa-check"></i> 儲存並更新到前台
+                    </button>
                 </div>
             </div>
 
@@ -404,7 +387,7 @@
                             </div>
                         </div>
 
-                        <div class="card">
+                        <div class="card" style="padding: 24px;">
                             <h3><i class="fas fa-bullhorn"></i> 推薦分享文案</h3>
                             <div class="share-templates" style="margin-top: 15px; display: grid; gap: 15px;">
                                 <div class="ai-card" style="padding: 15px; cursor: pointer;" onclick="copyTemplateText(0)">
@@ -412,118 +395,95 @@
                                     <p id="template-0" style="font-size: 0.9rem; margin-bottom: 0;">大家！我的 V-UP 專屬頁面開張囉！在這裡可以看到我目前的活動進度，還有專屬的限定內容～快來找我玩吧！💖 #VUP #VTuber</p>
                                 </div>
                                 <div class="ai-card" style="padding: 15px; cursor: pointer;" onclick="copyTemplateText(1)">
-                                    <div style="font-weight: 700; margin-bottom: 8px;">🎯 里程碑衝刺型</div>
-                                    <p id="template-1" style="font-size: 0.9rem; margin-bottom: 0;">目前正在為【新衣裝】進行募資里程碑！還差一點點就能解鎖了，希望能得到大家的支持與鼓勵 🚀 #VUP #新衣裝募資</p>
+                                    <div style="font-weight: 700; margin-bottom: 8px;">🚀 里程碑衝刺型</div>
+                                    <p id="template-1" style="font-size: 0.9rem; margin-bottom: 0;">新衣裝里程碑正在努力衝刺中！只差一點點就能解鎖了，感謝大家一直以來的陪伴與支持！💪✨ #VUP #里程碑</p>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="card" style="background: linear-gradient(135deg, #fff5f7, #f0f7ff);">
-                            <h3 style="color: var(--primary);"><i class="fas fa-lightbulb"></i> 分享小撇步</h3>
-                            <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; margin-top: 10px;">
-                                <li><strong>直播台 Overlay</strong>：將 QR Code 縮小放在畫面角落，讓觀眾隨時掃碼。</li>
-                                <li><strong>直播資訊欄</strong>：在 YouTube 或 Twitch 的描述欄加入專屬網址。</li>
-                                <li><strong>X (Twitter) 置頂</strong>：發布一篇包含 QRCode 與感性文案的貼文並置頂。</li>
-                                <li><strong>聊天室指令</strong>：設定機器人指令（如 !vup）自動回覆您的分享連結。</li>
-                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- ===== TAB: Settings ===== -->
-
             <div class="tab-panel" id="panel-settings">
-                <div class="dashboard-section" style="margin-bottom: 24px;">
-                    <div class="section-header">
-                        <h3 style="margin: 0;">創作者名稱設定</h3>
-                        <button class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                            onclick="saveVProfile(event)"><i class="fas fa-save"></i> 儲存</button>
-                    </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">VTuber 官方展示名稱</label>
-                        <input type="text" id="vt-name"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);"
-                            value="星野夢彩">
-                        <small class="text-muted" style="display:block;margin-top:5px;">此名稱會顯示於平台上所有的排行榜和預設頁面中。</small>
-                    </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">頻道識別碼 (Handle)</label>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span
-                                style="color:var(--text-muted); font-weight:700; font-size:0.95rem;">vtuber_profile.html?id=</span>
-                            <input type="text" id="vt-handle"
-                                style="flex:1; padding:10px; border-radius:6px; border:1px solid var(--border-color);"
-                                placeholder="sakuranova"
-                                oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,'')">
+                <div class="dashboard-section">
+                    <div class="settings-group">
+                        <div class="settings-group-header">
+                            <h3>創作者帳號設定</h3>
+                            <button class="btn-primary" onclick="saveVProfile(event)"><i class="fas fa-save"></i> 儲存</button>
                         </div>
-                        <small class="text-muted"
-                            style="display:block;margin-top:5px;">僅允許小寫英文、數字、底線、連字號。設定後對外的公開連結即為此識別碼，請謹慎更改。</small>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>VTuber 官方展示名稱</label>
+                                <input type="text" id="vt-name" class="form-control" value="星野夢彩">
+                                <small class="text-muted">顯示於排行榜和公開頁面。</small>
+                            </div>
+                            <div class="form-group">
+                                <label>頻道識別碼 (Handle)</label>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <span class="text-muted" style="font-weight:700;">id=</span>
+                                    <input type="text" id="vt-handle" class="form-control" placeholder="sakuranova" oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9_-]/g,'')">
+                                </div>
+                                <small class="text-muted">影響公開網址，請謹慎更改。</small>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="dashboard-section" style="margin-bottom: 24px;">
-                    <div class="section-header">
-                        <h3 style="margin: 0;">帳號密碼管理</h3>
-                        <button class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                            onclick="saveAccountConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                    <div class="settings-group">
+                        <div class="settings-group-header">
+                            <h3>安全與帳號</h3>
+                            <button class="btn-primary" onclick="saveAccountConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>登入信箱</label>
+                                <input type="email" id="account-email" class="form-control" value="vtuber.official@v-up.com" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>修改密碼</label>
+                                <div style="display: flex; gap: 8px;">
+                                    <button class="btn-outline" style="flex: 1;" onclick="alert('我們寄送了一封密碼重設信至您的信箱，請至信箱確認。')">發送重設信件</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">已註冊的登入信箱</label>
-                        <input type="email" id="account-email"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);"
-                            value="vtuber.official@v-up.com" disabled>
-                    </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">修改密碼</label>
-                        <input type="password" placeholder="輸入舊密碼"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color); margin-bottom: 8px;">
-                        <input type="password" placeholder="輸入新密碼"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);">
-                    </div>
-                    <button class="btn-outline" style="margin-bottom: 15px;"
-                        onclick="alert('我們寄送了一封密碼重設信至您的信箱，請至信箱確認。')">發送密碼重設信</button>
-                </div>
 
-                <div class="dashboard-section" style="margin-bottom: 24px;">
-                    <div class="section-header">
-                        <h3 style="margin: 0;">銀行提款帳戶設定</h3>
-                        <button class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                            onclick="saveBankConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                    <div class="settings-group">
+                        <div class="settings-group-header">
+                            <h3>銀行提款帳戶</h3>
+                            <button class="btn-primary" onclick="saveBankConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                        </div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>銀行代碼 / 名稱</label>
+                                <input type="text" class="form-control" value="808 玉山銀行" disabled>
+                            </div>
+                            <div class="form-group">
+                                <label>帳號 (已加密)</label>
+                                <input type="text" class="form-control" value="****-****-****-5566" disabled>
+                            </div>
+                            <div class="form-grid-full">
+                                <small class="text-muted"><i class="fas fa-info-circle"></i> 如需修改提款帳號，請聯繫平台客服重新驗證身份。</small>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">銀行代碼 / 名稱</label>
-                        <input type="text"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);"
-                            value="808 玉山銀行" disabled>
-                    </div>
-                    <div class="form-group" style="margin-bottom:15px;">
-                        <label style="display:block;margin-bottom:5px;font-weight:bold;">帳號</label>
-                        <input type="text"
-                            style="width:100%;padding:10px;border-radius:6px;border:1px solid var(--border-color);"
-                            value="****-****-****-5566" disabled>
-                        <small class="text-muted"
-                            style="display:block;margin-top:5px;">為確保金流安全，如需修改提款帳號，請聯繫平台客服重新驗證身份。</small>
-                    </div>
-                </div>
 
-                <div class="dashboard-section" style="margin-bottom: 24px;">
-                    <div class="section-header">
-                        <h3 style="margin: 0;">通知偏好</h3>
-                        <button class="btn-primary" style="padding: 6px 14px; font-size: 0.85rem;"
-                            onclick="saveNotificationConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                    <div class="settings-group">
+                        <div class="settings-group-header">
+                            <h3>通知偏好</h3>
+                            <button class="btn-primary" onclick="saveNotificationConfig(event)"><i class="fas fa-save"></i> 儲存</button>
+                        </div>
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <label class="checkbox-label"><input type="checkbox" checked> 接收大額贊助即時 Email 通知</label>
+                            <label class="checkbox-label"><input type="checkbox" checked> 接收系統更新與每月結算報表</label>
+                        </div>
                     </div>
-                    <label style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><input
-                            type="checkbox" checked> 接收大額贊助即時 Email 通知</label>
-                    <label style="display:flex; align-items:center; gap:10px;"><input type="checkbox" checked>
-                        接收系統更新與每月結算報表</label>
                 </div>
             </div>
 
         </main>
     </div>
 
-    <!-- Add Milestone Modal -->
     <div id="milestone-modal" class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
@@ -975,7 +935,7 @@
         }
 
         async function renderPosts() {
-            const list = document.getElementById('vt-post-list');
+            const list = document.getElementById('posts-history-list');
             if (!list || !currentUid) return;
 
             list.innerHTML = '<div class="text-muted">貼文載入中...</div>';
@@ -1075,6 +1035,65 @@
                 if (postSaveBtn) {
                     postSaveBtn.disabled = false;
                     postSaveBtn.innerHTML = originalBtnHtml || '<i class="fas fa-save"></i> 儲存草稿';
+                }
+            }
+        }
+
+        async function saveAndPublishPost() {
+            if (!currentUid) return alert('請先登入');
+            
+            const milestoneId = postMilestoneSelect?.value?.trim();
+            if (!milestoneId) {
+                showToast('請先選擇里程碑', 'error');
+                return;
+            }
+
+            const ok = await openConfirmModal('確定要立即發布這則貼文嗎？', '立即發布', '發布', '取消');
+            if (!ok) return;
+
+            const btn = document.getElementById('vt-post-publish-btn');
+            const originalBtnHtml = btn ? btn.innerHTML : '';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 發布中...';
+            }
+
+            try {
+                // First save as draft, then publish
+                const title = postTitleInput?.value?.trim() || '';
+                const content = postInput?.value?.trim() || '';
+                const files = Array.from(postAttachmentInput?.files || []);
+                
+                const attachments = [];
+                for (const file of files) {
+                    const url = await storageService.uploadFile(file);
+                    attachments.push({
+                        type: getAttachmentType(file),
+                        url,
+                        name: file.name,
+                        contentType: file.type || null
+                    });
+                }
+
+                const postId = await PostsService.createDraft(milestoneId, {
+                    title,
+                    content,
+                    visibility: postVisibilitySelect?.value || 'public',
+                    attachments
+                });
+
+                await PostsService.publish(milestoneId, postId);
+                
+                clearPostComposer();
+                await renderPosts();
+                showToast('貼文已立即發布！', 'success');
+            } catch (err) {
+                console.error('[Dashboard] saveAndPublishPost error:', err);
+                showToast('發布失敗，請重試', 'error');
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnHtml;
                 }
             }
         }
