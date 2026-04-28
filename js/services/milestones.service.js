@@ -101,8 +101,14 @@ const MilestonesService = {
       const map = {};
       snap.docs.forEach(d => {
         const tx = d.data();
+        if (!tx.fanUid) return;
         if (!map[tx.fanUid]) {
-          map[tx.fanUid] = { fanUid: tx.fanUid, displayName: tx.fanName || '匿名', totalAmount: 0 };
+          map[tx.fanUid] = { 
+            fanUid: tx.fanUid, 
+            displayName: tx.fanName || '匿名', 
+            avatarUrl: tx.fanAvatarUrl || null, 
+            totalAmount: 0 
+          };
         }
         map[tx.fanUid].totalAmount += (Number(tx.amount) || 0);
       });

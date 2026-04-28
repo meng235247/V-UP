@@ -1,7 +1,7 @@
 import { db, auth } from '../firebase-config.js';
 import {
   collection, doc, query, where, getDocs, orderBy,
-  runTransaction, serverTimestamp, updateDoc, arrayUnion
+  runTransaction, serverTimestamp, updateDoc, arrayUnion, setDoc
 } from 'firebase/firestore';
 
 const PaymentService = {
@@ -95,6 +95,40 @@ const PaymentService = {
 
     console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount });
     return { txId: txRef.id, status: 'success' };
+  },
+
+  /**
+   * Guest initiate: allow unauthenticated users to create a transaction.
+   * This writes a transaction with `status: 'success'` for now (no real payment gateway).
+   * Does NOT mutate user or milestone documents.
+   */
+  initiateGuest: async (vtuberId, milestoneId, amount, method, message, guestName) => {
+    if (!(Number(amount) > 0)) throw new Error('贊助金額必須大於 0');
+    if (!milestoneId) throw new Error('缺少 milestoneId');
+
+    const txRef = doc(collection(db, 'transactions'));
+
+    // Guest payload: omit fanUid to simplify rules check
+    const payload = {
+      fanName: guestName || '匿名粉絲',
+      vtuberId: vtuberId || null,
+      milestoneId: milestoneId,
+      amount: Number(amount),
+      method: method || 'guest_ui',
+      message: message || '',
+      status: 'success',
+      createdAt: serverTimestamp()
+    };
+
+    try {
+      // Simple client-side write for guest; keep it minimal and auditable
+      await setDoc(txRef, payload);
+      console.log('[PaymentService] initiateGuest created', txRef.id, payload);
+      return { txId: txRef.id, status: 'success' };
+    } catch (err) {
+      console.error('[PaymentService] initiateGuest error', err);
+      throw err;
+    }
   },
 
   /**

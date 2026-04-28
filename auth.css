@@ -235,6 +235,37 @@
 .social-btn.discord:hover { color: #5865F2; border-color: #5865F2; background: rgba(88,101,242,0.05); }
 .social-btn.twitter:hover { color: #1DA1F2; border-color: #1DA1F2; background: rgba(29,161,242,0.05); }
 
+/* Prominent Google Button */
+.btn-google-prominent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px;
+    background: white;
+    border: 2px solid #e9ecef;
+    border-radius: 14px;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.25s;
+    margin-top: 10px;
+}
+
+.btn-google-prominent:hover {
+    background: #f8fafc;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.btn-google-prominent i {
+    color: #DB4437;
+    font-size: 1.2rem;
+}
+
 /* Role Select */
 .auth-role-select {
     display: grid;
