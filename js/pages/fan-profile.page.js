@@ -12,13 +12,16 @@
 import { auth, db } from '../firebase-config.js';
 import { onAuthStateChanged } from 'firebase/auth';
 import {
-  doc, getDoc, collection, query, where,
-  onSnapshot, orderBy
+  doc, getDoc, getDocs, collection, query, where,
+  onSnapshot, orderBy, updateDoc
 } from 'firebase/firestore';
+import { storageService } from '../services/storage.service.js';
+import { vtuberService } from '../services/vtuber.service.js';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const el = (id) => document.getElementById(id);
+const vtuberNameCache = {};
 
 /**
  * 更新 Hero 區塊：名稱、頭像、Email
@@ -51,47 +54,116 @@ function renderHero(user, userDocData) {
   // tagline（個人簽名檔）
   const taglineEl = document.querySelector('.fan-tagline');
   if (taglineEl && userDocData?.tagline) taglineEl.textContent = userDocData.tagline;
+
+  // 更新年月份 (DECEMBER 2024 -> 實際年月份)
+  const dateBadge = document.querySelector('.date-badge');
+  if (dateBadge) {
+    const now = new Date();
+    const months = ["JANUARY", "FEBRUARY", "MARCH", "APRIL", "MAY", "JUNE", "JULY", "AUGUST", "SEPTEMBER", "OCTOBER", "NOVEMBER", "DECEMBER"];
+    dateBadge.textContent = `${months[now.getMonth()]} ${now.getFullYear()}`;
+  }
 }
 
 /**
- * 更新「收藏成就勳章」區塊（outer-badges-grid）
- * 將 Firestore badges 陣列和現有 ALL_BADGES（靜態）合併：
- *   - 有對應 milestoneId 的才顯示為已解鎖
- *   - 其餘 ALL_BADGES 保持原邏輯
+ * 更新「收藏成就勳章」與「獲得稱號」
+ * 將 Firestore 資料轉成 fan_profile.html 預期的格式並呼叫 window.updateBadgesAndTitles
  */
-function renderFirebaseBadges(firestoreBadges = []) {
-  if (!firestoreBadges.length) return; // 沒有資料就保留靜態 mock
+async function updateBadgesAndTitlesFromFirebase(fanUid, firestoreBadges = [], firestoreTitles = []) {
+  if (!window.updateBadgesAndTitles) return;
 
-  const grid = el('outer-badges-grid');
-  if (!grid) return;
+  let formattedBadges = null;
+  if (firestoreBadges && firestoreBadges.length > 0) {
+    formattedBadges = await Promise.all(firestoreBadges.map(async (b, i) => {
+      let vtName = b.vtuberName || null;
+      let mTitle = b.milestoneTitle || null;
+      let contrib = b.contribution || 0;
+      let resolvedVtuberId = b.vtuberId || null;
 
-  grid.innerHTML = '';
+      // 如果缺少 vtuberId 或 milestoneTitle 或 contribution，從交易紀錄回推
+      if (fanUid && b.milestoneId) {
+        try {
+          // Avoid composite index requirement by querying only by fanUid
+          const q = query(
+            collection(db, 'transactions'),
+            where('fanUid', '==', fanUid)
+          );
+          const qSnap = await getDocs(q);
+          let total = 0;
+          qSnap.forEach(tx => {
+            const txData = tx.data();
+            if (txData.milestoneId === b.milestoneId && txData.status === 'success') {
+                total += Number(txData.amount || 0);
+                if (!resolvedVtuberId && txData.vtuberId) resolvedVtuberId = txData.vtuberId;
+                if (!mTitle && txData.milestoneTitle) mTitle = txData.milestoneTitle;
+            }
+          });
+          if (!b.contribution) contrib = total;
+        } catch (e) { console.warn('Failed to fetch contribution from transactions', e); }
+      }
 
-  firestoreBadges.forEach(b => {
-    const div = document.createElement('div');
-    div.className = 'badge-icon bg-pink-light';
-    div.title = `${b.name || '徽章'} (${b.milestoneId || ''})`;
-    div.innerHTML = `<span style="font-size:2rem;">${b.icon || '🏅'}</span>`;
-    grid.appendChild(div);
-  });
-}
+      // 取得 VTuber 顯示名稱
+      if (resolvedVtuberId && !vtName) {
+        try {
+          const vDoc = await getDoc(doc(db, 'vtubers', resolvedVtuberId));
+          if (vDoc.exists()) {
+            vtName = vDoc.data().displayName || vDoc.data().name || resolvedVtuberId;
+          }
+        } catch (e) { console.warn('Failed to fetch vtuberName', e); }
+      }
 
-/**
- * 更新「獲得稱號」區塊（outer-titles-grid）
- */
-function renderFirebaseTitles(titles = []) {
-  if (!titles.length) return;
+      // 如果從交易紀錄中仍找不到里程碑標題，且知道 vtuberId，則直接從里程碑文件獲取
+      if (resolvedVtuberId && b.milestoneId && !mTitle) {
+        try {
+          const mDoc = await getDoc(doc(db, 'vtubers', resolvedVtuberId, 'milestones', b.milestoneId));
+          if (mDoc.exists()) {
+            mTitle = mDoc.data().title || b.milestoneId;
+          }
+        } catch (e) { console.warn('Failed to fetch milestoneTitle', e); }
+      }
 
-  const grid = el('outer-titles-grid');
-  if (!grid) return;
+      return {
+        id: b.id || `fb_badge_${i}`,
+        imgSrc: b.badgeUrl || b.imageUrl || null,
+        iconClass: b.icon || (!b.badgeUrl && !b.imageUrl ? 'fa-solid fa-medal' : null),
+        style: b.style || 'bg-pink-light',
+        title: b.name || b.badgeName || '預設徽章',
+        origin: mTitle || '贊助成就',
+        date: b.awardedAt ? (new Date(b.awardedAt).toLocaleDateString('zh-TW')) : (b.earnedAt ? (b.earnedAt.toDate ? b.earnedAt.toDate().toLocaleDateString('zh-TW') : b.earnedAt) : '最近'),
+        desc: b.desc || b.description || '感謝您一直以來的支持！',
+        contribution: contrib.toString(),
+        selected: b.selected !== false,
+        vtuberId: resolvedVtuberId || null,
+        vtuberName: vtName || 'VTuber'
+      };
+    }));
+  }
 
-  grid.innerHTML = '';
-  titles.forEach(t => {
-    const span = document.createElement('span');
-    span.className = 'title-tag';
-    span.innerHTML = `<i class="fa-solid fa-flag text-blue"></i> ${t}`;
-    grid.appendChild(span);
-  });
+  let formattedTitles = null;
+  if (firestoreTitles && firestoreTitles.length > 0) {
+    formattedTitles = firestoreTitles.map((t, i) => {
+      if (typeof t === 'string') {
+        return {
+          id: `fb_title_${i}`,
+          iconClass: 'fa-solid fa-flag text-blue',
+          title: t,
+          origin: '成就解鎖',
+          selected: true
+        };
+      }
+      return {
+        id: t.id || `fb_title_${i}`,
+        iconClass: t.iconClass || 'fa-solid fa-flag text-blue',
+        title: t.name || t.title || '稱號',
+        origin: t.origin || '成就解鎖',
+        selected: t.selected !== false
+      };
+    });
+  }
+
+  // Only update if we actually got data, otherwise keep the default HTML mock data for visual demo
+  if (formattedBadges || formattedTitles) {
+    window.updateBadgesAndTitles(formattedBadges, formattedTitles);
+  }
 }
 
 /**
@@ -100,15 +172,25 @@ function renderFirebaseTitles(titles = []) {
 function renderStats(userDocData) {
   const supportedCount = (userDocData?.supportedVtubers || []).length;
   const badgeCount     = (userDocData?.badges || []).length;
+  const longestDays    = userDocData?.longestSupportDays || 0;
+  const milestoneRate  = userDocData?.milestoneRate || 0;
 
   const vtuberCountEl = el('stat-vtuber-count');
   const badgeCountEl  = el('stat-badge-count');
+  const longestDayEl  = el('stat-longest-day');
+  const milestoneRateEl = el('stat-milestone-rate');
 
   if (vtuberCountEl && supportedCount > 0) {
     vtuberCountEl.innerHTML = `${supportedCount} <small>位</small>`;
   }
   if (badgeCountEl && badgeCount > 0) {
     badgeCountEl.textContent = `${badgeCount}`;
+  }
+  if (longestDayEl && longestDays > 0) {
+    longestDayEl.innerHTML = `${longestDays} <small>day</small>`;
+  }
+  if (milestoneRateEl && milestoneRate > 0) {
+    milestoneRateEl.textContent = `${milestoneRate}%`;
   }
 }
 
@@ -117,18 +199,35 @@ function renderStats(userDocData) {
  */
 async function renderSupportedVtubers(vtuberIds = []) {
   const container = el('vtuber-flex-container');
-  if (!container || !vtuberIds.length) return;
+  if (!container) return;
+  
+  if (!vtuberIds.length) {
+    container.innerHTML = `
+      <div style="width:100%; text-align:center; padding:40px 20px; color:var(--text-muted); border: 2px dashed rgba(0,0,0,0.05); border-radius: 20px;">
+        <i class="fa-solid fa-heart-crack" style="font-size:2rem; margin-bottom:15px; display:block; opacity:0.3;"></i>
+        <p style="margin-bottom: 15px;">目前還沒有陪伴中的 VTuber 喔！</p>
+        <a href="index.html" class="btn-primary" style="display:inline-block; padding:8px 25px; font-size:0.9rem; border-radius: 50px; text-decoration:none;">去尋找喜歡的 V 吧</a>
+      </div>
+    `;
+    return;
+  }
 
   // 取得各 VTuber 的資料
   const cards = await Promise.all(vtuberIds.map(async (vid) => {
     try {
-      const snap = await getDoc(doc(db, 'vtubers', vid));
-      const data = snap.exists() ? snap.data() : {};
+      const data = await vtuberService.getProfileByHandle(vid);
+      if (!data) {
+        console.warn(`[fan-profile] VTuber profile not found for ID/Handle: ${vid}`);
+        return { handle: vid, name: vid, avatar: 'image/v_head_ryusei.jpg' };
+      }
       const handle = data.handle || vid;
       const name   = data.displayName || data.name || handle;
-      const avatar = data.avatarUrl || data.photoURL || 'image/v_head_ryusei.jpg';
+      // 優先序：avatarUrl > photoURL > bannerUrl > 預設圖
+      const avatar = data.avatarUrl || data.photoURL || data.bannerUrl || 'image/v_head_ryusei.jpg';
+      console.log(`[fan-profile] Resolved VTuber: ${name}, Avatar: ${avatar}`);
       return { handle, name, avatar };
-    } catch {
+    } catch (err) {
+      console.error(`[fan-profile] Error fetching VTuber ${vid}:`, err);
       return { handle: vid, name: vid, avatar: 'image/v_head_ryusei.jpg' };
     }
   }));
@@ -144,6 +243,27 @@ async function renderSupportedVtubers(vtuberIds = []) {
 }
 
 /**
+ * 輔助：批次解析 VTuber 名稱
+ */
+async function resolveVtuberNames(txList) {
+  const ids = [...new Set(txList.map(t => t.vtuberId).filter(Boolean))];
+  await Promise.all(ids.map(async (id) => {
+    if (vtuberNameCache[id]) return;
+    try {
+      const snap = await getDoc(doc(db, 'vtubers', id));
+      if (snap.exists()) {
+        const data = snap.data();
+        vtuberNameCache[id] = data.displayName || data.name || id;
+      } else {
+        vtuberNameCache[id] = id;
+      }
+    } catch {
+      vtuberNameCache[id] = id;
+    }
+  }));
+}
+
+/**
  * 更新「近期贊助與點數異動明細」表格（transaction-table tbody）
  */
 function renderTransactions(txList = []) {
@@ -155,27 +275,40 @@ function renderTransactions(txList = []) {
 
   if (!txList.length) {
     tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted); padding:20px;">尚無贊助紀錄。</td></tr>';
+    const btnViewMore = table.parentElement.querySelector('.btn-view-more') || table.closest('.fan-card')?.querySelector('.btn-view-more');
+    if (btnViewMore) btnViewMore.style.display = 'none';
     return;
   }
 
-  tbody.innerHTML = txList.map(tx => {
+  tbody.innerHTML = txList.map((tx, index) => {
     const date   = tx.createdAt?.toDate
       ? tx.createdAt.toDate().toLocaleString('zh-TW', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
       : '—';
+    const vtuberName = vtuberNameCache[tx.vtuberId] || tx.vtuberId || '—';
     const statusHtml = tx.status === 'success'
       ? '<span class="status-success"><i class="fa-solid fa-check"></i> 成功扣款</span>'
       : '<span style="color:#f59e0b;"><i class="fa-solid fa-clock"></i> 處理中</span>';
 
+    const hiddenClass = index >= 5 ? 'hidden-item extra-trans' : '';
+
     return `
-      <tr>
+      <tr class="${hiddenClass}">
         <td class="col-date" data-label="日期時間">${date}</td>
-        <td class="col-bold" data-label="對象">${tx.vtuberId || '—'}</td>
+        <td class="col-bold" data-label="對象">${vtuberName}</td>
         <td data-label="項目">${tx.milestoneTitle || tx.milestoneId || '—'}</td>
         <td class="col-red" data-label="花費(NTD)">- ${Number(tx.amount || 0).toLocaleString()}</td>
         <td data-label="狀態">${statusHtml}</td>
       </tr>
     `;
   }).join('');
+
+  // 處理「查看更多」按鈕的顯示/隱藏
+  const btnViewMore = table.parentElement.querySelector('.btn-view-more') || table.closest('.fan-card')?.querySelector('.btn-view-more');
+  if (btnViewMore) {
+    btnViewMore.style.display = txList.length > 5 ? 'block' : 'none';
+    // 確保按鈕文字重置（如果是剛加載）
+    btnViewMore.innerHTML = '查看更多 <i class="fa-solid fa-chevron-down"></i>';
+  }
 }
 
 // ─── 主初始化 ────────────────────────────────────────────────────────────────
@@ -199,8 +332,7 @@ function initFanProfile() {
       const data = snap.data();
 
       renderHero(user, data);
-      renderFirebaseBadges(data.badges || []);
-      renderFirebaseTitles(data.honorTitles || []);
+      await updateBadgesAndTitlesFromFirebase(user.uid, data.badges || [], data.honorTitles || []);
       renderStats(data);
 
       const vtuberIds = data.supportedVtubers || [];
@@ -213,22 +345,104 @@ function initFanProfile() {
       renderHero(user, null);
     });
 
-    // 2. 即時監聽 Transactions
-    const txQuery = query(
-      collection(db, 'transactions'),
-      where('fanUid', '==', user.uid),
-      orderBy('createdAt', 'desc')
-    );
+    // 2. 即時監聽 Transactions (近 30 天且成功的贊助)
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    let txQuery;
+    try {
+      txQuery = query(
+        collection(db, 'transactions'),
+        where('fanUid', '==', user.uid),
+        where('status', '==', 'success'),
+        where('createdAt', '>=', thirtyDaysAgo),
+        orderBy('createdAt', 'desc')
+      );
+    } catch (e) {
+      console.warn('[fan-profile] Query construction failed, falling back to simple query', e);
+      txQuery = query(collection(db, 'transactions'), where('fanUid', '==', user.uid));
+    }
 
     onSnapshot(txQuery, (snap) => {
-      renderTransactions(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+      let docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      
+      // 如果 query 因為缺少索引報錯或回傳全量，則在前端補強過濾 (防止萬一)
+      // 同時處理那些不支援複合查詢的情況
+      const thirtyDaysMs = thirtyDaysAgo.getTime();
+      const filtered = docs.filter(tx => {
+        const txTime = tx.createdAt?.toMillis ? tx.createdAt.toMillis() : 0;
+        return tx.status === 'success' && txTime >= thirtyDaysMs;
+      });
+
+      // 確保排序 (以防 fallback query 沒有 orderBy)
+      filtered.sort((a, b) => {
+        const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+        const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        return tB - tA;
+      });
+
+      resolveVtuberNames(filtered).then(() => renderTransactions(filtered));
     }, (err) => {
       console.warn('[fan-profile] Transactions onSnapshot error (可能缺少索引):', err);
-      // 索引未建時，不清除現有 mock 資料
+      // 如果正式查詢失敗（通常是索引問題），嘗試回退到最基礎查詢並手動過濾
+      const fallbackQuery = query(collection(db, 'transactions'), where('fanUid', '==', user.uid));
+      onSnapshot(fallbackQuery, (snap) => {
+          const allDocs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+          const filtered = allDocs.filter(tx => {
+            const txTime = tx.createdAt?.toMillis ? tx.createdAt.toMillis() : 0;
+            return tx.status === 'success' && txTime >= thirtyDaysMs;
+          });
+          filtered.sort((a, b) => {
+            const tA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            const tB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+            return tB - tA;
+          });
+          resolveVtuberNames(filtered).then(() => renderTransactions(filtered));
+      }, (err2) => {
+          console.error('[fan-profile] Fallback transactions query also failed:', err2);
+      });
     });
   });
 }
 
-// 等 DOM 載入完再初始化（fan_profile.html 有 DOMContentLoaded → initPage()，
-// 我們需要在它之後執行，所以用 module script 的時序（module 比 DOMContentLoaded 晚）
+/**
+ * 儲存介面設定（名稱、簽名檔、頭像上傳）
+ */
+window.handleInterfaceSettingsUpdate = async () => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const newName = el('theme-name').value;
+  const newTagline = el('theme-tagline').value;
+  const avatarInput = el('theme-avatar');
+  
+  const userDocRef = doc(db, 'users', user.uid);
+  const updates = {
+    displayName: newName,
+    tagline: newTagline,
+    updatedAt: new Date()
+  };
+
+  try {
+    // 處理頭像上傳
+    if (avatarInput && avatarInput.files && avatarInput.files[0]) {
+      const file = avatarInput.files[0];
+      const uploadUrl = await storageService.uploadFile(file);
+      updates.photoURL = uploadUrl;
+
+      // 即時更新 UI 預覽
+      const heroAvatars = document.querySelectorAll('.hero-avatar img');
+      heroAvatars.forEach(img => img.src = uploadUrl);
+    }
+
+    await updateDoc(userDocRef, updates);
+    console.log('[fan-profile] Interface settings updated');
+    alert('設定已儲存！');
+  } catch (err) {
+    console.error('[fan-profile] Failed to save settings:', err);
+    alert('儲存失敗：' + err.message);
+  }
+};
+
+// 等 DOM 載入完再初始化
 initFanProfile();

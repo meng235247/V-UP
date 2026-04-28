@@ -1,5 +1,5 @@
 import PostsService from '../services/posts.service.js';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase-config.js';
 
@@ -12,6 +12,7 @@ const MEDIA_ICON_CLASS = {
 };
 
 const postModalCache = new Map();
+const userAvatarCache = new Map(); // [Step 3] 快取使用者頭像，避免重複讀取
 
 function esc(s) {
   return s ? String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])) : '';
@@ -209,6 +210,28 @@ const VtuberProfilePage = {
           root.style.setProperty('--vt-floating-badge-shadow-blue', `rgba(${sRgb.r}, ${sRgb.g}, ${sRgb.b}, 0.15)`);
         }
       }
+
+      // [Step 2] 渲染社群連結
+      const socials = [
+        { id: 'social-youtube', url: vtuber.youtubeUrl },
+        { id: 'social-twitter', url: vtuber.twitterUrl || vtuber.xUrl },
+        { id: 'social-instagram', url: vtuber.instagramUrl }
+      ];
+      socials.forEach(s => {
+        const el = document.getElementById(s.id);
+        if (el) {
+          if (s.url) {
+            el.href = s.url;
+            el.style.display = 'flex';
+          } else {
+            el.style.display = 'none';
+          }
+        }
+      });
+
+      // [修正] 更新全站 Footer 品牌名稱
+      const footerBrand = document.getElementById('footer-brand');
+      if (footerBrand) footerBrand.textContent = vtuber.displayName || vtuber.name || 'SAKURA NOVA';
     } catch (err) {
       console.warn('[VtuberProfilePage] renderVtuber partial failure:', err);
     }
@@ -235,9 +258,31 @@ const VtuberProfilePage = {
           <div style="text-align:center; font-weight:900; font-size:1.6rem; color:var(--text-muted);">夢想緒力中……!</div>
         </div>
       `;
-      section.insertBefore(placeholder, section.firstChild);
+      section.appendChild(placeholder);
     } else {
-      milestones.forEach(m => {
+      // [Task 3 Step 1] 精確排序：進行中優先(由新到舊)，已達成次之(由新到舊)
+      const sorted = [...milestones].sort((a, b) => {
+        const isAchA = (a.status === 'achieved' || a.status === 'completed');
+        const isAchB = (b.status === 'achieved' || b.status === 'completed');
+        
+        // 1. 狀態優先級：進行中(0) < 已達成(1)
+        if (isAchA !== isAchB) return (isAchA ? 1 : -1);
+
+        // 2. 內部排序
+        if (!isAchA) {
+          // 進行中：依 publishedAt 降序 (fallback createdAt)
+          const tA = toMillis(a.publishedAt || a.createdAt);
+          const tB = toMillis(b.publishedAt || b.createdAt);
+          return tB - tA;
+        } else {
+          // 已達成：依 achievedAt 降序 (fallback updatedAt)
+          const tA = toMillis(a.achievedAt || a.updatedAt);
+          const tB = toMillis(b.achievedAt || b.updatedAt);
+          return tB - tA;
+        }
+      });
+
+      sorted.forEach(m => {
         const card = document.createElement('div');
         card.className = 'ms-card';
         card.dataset.generated = 'true';
@@ -253,8 +298,9 @@ const VtuberProfilePage = {
         if (m.isCollab && m.collaboratorsMeta && m.collaboratorsMeta.length > 0) {
           const vt = VtuberProfilePage._currentVtuber || {};
           const ownerName = vt.displayName || vt.name || '本頻道';
-          const ownerAvatar = vt.avatarUrl || 'https://i.pravatar.cc/100';
-          const avatarsHtml = m.collaboratorsMeta.map(c => `<img src="${esc(c.avatarUrl || 'https://i.pravatar.cc/100?u='+c.uid)}" alt="${esc(c.name)}">`).join('');
+          // [Step 3 修正] 使用 bannerUrl 作為展示頭貼
+          const ownerAvatar = vt.bannerUrl || vt.avatarUrl || 'https://i.pravatar.cc/100';
+          const avatarsHtml = m.collaboratorsMeta.map(c => `<img src="${esc(c.bannerUrl || c.avatarUrl || 'https://i.pravatar.cc/100?u='+c.uid)}" alt="${esc(c.name)}">`).join('');
           const namesHtml = m.collaboratorsMeta.map(c => `<span class="vt-name-ume" style="font-weight:bold;">${esc(c.name)}</span>`).join('、');
           
           collabHtml = `
@@ -326,36 +372,54 @@ const VtuberProfilePage = {
           </div>
         `;
 
-        // insert at top
-        section.insertBefore(card, section.firstChild);
+        // 改用 appendChild 確保排序與 UI 呈現一致
+        section.appendChild(card);
 
         // A-Task 2b: 即時監聽排行榜（依 transactions 彙整粉絲累積金額）
-        const unsubRank = MilestonesService.listenRankings(m.id, 10, (rankList, myAmount) => {
+        const unsubRank = MilestonesService.listenRankings(m.id, 10, async (rankList, myAmount) => {
           const rl = card.querySelector(`#rank-list-${m.id}`);
           if (!rl) return;
           
-          let html = '';
-          if (!rankList.length) {
-            html += '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
-          } else {
-            html += rankList.map((r, i) => `
+          // [Step 3] 異步取得排行榜中所有用戶的真實頭像
+          const renderList = await Promise.all(rankList.map(async (r, i) => {
+            let avatar = userAvatarCache.get(r.fanUid);
+            if (avatar === undefined) {
+              try {
+                const snap = await getDoc(doc(db, 'users', r.fanUid));
+                avatar = snap.exists() ? (snap.data().photoURL || snap.data().avatarUrl) : null;
+                // [Step 3 修正] 如果資料庫沒頭像，優先採用交易紀錄中的快照 (Google 帳號頭像通常存於此)
+                if (!avatar && r.avatarUrl) avatar = r.avatarUrl;
+                
+                userAvatarCache.set(r.fanUid, avatar || false);
+              } catch (e) { 
+                console.warn('Fetch avatar failed', r.fanUid, e);
+                avatar = r.avatarUrl || null;
+              }
+            }
+            const displayAvatar = (avatar && avatar !== false) ? avatar : `https://i.pravatar.cc/100?u=${r.fanUid}`;
+
+            return `
               <div class="rank-item">
                 <span class="r-rank" style="min-width:1.5rem;font-weight:bold;color:var(--vt-pink,#e91e8c)">${i + 1}</span>
-                <img src="${esc('https://i.pravatar.cc/100?u=' + r.fanUid)}" class="r-avatar" alt="${esc(r.displayName)}">
+                <img src="${esc(displayAvatar)}" class="r-avatar" alt="${esc(r.displayName)}">
                 <div class="r-info">
                   <span class="r-name">${esc(r.displayName)}</span>
                   <span class="r-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
                 </div>
               </div>
-            `).join('');
-          }
+            `;
+          }));
+
+          let html = renderList.length ? renderList.join('') : '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
 
           // A-Task 2b: 顯示該用戶在此里程碑的累計金額
           const user = auth.currentUser;
           if (user) {
+            let myAvatar = userAvatarCache.get(user.uid);
+            if (!myAvatar || myAvatar === false) myAvatar = user.photoURL || `https://i.pravatar.cc/100?u=${user.uid}`;
             html += `
               <div class="rank-item you" style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
-                <img src="${esc('https://i.pravatar.cc/100?u=' + user.uid)}" class="r-avatar" alt="您">
+                <img src="${esc(myAvatar)}" class="r-avatar" alt="您">
                 <div class="r-info">
                   <span class="r-name">您目前的累計贊助</span>
                   <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(myAmount || 0).toLocaleString()} NTD</span>
@@ -433,6 +497,7 @@ const VtuberProfilePage = {
       const iconClass = MEDIA_ICON_CLASS[mediaType] || MEDIA_ICON_CLASS.text;
       const cacheKey = `${milestoneId}:${post.id}`;
       const media = getPostPrimaryMedia(post);
+      const vt = VtuberProfilePage._currentVtuber || {};
       postModalCache.set(cacheKey, {
         title,
         time,
@@ -440,7 +505,9 @@ const VtuberProfilePage = {
         body: post.content || '',
         imageUrl: media.imageUrl,
         mediaType: media.mediaType === 'text' || media.mediaType === 'file' ? null : media.mediaType,
-        mediaUrl: media.mediaUrl
+        mediaUrl: media.mediaUrl,
+        authorName: vt.displayName || vt.name || 'SAKURA NOVA',
+        authorAvatar: vt.bannerUrl || vt.avatarUrl || 'image/miku_test.png'
       });
 
       const isSupporterOnly = post.visibility === 'supporters';
@@ -498,14 +565,91 @@ const VtuberProfilePage = {
           payload.body,
           payload.imageUrl,
           payload.mediaType,
-          payload.mediaUrl
+          payload.mediaUrl,
+          payload.authorName,
+          payload.authorAvatar
         );
       });
     });
+  },
+
+  /**
+   * [Step 3] 渲染回顧彈窗中的排行榜
+   */
+  renderReviewRankings: async (milestoneId) => {
+    const rl = document.getElementById('rmc-rank-list');
+    if (!rl || !milestoneId) return;
+
+    try {
+      // 取得 Top 10 排行 (靜態一次性讀取)
+      const rankingsRef = collection(db, 'transactions');
+      const q = query(
+        rankingsRef,
+        where('milestoneId', '==', milestoneId),
+        where('status', '==', 'success')
+      );
+      const snap = await getDocs(q);
+      
+      const map = {};
+      snap.docs.forEach(d => {
+        const tx = d.data();
+        if (!tx.fanUid) return;
+        if (!map[tx.fanUid]) {
+          map[tx.fanUid] = { 
+            fanUid: tx.fanUid, 
+            displayName: tx.fanName || '匿名粉絲', 
+            avatarUrl: tx.fanAvatarUrl || null,
+            totalAmount: 0 
+          };
+        }
+        map[tx.fanUid].totalAmount += (Number(tx.amount) || 0);
+      });
+
+      const sorted = Object.values(map)
+        .sort((a, b) => b.totalAmount - a.totalAmount)
+        .slice(0, 10);
+
+      if (!sorted.length) {
+        rl.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
+        return;
+      }
+
+      const medalClass = ['gold', 'silver', 'bronze'];
+      const medalEmoji = ['🥇', '🥈', '🥉'];
+
+      const renderList = await Promise.all(sorted.map(async (r, i) => {
+        let avatar = userAvatarCache.get(r.fanUid);
+        if (avatar === undefined) {
+          try {
+            const userSnap = await getDoc(doc(db, 'users', r.fanUid));
+            avatar = userSnap.exists() ? (userSnap.data().photoURL || userSnap.data().avatarUrl) : null;
+            if (!avatar && r.avatarUrl) avatar = r.avatarUrl;
+            userAvatarCache.set(r.fanUid, avatar || false);
+          } catch (e) { 
+            console.warn('Fetch avatar failed', r.fanUid, e);
+            avatar = r.avatarUrl || null;
+          }
+        }
+        const displayAvatar = (avatar && avatar !== false) ? avatar : `https://i.pravatar.cc/100?u=${r.fanUid}`;
+
+        return `
+          <div class="rmc-rank-item">
+            <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? medalEmoji[i] : (i + 1)}</span>
+            <img src="${esc(displayAvatar)}" alt="${esc(r.displayName)}" class="rmc-rank-avatar">
+            <span class="rmc-rank-name">${esc(r.displayName)}</span>
+            <span class="rmc-rank-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
+          </div>
+        `;
+      }));
+
+      rl.innerHTML = renderList.join('');
+    } catch (err) {
+      console.error('[VtuberProfilePage] renderReviewRankings error:', err);
+      rl.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">載入失敗</span></div></div>';
+    }
   }
 };
 
-// Expose controller to window to avoid duplicate init and for debugging
 window.VtuberProfilePage = VtuberProfilePage;
 
 // Initialize the page
