@@ -10,6 +10,7 @@ $uploadLog = Join-Path $runtimeDir "upload.out.log"
 $pidFile = Join-Path $runtimeDir "local-dev.pids.json"
 
 $javaCandidates = @(
+  "C:\Program Files\Java\jdk-21.0.11\bin",
   "C:\Program Files\Eclipse Adoptium\jdk-21.0.10.7-hotspot\bin",
   "C:\Program Files\Eclipse Adoptium\jdk-17.0.18.8-hotspot\bin"
 )
