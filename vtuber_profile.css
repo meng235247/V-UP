@@ -17,8 +17,8 @@
     --vt-hero-shadow: 0 20px 40px rgba(255, 133, 178, 0.2);
     --vt-bg: #FCFBFF;
     --text-main: #1E293B;
-    --text-muted: #64748B;
-    --border-light: #F1F5F9;
+    --text-muted: #475569; /* improved contrast */
+    --border-light: #E2E8F0; /* slightly darker for better separation */
     --shadow-soft: 0 10px 40px rgba(0, 0, 0, 0.04);
 }
 
@@ -478,7 +478,7 @@ body {
     font-size: 0.95rem;
     color: var(--text-muted);
     margin-bottom: 24px;
-    line-height: 1.6;
+    line-height: 1.75; /* increased for readability */
     max-width: calc(100% - 144px);
 }
 
@@ -668,7 +668,7 @@ body {
 
 .exc-post {
     background: white;
-    border: 1px solid #F1F5F9;
+    border: 1px solid var(--border-light); /* using updated variable for better contrast */
     border-radius: 20px;
     padding: 15px 20px;
     margin-bottom: 8px;

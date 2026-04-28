@@ -14,7 +14,7 @@
     --bg-blue: #E8F4FC;
     --card-bg: #FFFFFF;
     --text-main: #111827;
-    --text-muted: #6B7280;
+    --text-muted: #4B5563; /* improved contrast */
     --text-pink: #EC4899;
     --text-blue: #0EA5E9;
     --text-purple: #8B5CF6;
@@ -654,7 +654,7 @@ body.fan-body {
 
 .transaction-table td {
     padding: 20px 10px;
-    border-bottom: 1px dashed var(--border-dark);
+    border-bottom: 1px solid var(--border-dark); /* clearer row separation */
 }
 
 .transaction-table tr:last-child td {
