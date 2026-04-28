@@ -108,15 +108,13 @@
                 <button type="submit" class="btn-secondary full-width auth-submit">建立帳號</button>
             </form>
 
-            <!-- Added Google Sign-In button -->
-            <div class="auth-container">
-                <h1>登入</h1>
-                <button id="google-signin-btn">使用 Google 登入</button>
-
-                <!-- Dev quick-login (shown only on localhost) -->
-                <div id="dev-login" style="margin-top:12px; display:none;">
-                    <button id="dev-auto-login" class="btn-secondary full-width">快速登入測試創作者 (dev)</button>
-                </div>
+            <!-- Social Login Section -->
+            <div class="social-login">
+                <p>或使用社群帳號登入</p>
+                <button class="btn-google-prominent">
+                    <i class="fab fa-google"></i>
+                    使用 Google 帳號繼續
+                </button>
             </div>
 
     <script type="module">
@@ -211,56 +209,8 @@
             }
         });
 
-        // 取代原本隨便寫的 Google Sign-In button
-        const googleBtn = document.getElementById('google-signin-btn');
-        if(googleBtn) {
-            googleBtn.addEventListener('click', async () => {
-                // 如果是透過登入表單上方的選項，判斷角色
-                const activeRoleInput = document.querySelector('.active-form input[type="radio"]:checked');
-                const role = activeRoleInput ? activeRoleInput.value : 'fan';
-                try {
-                    isAuthActionInProgress = true;
-                    const user = await authService.loginWithGoogle(role);
-                    await redirectUser(user);
-                } catch (error) {
-                    isAuthActionInProgress = false;
-                    alert(`Google 登入失敗: ${error.message}`);
-                }
-            });
-        }
-        // Dev-only quick login button (visible on localhost)
-        (function() {
-            try {
-                const isLocal = window.location && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-                if (!isLocal) return;
-
-                const devLoginDiv = document.getElementById('dev-login');
-                if (devLoginDiv) devLoginDiv.style.display = 'block';
-
-                const devBtn = document.getElementById('dev-auto-login');
-                if (!devBtn) return;
-
-                devBtn.addEventListener('click', async () => {
-                    try {
-                        isAuthActionInProgress = true;
-                        devBtn.disabled = true;
-                        devBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 登入中...';
-                        const user = await authService.loginWithEmail('creator@test.local', 'TestPass123!');
-                        await redirectUser(user);
-                    } catch (err) {
-                        isAuthActionInProgress = false;
-                        alert('快速登入失敗: ' + (err.message || err));
-                        devBtn.disabled = false;
-                        devBtn.innerHTML = '快速登入測試創作者 (dev)';
-                    }
-                });
-            } catch (e) {
-                console.warn('[dev-login] initialization failed', e);
-            }
-        })();
-        
-        // 綁定社群圖示也吃一樣的邏輯
-        document.querySelector('.social-btn.google')?.addEventListener('click', async () => {
+        // 綁定 Google 登入按鈕邏輯
+        document.querySelector('.btn-google-prominent')?.addEventListener('click', async () => {
             const activeRoleInput = document.querySelector('.active-form input[type="radio"]:checked');
             const role = activeRoleInput ? activeRoleInput.value : 'fan';
             try {

@@ -458,7 +458,7 @@
             </div>
 
             <h2 class="rmc-title" id="brm-title" style="margin-bottom: 5px;">首位應援</h2>
-            <div
+            <div id="brm-vtuber-name"
                 style="font-size: 0.9rem; font-weight: 700; color:var(--text-purple); letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;">
                 SAKURA NOVA 專屬成就</div>
 
@@ -502,7 +502,7 @@
                         <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">SAKURA
                             NOVA 3D化募資</div>
                     </div>
-                    <a href="vtuber_profile.html#achieved"
+                    <a id="brm-vtuber-link" href="vtuber_profile.html#achieved"
                         style="background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:6px;">前往
                         VTuber 專頁查看詳細 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
@@ -670,15 +670,15 @@
                 reader.readAsDataURL(avatarInput.files[0]);
             }
 
-            // Close modal & notify
+            // Close modal & Persist to Firebase
             closeSettingsModal();
-            setTimeout(() => {
-                alert('您的個人風格設定已更新！');
-            }, 300);
+            if (window.handleInterfaceSettingsUpdate) {
+                window.handleInterfaceSettingsUpdate();
+            }
         }
 
         // --- BADGE & TITLES LOGIC ---
-        const ALL_BADGES = [
+        let ALL_BADGES = [
             // id will be replaced by real DB id from GET /api/user/badges
             { id: 'badge_first_support', imgSrc: 'image/資產 1.png', style: 'bg-pink-light', title: '首位應援', origin: 'SAKURA NOVA 3D化募資', date: '2023.12.15', desc: '初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！', contribution: '1,500', selected: true },
             { id: 'badge_sprout', imgSrc: 'image/資產 3.png', style: 'bg-blue-light', title: '新芽滋長', origin: '初次贊助成就', date: '2024.01.20', desc: '你的支持讓小樹苗開始成長。', contribution: '1,000', selected: true },
@@ -691,12 +691,18 @@
             { id: 'badge_more', iconClass: 'fa-solid fa-ellipsis', style: 'bg-gray-light', title: '更多驚喜', origin: '未來成就', date: '2024.08', desc: '還有更多未知等著你。', contribution: '0', selected: true, unclickable: true }
         ];
 
-        const ALL_TITLES = [
+        let ALL_TITLES = [
             { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: 'SAKURA NOVA 3D化募資', selected: true },
             { id: 't2', iconClass: 'fa-solid fa-trophy text-purple', title: 'sakura的全面應援', origin: '陪伴 sakura 走過所有重要時刻', selected: true },
             { id: 't3', iconClass: 'fa-solid fa-flag text-blue', title: '全部都是盤幣', origin: '累積消費超過 100,000 NTD', selected: true },
             { id: 't4', iconClass: 'fa-solid fa-crown text-pink', title: '頂尖粉絲', origin: '年度貢獻前 1% 專屬', selected: false }
         ];
+
+        window.updateBadgesAndTitles = function (badges, titles) {
+            if (badges && badges.length > 0) ALL_BADGES = badges;
+            if (titles && titles.length > 0) ALL_TITLES = titles;
+            renderBadgesAndTitles();
+        };
 
         function renderBadgesAndTitles() {
             // Badges containers
@@ -711,7 +717,11 @@
 
             // ----- Render Badges -----
             outerBadges.innerHTML = '';
-            ALL_BADGES.filter(b => b.selected || b.unclickable).forEach(badge => {
+            const displayBadges = ALL_BADGES.filter(b => b.selected || b.unclickable);
+            if (displayBadges.length === 0) {
+                outerBadges.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem; padding:15px; width:100%; text-align:center;">尚無展示徽章</div>';
+            }
+            displayBadges.forEach(badge => {
                 const el = document.createElement('div');
                 el.className = `badge-icon ${badge.style}`;
                 el.title = badge.unclickable ? badge.title : `${badge.title} (${badge.origin})`;
@@ -723,7 +733,8 @@
                 }
 
                 if (!badge.locked && !badge.unclickable) {
-                    el.onclick = () => openBadgeReview(badge.imgSrc, badge.title, badge.date, badge.desc, badge.contribution, badge.origin);
+                    el.onclick = () => openBadgeReviewById(badge.id);
+                    el.style.cursor = 'pointer';
                 }
                 outerBadges.appendChild(el);
             });
@@ -733,6 +744,13 @@
                 if (badge.unclickable) return;
                 const wrapper = document.createElement('div');
                 wrapper.style.textAlign = 'center';
+
+                wrapper.style.cursor = 'pointer';
+                wrapper.onclick = (e) => {
+                    if (e.target.tagName.toLowerCase() !== 'input') {
+                        openBadgeReviewById(badge.id);
+                    }
+                };
 
                 let opacity = badge.locked ? '0.5' : '1';
                 let disabledAttr = badge.locked ? 'disabled' : '';
@@ -754,7 +772,11 @@
 
             // ----- Render Titles -----
             outerTitles.innerHTML = '';
-            ALL_TITLES.filter(t => t.selected).forEach(titleObj => {
+            const displayTitles = ALL_TITLES.filter(t => t.selected);
+            if (displayTitles.length === 0) {
+                outerTitles.innerHTML = '<div style="color:var(--text-muted); font-size:0.9rem; padding:10px; width:100%;">尚未設定展示稱號</div>';
+            }
+            displayTitles.forEach(titleObj => {
                 const el = document.createElement('span');
                 el.className = 'title-tag';
                 el.title = titleObj.origin; // Native hover for desktop
@@ -960,17 +982,41 @@
         document.addEventListener('DOMContentLoaded', initPage);
 
         // -- Badge Review Modal --
-        function openBadgeReview(imgSrc, title, date, desc, contribution, origin) {
-            const iconContainer = document.getElementById('brm-icon');
-            iconContainer.innerHTML = `<img src="${imgSrc}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+        function openBadgeReviewById(id) {
+            const b = ALL_BADGES.find(x => x.id === id);
+            if (b) openBadgeReview(b.imgSrc, b.title, b.date, b.desc, b.contribution, b.origin, b.vtuberId, b.vtuberName);
+        }
 
-            document.getElementById('brm-title').textContent = title;
+        function openBadgeReview(imgSrc, title, date, desc, contribution, origin, vtuberId, vtuberName) {
+            const iconContainer = document.getElementById('brm-icon');
+            if (imgSrc) {
+                iconContainer.innerHTML = `<img src="${imgSrc}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
+            } else {
+                iconContainer.innerHTML = '<i class="fa-solid fa-medal" style="font-size:3rem;"></i>';
+            }
+
+            document.getElementById('brm-title').textContent = title || '預設徽章';
             document.getElementById('brm-date').textContent = date;
             document.getElementById('brm-desc').textContent = desc;
-            document.getElementById('brm-origin').textContent = origin;
+            document.getElementById('brm-origin').textContent = origin || '贊助成就';
 
             const contribEl = document.getElementById('brm-contribution');
-            if (contribEl && contribution) contribEl.textContent = contribution;
+            if (contribEl) {
+                contribEl.textContent = contribution ? Number(contribution).toLocaleString() : '0';
+            }
+
+            const vtNameEl = document.getElementById('brm-vtuber-name');
+            if (vtNameEl) vtNameEl.textContent = `${vtuberName || 'SAKURA NOVA'} 專屬成就`;
+
+            const vtLinkEl = document.getElementById('brm-vtuber-link');
+            if (vtLinkEl) {
+                if (vtuberId) {
+                    vtLinkEl.href = `vtuber_profile.html?id=${vtuberId}#achieved`;
+                    vtLinkEl.style.display = 'flex';
+                } else {
+                    vtLinkEl.style.display = 'none';
+                }
+            }
 
             document.getElementById('badge-review-modal').classList.add('open');
             document.body.style.overflow = 'hidden';

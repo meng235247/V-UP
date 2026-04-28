@@ -4,7 +4,7 @@
 
 **Goal:** Close the pre-deploy functional gaps and UI polish items, add AI-suggestion UI in dashboard (no backend), and run a full security pass before Netlify deployment.
 
-**Architecture:** Keep changes localized to page modules and existing services, using Firebase Auth/Firestore for data. Anonymous sponsorship will use Firebase anonymous auth (no unauthenticated writes). UI-only AI suggestion feature will be front-end modal stubs with no data persistence.
+**Architecture:** Keep changes localized to page modules and existing services, using Firebase Auth/Firestore for data. Guest sponsorship will allow unauthenticated users to sponsor (client creates a pending transaction with no persistent user id); UI should encourage login but must still permit a guest flow. UI-only AI suggestion feature will be front-end modal stubs with no data persistence.
 
 **Tech Stack:** HTML, CSS, JavaScript (ES modules), Firebase Auth/Firestore, Vite.
 
@@ -15,11 +15,11 @@
 - Avatar source fixes (fan from users, creator from vtubers)
 - Dashboard real data (Overview + CRM)
 - Full security review (frontend + Firestore/Storage rules)
-- Anonymous sponsorship via Firebase anonymous auth
+- Guest (匿名) sponsorship UI: allow unauthenticated users to sponsor without signing in (UI will encourage login). Ensure transaction writes are protected by Firestore rules or server-side validation so clients cannot set/modify sensitive fields like `status`.
 
 ---
 
-### Task 1: Auth Updates (Google Login + Remove Dev Login + Anonymous Auth Support)
+### Task 1: Auth Updates (Google Login + Remove Dev Login)
 
 **Files:**
 - Modify: auth.html
@@ -27,58 +27,48 @@
 - Modify: js/services/auth.service.js
 
 **Step 1: Remove dev login UI**
-- Delete the dev-only login button and any related text in auth.html.
+- Delete the dev-only login button and any related text in `auth.html` that exposes test credentials.
 
 **Step 2: Add Google sign-in UI**
-- Add a Google sign-in button in auth.html (match existing style).
-- Ensure auth.css includes button style (if needed) consistent with page design.
+- Add a Google sign-in button in `auth.html` (match existing styles).
+- Ensure `auth.css` includes the button style (or reuse existing primary button styles).
 
 **Step 3: Add Google sign-in logic**
-- Implement `authService.loginWithGoogle()` in js/services/auth.service.js (if missing).
+- Implement `authService.loginWithGoogle()` in `js/services/auth.service.js` if missing.
 - Wire the button `onclick` to call Google login and redirect by role.
 
-**Step 4: Add anonymous auth helper**
-- Add `authService.ensureAnonymous()` (or similar) to sign in anonymously if no user exists.
-- This will be used by PaymentService when a guest supports.
+**Step 4: Test (manual by user)**
+- User will run dev and test Google login locally. (No automated tests or commits performed by agent.)
 
-**Step 5: Test**
-- Run: `npm run dev`
-- Verify: Google login works and redirects correctly.
-- Verify: dev login button is removed.
-- Verify: calling anonymous sign-in does not error.
-
-**Step 6: Commit**
-- `git add auth.html auth.css js/services/auth.service.js`
-- `git commit -m "feat: auth google login + anonymous support"`
+**Notes:**
+- We are NOT adding Firebase anonymous sign-in. Guest sponsorship is supported as an unauthenticated client action (see Task 2) — but because allowing unauthenticated writes has security implications, Task 8 (security review) will ensure Firestore rules prevent clients from tampering with sensitive transaction fields.
 
 ---
 
-### Task 2: Anonymous Sponsorship Flow (UI Prompt + Data Path)
+### Task 2: Guest Sponsorship Flow (UI Prompt + Data Path)
 
 **Files:**
 - Modify: js/services/payment.service.js
 - Modify: vtuber_profile.html
 - Modify: js/pages/vtuber-profile.page.js
 
-**Step 1: Ensure anonymous auth before payment**
-- In PaymentService, call `authService.ensureAnonymous()` (or Firebase `signInAnonymously`) when no user.
-- Set transaction `fanUid` to anonymous uid and `fanName` to `"匿名粉絲"`.
+**Step 1: Guest sponsorship behavior**
+- Allow unauthenticated users to sponsor from the public VTuber page.
+- When no logged-in user, Payment UI shows an encouragement message and a prominent "登入以保留紀錄" CTA, but still allows proceeding.
+- For guest sponsors, create a transaction with `fanUid: null` (or `fanUid: 'guest'`) and `fanName: '匿名粉絲'`.
 
-**Step 2: UI prompt for guests**
-- In vtuber_profile.html payment modal, add a small info block:
-  - If no user, show "可匿名贊助，建議登入以保留紀錄" and a login CTA button.
+**Step 2: Protect sensitive fields**
+- Ensure Firestore rules (Task 8) prevent clients from setting `status` to `success` or modifying `confirmedAt` — only server-side processes (or secure Cloud Functions / admin SDK) can update transaction `status`.
 
-**Step 3: Update vtuber-profile.page.js**
-- Ensure modal renders login CTA for guest state.
-- If user logs in, refresh modal state.
+**Step 3: UI implementation details**
+- In `vtuber_profile.html` payment modal, add info text for guest state and a login CTA that opens `auth.html` or triggers Google login.
+- Update `vtuber-profile.page.js` to set `fanName`/`fanUid` appropriately and fallback to `匿名粉絲` when unauthenticated.
 
-**Step 4: Test**
-- With no login: open vtuber profile, attempt support, confirm transaction created with anonymous uid.
-- With login: support flow uses real uid.
+**Step 4: Test (manual by user)**
+- User will verify that guests can create a pending transaction and that status remains `pending` until server-side confirmation.
 
-**Step 5: Commit**
-- `git add js/services/payment.service.js vtuber_profile.html js/pages/vtuber-profile.page.js`
-- `git commit -m "feat: allow anonymous support with login prompt"`
+**Notes:**
+- This approach avoids adding Firebase anonymous sign-in while still supporting guest sponsors. Security review must ensure this write pattern is safe.
 
 ---
 
