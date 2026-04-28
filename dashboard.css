@@ -844,3 +844,209 @@ button { font-family: inherit; cursor: pointer; border: none; border-radius: 8px
 #confirm-modal .modal-content { max-width: 520px; padding: 20px; }
 #confirm-modal .modal-body { padding: 16px 0; }
 #confirm-modal .modal-footer { padding-top: 12px; }
+/* ---- AI Sparkle UI ---- */
+.ai-sparkle-btn {
+    border: 1.5px solid var(--primary);
+    background: linear-gradient(135deg, white, var(--primary-light));
+    color: var(--primary);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+[data-theme="dark"] .ai-sparkle-btn {
+    background: linear-gradient(135deg, var(--surface), var(--primary-light));
+}
+
+.ai-sparkle-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px var(--primary-glow);
+    background: linear-gradient(135deg, var(--primary-light), white);
+}
+
+.ai-suggestion-list {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.ai-card {
+    padding: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--surface);
+    position: relative;
+    overflow: hidden;
+}
+
+.ai-card:hover {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    transform: translateX(4px);
+}
+
+.ai-card-title {
+    font-weight: 800;
+    font-size: 1rem;
+    margin-bottom: 4px;
+    color: var(--text-main);
+}
+
+.ai-card::after {
+    content: '\f0a9';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0;
+    transition: all 0.2s;
+    color: var(--primary);
+}
+
+.ai-card:hover::after {
+    opacity: 1;
+    right: 12px;
+}
+
+.ai-insight-box {
+    background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #bae6fd;
+    margin-bottom: 12px;
+}
+
+[data-theme="dark"] .ai-insight-box {
+    background: linear-gradient(135deg, #0c4a6e, #082f49);
+    border-color: #075985;
+}
+
+.insight-tag {
+    display: inline-block;
+    background: white;
+    color: var(--primary);
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+    margin-right: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+[data-theme="dark"] .insight-tag {
+    background: #1e293b;
+    color: #2dd4bf;
+}
+
+.data-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+}
+
+.data-table th.sortable:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.data-table th.sortable i {
+    margin-left: 4px;
+    font-size: 0.7rem;
+    opacity: 0.5;
+}
+
+.crm-comment-cell {
+    max-width: 250px;
+}
+
+.crm-comment-text {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-all;
+}
+
+.crm-comment-text.expanded {
+    display: block;
+    -webkit-line-clamp: initial;
+    max-height: none;
+}
+
+.btn-text-link {
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-size: 0.75rem;
+    padding: 0;
+    margin-top: 4px;
+    font-weight: 700;
+}
+
+.btn-text-link:hover {
+    text-decoration: underline;
+}
+
+.share-templates .ai-card {
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
+}
+
+.share-templates .ai-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--primary);
+    box-shadow: 0 4px 12px rgba(255, 71, 126, 0.1);
+    background: linear-gradient(to right, #ffffff, #fff5f7);
+}
+
+[data-theme="dark"] .share-templates .ai-card:hover {
+    background: linear-gradient(to right, #1e293b, #312e81);
+}
+
+#share-qrcode-container {
+    transition: transform 0.3s ease;
+}
+
+#share-qrcode-container:hover {
+    transform: scale(1.02);
+}
+
+/* Specific styling for share templates to avoid icon overlap */
+.share-templates .ai-card::after {
+    content: "點擊複製";
+    position: relative; /* Change from absolute to relative */
+    display: block;
+    font-size: 0.75rem;
+    color: var(--primary);
+    margin-top: 12px;
+    font-weight: 700;
+    text-align: right;
+    opacity: 0.8;
+    right: 0;
+    top: 0;
+    transform: none;
+}
+
+.share-templates .ai-card:hover::after {
+    opacity: 1;
+    right: 0;
+}
+
+/* Responsive Dashboard Grid for Share Page */
+@media (max-width: 992px) {
+    .share-grid {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+
+
+
