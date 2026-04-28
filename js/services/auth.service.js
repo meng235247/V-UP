@@ -45,6 +45,7 @@ class AuthService {
                 email: user.email,
                 role: role,
                 displayName: displayName || user.displayName || user.email.split('@')[0],
+                photoURL: user.photoURL || null,
                 createdAt: serverTimestamp()
             });
         }

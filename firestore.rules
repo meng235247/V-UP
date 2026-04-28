@@ -221,13 +221,33 @@ service cloud.firestore {
     match /transactions/{txId} {
       // 為了支援 A-Task 2b 的前端排行榜即時監聽，開放讀取成功的交易
       allow read: if isAdmin() 
-                  || (isSignedIn() && (resource.data.fanUid == request.auth.uid || resource.data.vtuberId == request.auth.uid))
+                  || (isSignedIn() && (resource.data.get('fanUid', null) == request.auth.uid || resource.data.vtuberId == request.auth.uid))
                   || (resource.data.status == 'success');
 
-      allow create: if isSignedIn()
-            && ('fanUid' in request.resource.data && request.auth.uid == request.resource.data.fanUid)
+      allow create: if
+            // signed-in user must provide their own fanUid
+            (isSignedIn()
+              && ('fanUid' in request.resource.data && request.auth.uid == request.resource.data.fanUid)
+            )
+            // guest: no fanUid field required, just validate amount and status
+            || (!isSignedIn()
+              && !('fanUid' in request.resource.data)
+            )
+            // shared validations for both paths
             && ('status' in request.resource.data && request.resource.data.status in ['pending', 'success'])
-            && ('amount' in request.resource.data && (request.resource.data.amount is number && request.resource.data.amount > 0));
+            && ('amount' in request.resource.data && (request.resource.data.amount is number && request.resource.data.amount > 0))
+            && request.resource.data.keys().hasOnly([
+              'fanUid',
+              'fanName',
+              'vtuberId',
+              'milestoneId',
+              'milestoneTitle',
+              'amount',
+              'method',
+              'message',
+              'status',
+              'createdAt'
+            ]);
 
       allow update: if isAdmin();
       allow delete: if isAdmin();
