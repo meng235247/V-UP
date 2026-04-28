@@ -34,6 +34,9 @@
                 <a href="#" class="nav-item" data-tab="posts">
                     <i class="fas fa-newspaper"></i> 限定內容發布 (Posts)
                 </a>
+                <a href="#" class="nav-item" data-tab="share">
+                    <i class="fas fa-share-nodes"></i> 擴散分享 (Share)
+                </a>
                 <a href="#" class="nav-item" data-tab="customization">
                     <i class="fas fa-palette"></i> 專屬頁面自訂
                 </a>
@@ -109,31 +112,31 @@
                         <div class="data-icon bg-primary-light"><i class="fas fa-coins text-primary"></i></div>
                         <div class="data-info">
                             <span class="data-label">本月總斗內點數</span>
-                            <div class="data-value">42,500 <span class="trend positive"><i class="fas fa-arrow-up"></i>
-                                    12.5%</span></div>
+                            <div class="data-value" id="kpi-monthly-points">0 <span class="trend positive"><i class="fas fa-arrow-up"></i>
+                                    0%</span></div>
                         </div>
                     </div>
                     <div class="data-card">
                         <div class="data-icon bg-success-light"><i class="fas fa-heart text-success"></i></div>
                         <div class="data-info">
                             <span class="data-label">活躍贊助粉絲</span>
-                            <div class="data-value">1,248 <span class="trend positive"><i class="fas fa-arrow-up"></i>
-                                    5.2%</span></div>
+                            <div class="data-value" id="kpi-active-fans">0 <span class="trend positive"><i class="fas fa-arrow-up"></i>
+                                    0%</span></div>
                         </div>
                     </div>
                     <div class="data-card">
                         <div class="data-icon bg-warning-light"><i class="fas fa-medal text-warning"></i></div>
                         <div class="data-info">
                             <span class="data-label">已發放限定證明</span>
-                            <div class="data-value">320 <span class="trend neutral">-</span></div>
+                            <div class="data-value" id="kpi-issued-badges">0 <span class="trend neutral">-</span></div>
                         </div>
                     </div>
                     <div class="data-card">
                         <div class="data-icon bg-info-light"><i class="fas fa-eye text-info"></i></div>
                         <div class="data-info">
                             <span class="data-label">公開頁面瀏覽人數</span>
-                            <div class="data-value">18.2K <span class="trend positive"><i class="fas fa-arrow-up"></i>
-                                    8.4%</span></div>
+                            <div class="data-value" id="kpi-page-views">0 <span class="trend positive"><i class="fas fa-arrow-up"></i>
+                                    0%</span></div>
                         </div>
                     </div>
 
@@ -155,59 +158,8 @@
                                         <th>操作</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <div class="table-item-title">
-                                                <div class="item-icon-small"><i class="fas fa-microphone"></i></div>
-                                                <span>錄音室級別麥克風升級！</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="table-progress">
-                                                <div class="progress-bar-bg">
-                                                    <div class="progress-bar-fill" style="width:75%;"></div>
-                                                </div>
-                                                <span class="progress-percent">75%</span>
-                                            </div>
-                                        </td>
-                                        <td class="font-mono">15,000</td>
-                                        <td class="font-mono text-muted">20,000</td>
-                                        <td>
-                                            <button class="btn-table-action edit" title="編輯項目"><i
-                                                    class="fas fa-edit"></i></button>
-                                            <button class="btn-table-action rank" title="查看排行榜"><i
-                                                    class="fas fa-list-ol"></i></button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <div class="table-item-title">
-                                                <div class="item-icon-small"
-                                                    style="background:var(--secondary-light); color:var(--secondary);">
-                                                    <i class="fas fa-vr-cardboard"></i>
-                                                </div>
-                                                <span>超美麗 3D 化模型製作</span>
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div class="table-progress">
-                                                <div class="progress-bar-bg">
-                                                    <div class="progress-bar-fill bg-secondary" style="width:12%;">
-                                                    </div>
-                                                </div>
-                                                <span class="progress-percent">12%</span>
-                                            </div>
-                                        </td>
-                                        <td class="font-mono">12,000</td>
-                                        <td class="font-mono text-muted">100,000</td>
-                                        <td>
-                                            <button class="btn-table-action edit" title="編輯項目"><i
-                                                    class="fas fa-edit"></i></button>
-                                            <button class="btn-table-action rank" title="查看排行榜"><i
-                                                    class="fas fa-list-ol"></i></button>
-                                        </td>
-                                    </tr>
+                                <tbody id="active-milestones-tbody">
+                                    <tr><td colspan="5" style="text-align:center; padding:20px;">載入中...</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -218,31 +170,8 @@
                         <div class="section-header">
                             <h2>最近大額貢獻粉絲</h2>
                         </div>
-                        <div class="recent-fans-list">
-                            <div class="fan-list-item">
-                                <div class="fan-avatar"><i class="fas fa-user-astronaut"></i></div>
-                                <div class="fan-details">
-                                    <span class="fan-name">星空騎士_阿龍</span>
-                                    <span class="fan-time text-muted">10 分鐘前</span>
-                                </div>
-                                <div class="fan-contribution text-primary">+ 5,000 點</div>
-                            </div>
-                            <div class="fan-list-item">
-                                <div class="fan-avatar"><i class="fas fa-user-ninja"></i></div>
-                                <div class="fan-details">
-                                    <span class="fan-name">深海的貓</span>
-                                    <span class="fan-time text-muted">1 小時前</span>
-                                </div>
-                                <div class="fan-contribution text-primary">+ 3,200 點</div>
-                            </div>
-                            <div class="fan-list-item">
-                                <div class="fan-avatar"><i class="fas fa-user-secret"></i></div>
-                                <div class="fan-details">
-                                    <span class="fan-name">Mystic_K</span>
-                                    <span class="fan-time text-muted">3 小時前</span>
-                                </div>
-                                <div class="fan-contribution text-primary">+ 1,000 點</div>
-                            </div>
+                        <div class="recent-fans-list" id="recent-top-fans-list">
+                            <div style="text-align:center; padding:20px; color:var(--text-muted);">載入中...</div>
                         </div>
                         <button class="btn-outline full-width" id="send-thanks-btn" style="margin-top:15px;">
                             <i class="fas fa-envelope"></i> 發送感謝信函 (批次)
@@ -257,8 +186,13 @@
                     <div style="font-size:3rem; margin-bottom:16px;">🎯</div>
                     <h2 style="margin-bottom:8px;">里程碑管理</h2>
                     <p class="text-muted" style="margin-bottom:24px;">在這裡建立、編輯和追蹤您所有的募資里程碑項目</p>
-                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i>
-                        建立第一個里程碑</button>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i>
+                            建立第一個里程碑</button>
+                        <button class="btn-outline ai-sparkle-btn" onclick="openMilestoneAIModal()">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI 生成提案
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -276,12 +210,6 @@
                         <select id="crm-filter-milestone" class="form-control" style="flex: 1; min-width: 200px;">
                             <option value="">所有里程碑</option>
                         </select>
-                        <select id="crm-sort" class="form-control" style="flex: 1; min-width: 150px;">
-                            <option value="date-desc">日期 (新到舊)</option>
-                            <option value="date-asc">日期 (舊到新)</option>
-                            <option value="amount-desc">金額 (高到低)</option>
-                            <option value="amount-asc">金額 (低到高)</option>
-                        </select>
                     </div>
 
                     <div class="card">
@@ -289,10 +217,10 @@
                             <table class="data-table" id="crm-table">
                                 <thead>
                                     <tr>
-                                        <th>粉絲名稱</th>
-                                        <th>貢獻項目 (里程碑)</th>
-                                        <th>贊助金額</th>
-                                        <th>贊助日期</th>
+                                        <th class="sortable" onclick="handleCRMSort('fanName')">粉絲名稱 <i class="fas fa-sort"></i></th>
+                                        <th class="sortable" onclick="handleCRMSort('milestoneTitle')">貢獻項目 <i class="fas fa-sort"></i></th>
+                                        <th class="sortable" onclick="handleCRMSort('amount')">贊助金額 <i class="fas fa-sort"></i></th>
+                                        <th class="sortable" onclick="handleCRMSort('createdAt')">贊助日期 <i class="fas fa-sort"></i></th>
                                         <th>狀態</th>
                                         <th>留言</th>
                                     </tr>
@@ -309,8 +237,11 @@
             <!-- ===== TAB: Posts ===== -->
             <div class="tab-panel" id="panel-posts">
                 <div class="dashboard-section">
-                    <div class="section-header">
+                    <div class="section-header" style="display:flex; justify-content:space-between; align-items:center;">
                         <h2>📰 限定內容發布</h2>
+                        <button class="btn-outline ai-sparkle-btn" onclick="openPostAIModal()">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI 生成貼文
+                        </button>
                     </div>
                     <div class="card post-composer-card">
                         <div class="form-group" style="margin-bottom: 16px;">
@@ -450,7 +381,58 @@
                 </div>
             </div>
 
+            <!-- ===== TAB: Share & Spread ===== -->
+            <div class="tab-panel" id="panel-share">
+                <div class="dashboard-grid share-grid" style="grid-template-columns: 350px 1fr; align-items: start;">
+                    <!-- QR Code Card -->
+                    <div class="card" style="text-align: center; padding: 30px;">
+                        <h3 style="margin-bottom: 20px;"><i class="fas fa-qrcode"></i> 專屬 QR Code</h3>
+                        <div id="share-qrcode-container" style="background: white; padding: 20px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 20px;">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://v-up.app/vtuber/yume" alt="QR Code" id="share-qrcode-img" style="width: 200px; height: 200px;">
+                        </div>
+                        <p class="text-muted" style="font-size: 0.9rem; margin-bottom: 20px;">推薦將此 QR Code 放入您的直播間 Overlay<br>或 X (Twitter) 的置頂貼文中</p>
+                        <button class="btn-primary full-width" onclick="downloadQRCode()"><i class="fas fa-download"></i> 下載 QR Code</button>
+                    </div>
+
+                    <!-- URL & Templates Card -->
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card" style="padding: 24px;">
+                            <h3 style="margin-bottom: 15px;"><i class="fas fa-link"></i> 公開頁面網址</h3>
+                            <div style="display: flex; gap: 8px; background: var(--bg-subtle); padding: 8px; border-radius: 10px; border: 1px solid var(--border);">
+                                <input type="text" id="share-url-input" class="form-control" readonly value="https://v-up.app/vtuber/yume" style="font-family: monospace; border: none; background: transparent; flex: 1; font-size: 0.95rem;">
+                                <button class="btn-primary" onclick="copyShareLink()" style="padding: 6px 16px;"><i class="fas fa-copy"></i> 複製</button>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3><i class="fas fa-bullhorn"></i> 推薦分享文案</h3>
+                            <div class="share-templates" style="margin-top: 15px; display: grid; gap: 15px;">
+                                <div class="ai-card" style="padding: 15px; cursor: pointer;" onclick="copyTemplateText(0)">
+                                    <div style="font-weight: 700; margin-bottom: 8px;">✨ 溫馨互動型</div>
+                                    <p id="template-0" style="font-size: 0.9rem; margin-bottom: 0;">大家！我的 V-UP 專屬頁面開張囉！在這裡可以看到我目前的活動進度，還有專屬的限定內容～快來找我玩吧！💖 #VUP #VTuber</p>
+                                </div>
+                                <div class="ai-card" style="padding: 15px; cursor: pointer;" onclick="copyTemplateText(1)">
+                                    <div style="font-weight: 700; margin-bottom: 8px;">🎯 里程碑衝刺型</div>
+                                    <p id="template-1" style="font-size: 0.9rem; margin-bottom: 0;">目前正在為【新衣裝】進行募資里程碑！還差一點點就能解鎖了，希望能得到大家的支持與鼓勵 🚀 #VUP #新衣裝募資</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card" style="background: linear-gradient(135deg, #fff5f7, #f0f7ff);">
+                            <h3 style="color: var(--primary);"><i class="fas fa-lightbulb"></i> 分享小撇步</h3>
+                            <ul style="padding-left: 20px; font-size: 0.9rem; line-height: 1.6; margin-top: 10px;">
+                                <li><strong>直播台 Overlay</strong>：將 QR Code 縮小放在畫面角落，讓觀眾隨時掃碼。</li>
+                                <li><strong>直播資訊欄</strong>：在 YouTube 或 Twitch 的描述欄加入專屬網址。</li>
+                                <li><strong>X (Twitter) 置頂</strong>：發布一篇包含 QRCode 與感性文案的貼文並置頂。</li>
+                                <li><strong>聊天室指令</strong>：設定機器人指令（如 !vup）自動回覆您的分享連結。</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- ===== TAB: Settings ===== -->
+
             <div class="tab-panel" id="panel-settings">
                 <div class="dashboard-section" style="margin-bottom: 24px;">
                     <div class="section-header">
@@ -628,6 +610,87 @@
         </div>
     </div>
 
+    <!-- Milestone AI Suggestion Modal -->
+    <div id="milestone-ai-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-wand-magic-sparkles text-primary"></i> AI 里程碑提案助手</h3>
+                <button class="btn-close" onclick="closeMilestoneAIModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="ms-ai-insight" style="margin-bottom: 20px;">
+                    <div class="ai-insight-box">
+                        <div class="insight-tag">🔥 本週趨勢：3D 模型精緻化、ASMR 專案</div>
+                        <div class="insight-tag">💡 粉絲興趣：您的支持者近期頻繁提及「新衣裝」</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>告訴 AI 您的目標或靈感</label>
+                    <textarea id="ms-ai-prompt" class="form-control" rows="3" placeholder="例如：我想辦一個慶祝 1 萬訂閱的活動..."></textarea>
+                </div>
+                <button class="btn-primary full-width" id="ms-ai-generate-btn" onclick="generateMilestoneSuggestions()">
+                    <i class="fas fa-sparkles"></i> 開始分析並生成提案
+                </button>
+
+                <div id="ms-ai-results" style="margin-top:20px; display:none;">
+                    <label style="font-weight:bold; margin-bottom:12px; display:block;">AI 推薦方案 (可點擊套用)：</label>
+                    <div class="ai-suggestion-list" style="display:grid; gap:12px;">
+                        <!-- Placeholder Results -->
+                        <div class="ai-card" onclick="selectAISuggestion('萬訂感謝祭：全新 2K 實況設備升級', 15000, '為了提供更高畫質的直播，希望能募集電腦升級資金！')">
+                            <div class="ai-card-title">方案 A：高畫質直播計畫</div>
+                            <p class="text-muted">升級 CPU 與顯示卡，開啟 2K 時代。</p>
+                        </div>
+                        <div class="ai-card" onclick="selectAISuggestion('夢想舞台：3D 模型精緻化工程', 50000, '希望能邀請頂尖繪師優化 3D 模型的物理效果...')">
+                            <div class="ai-card-title">方案 B：究極 3D 優化</div>
+                            <p class="text-muted">優化頭髮與衣服物理，讓動作更流暢。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Post AI Suggestion Modal -->
+    <div id="post-ai-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3><i class="fas fa-wand-magic-sparkles text-primary"></i> AI 貼文靈感助手</h3>
+                <button class="btn-close" onclick="closePostAIModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <div id="post-ai-insight" style="margin-bottom: 20px;">
+                    <div class="ai-insight-box">
+                        <div class="insight-tag">📢 熱門話題：#VUp週年慶、#週六直播</div>
+                        <div class="insight-tag">❤️ 互動建議：分享幕後花絮可增加 40% 互動率</div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>這篇貼文想傳達什麼情緒？</label>
+                    <textarea id="post-ai-prompt" class="form-control" rows="3" placeholder="例如：我想感謝大家支持我的新衣裝募資..."></textarea>
+                </div>
+                <button class="btn-primary full-width" id="post-ai-generate-btn" onclick="generatePostSuggestions()">
+                    <i class="fas fa-sparkles"></i> 撰寫貼文草稿與建議
+                </button>
+
+                <div id="post-ai-results" style="margin-top:20px; display:none;">
+                    <label style="font-weight:bold; margin-bottom:12px; display:block;">推薦草稿 (點擊複製到編輯器)：</label>
+                    <div class="ai-suggestion-list" style="display:grid; gap:12px;">
+                        <div class="ai-card" onclick="selectAIPost('【幕後解密】謝謝大家的支持！新衣裝的進度已經達到 50% 囉 ✨\n今天偷偷放出一張設計草稿給大家看...')">
+                            <div class="ai-card-title">風格 A：溫馨感謝型</div>
+                            <p class="text-muted">「新衣裝的進度已經達到 50% 囉 ✨」</p>
+                        </div>
+                        <div class="ai-card" onclick="selectAIPost('太瘋狂了！居然這麼快就達成第一階段目標 🚀\n大家的力量真的好強大... (內含贊助者限定桌布預告)')">
+                            <div class="ai-card-title">風格 B：激動興奮型</div>
+                            <p class="text-muted">「大家的力量真的好強大... 🚀」</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/services/milestones.service.js"></script>
     <script src="dashboard.js"></script>
     <script type="module">
@@ -658,6 +721,7 @@
             }
 
             currentUid = user.uid;
+            window.currentUid = user.uid;
 
             // 已登入，將用戶名稱替換到 UI
             const displayName = document.querySelector('.user-profile .user-name');
@@ -703,8 +767,10 @@
 
         await loadPostComposerMilestones();
         await renderPosts();
-                // Render milestones list after posts
-                if (typeof renderMilestones === 'function') renderMilestones();
+        // Render milestones list after posts
+        if (typeof renderMilestones === 'function') renderMilestones();
+        // [Task 5] Render KPI Overview
+        if (typeof window.renderDashboardOverview === 'function') window.renderDashboardOverview(user.uid);
         });
 
         // 登出綁定

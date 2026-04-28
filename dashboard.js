@@ -25,6 +25,7 @@ const TAB_CONFIG = {
     'milestones':     { title: '里程碑管理 (Milestones)',   desc: '建立與管理您的所有募資項目' },
     'crm':            { title: '粉絲關係管理 (CRM)',         desc: '查看並聯繫您的核心支持者' },
     'posts':          { title: '限定內容發布 (Posts)',       desc: '向贊助粉絲發布專屬內容' },
+    'share':          { title: '擴散分享 (Share & Spread)',  desc: '讓更多人看見您的專屬頁面' },
     'customization':  { title: '專屬頁面自訂 (Customization)', desc: '調整您的公開頁面視覺風格' },
     'settings':       { title: '帳號設定 (Settings)',        desc: '管理您的帳號資料與安全設定' },
 };
@@ -173,7 +174,99 @@ function switchTab(tabId) {
         if (typeof window.refreshPostMilestoneOptions === 'function') window.refreshPostMilestoneOptions();
         if (typeof window.renderPosts === 'function') window.renderPosts();
     }
+
+    if (tabId === 'crm') {
+        if (typeof window.renderCRM === 'function') window.renderCRM();
+    }
+
+    if (tabId === 'share') {
+        if (typeof window.initShareTab === 'function') window.initShareTab();
+    }
 }
+
+// ---- Share Tab Logic ----
+window.initShareTab = async () => {
+    const handleInput = document.getElementById('vt-handle');
+    const shareUrlInput = document.getElementById('share-url-input');
+    const qrImg = document.getElementById('share-qrcode-img');
+    
+    // Get handle from settings input or default
+    const handle = (handleInput && handleInput.value) || 'yume';
+    // Use current location for base URL
+    const baseUrl = window.location.origin + window.location.pathname.replace('dashboard.html', 'vtuber_profile.html?id=');
+    const fullUrl = baseUrl + handle;
+    
+    if (shareUrlInput) shareUrlInput.value = fullUrl;
+    if (qrImg) {
+        qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(fullUrl)}`;
+    }
+};
+
+window.copyShareLink = () => {
+    const input = document.getElementById('share-url-input');
+    if (!input) return;
+    input.select();
+    input.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(input.value).then(() => {
+        showToast('公開頁面連結已複製！', 'success');
+    });
+};
+
+window.copyTemplateText = (index) => {
+    const textEl = document.getElementById(`template-${index}`);
+    if (!textEl) return;
+    navigator.clipboard.writeText(textEl.textContent).then(() => {
+        showToast('文案已複製，快去分享吧！', 'success');
+    });
+};
+
+window.downloadQRCode = () => {
+    const img = document.getElementById('share-qrcode-img');
+    if (!img) return;
+    const link = document.createElement('a');
+    link.href = img.src;
+    link.download = 'V-UP_Share_QRCode.png';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('開始下載專屬 QR Code', 'info');
+};
+
+// CRM Global State
+let crmSortKey = 'createdAt';
+let crmSortOrder = 'desc';
+
+window.handleCRMSort = (key) => {
+    if (crmSortKey === key) {
+        crmSortOrder = crmSortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+        crmSortKey = key;
+        crmSortOrder = 'desc';
+    }
+    
+    // Update icons
+    document.querySelectorAll('#crm-table th.sortable i').forEach(i => i.className = 'fas fa-sort');
+    const ths = document.querySelectorAll('#crm-table th.sortable');
+    ths.forEach(th => {
+        if (th.getAttribute('onclick')?.includes(key)) {
+            const icon = th.querySelector('i');
+            if (icon) icon.className = crmSortOrder === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
+        }
+    });
+    
+    if (typeof window.applyCRMFilters === 'function') window.applyCRMFilters();
+};
+
+window.toggleCRMComment = (btn) => {
+    const text = btn.previousElementSibling;
+    if (text.classList.contains('expanded')) {
+        text.classList.remove('expanded');
+        btn.textContent = '查看更多';
+    } else {
+        text.classList.add('expanded');
+        btn.textContent = '收合';
+    }
+};
 
 // ---- Render Milestones List ----
 window.renderMilestones = async function() {
@@ -190,8 +283,13 @@ window.renderMilestones = async function() {
                     <div style="font-size:3rem; margin-bottom:16px;">🎯</div>
                     <h2 style="margin-bottom:8px;">里程碑管理</h2>
                     <p class="text-muted" style="margin-bottom:24px;">在這裡建立、編輯和追蹤您所有的募資里程碑項目</p>
-                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i>
-                        建立第一個里程碑</button>
+                    <div style="display:flex; justify-content:center; gap:12px;">
+                        <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i>
+                            建立第一個里程碑</button>
+                        <button class="btn-outline ai-sparkle-btn" onclick="openMilestoneAIModal()">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI 生成提案
+                        </button>
+                    </div>
                 </div>`;
             return;
         }
@@ -222,7 +320,12 @@ window.renderMilestones = async function() {
             <div class="dashboard-section">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
                     <h2 style="margin:0;">我的里程碑</h2>
-                    <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> 新增里程碑</button>
+                    <div style="display:flex; gap:10px;">
+                        <button class="btn-outline ai-sparkle-btn" onclick="openMilestoneAIModal()">
+                            <i class="fas fa-wand-magic-sparkles"></i> AI 生成提案
+                        </button>
+                        <button class="btn-primary" onclick="openNewMilestoneModal()"><i class="fas fa-plus"></i> 新增里程碑</button>
+                    </div>
                 </div>
                 <div id="milestones-list">${rows}</div>
             </div>`;
@@ -499,6 +602,197 @@ function showToast(msg, type = 'info') {
     t._timer = setTimeout(() => t.classList.remove('show'), 3500);
 }
 
+// ==== KPI Overview Logic ====
+window.renderDashboardOverview = async (uid) => {
+    if (!uid) return;
+    try {
+        if (!window.PaymentService) {
+            console.warn('[renderDashboardOverview] PaymentService not ready');
+            return;
+        }
+
+        // 取得該 VTuber 的所有交易紀錄
+        const txs = await window.PaymentService.getTransactions(uid);
+        
+        // 取得該 VTuber 的里程碑
+        const milestones = await window.MilestonesService.getMilestones(uid);
+
+        // 1. 本月總點數 (以 30 天內為準，或是當月)
+        const now = new Date();
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        const monthlyTxs = txs.filter(tx => {
+            const date = tx.createdAt?.toDate ? tx.createdAt.toDate() : null;
+            return date && date >= startOfMonth && tx.status === 'success';
+        });
+        const monthlyTotal = monthlyTxs.reduce((sum, tx) => sum + (Number(tx.amount) || 0), 0);
+        
+        // 2. 活躍贊助粉絲 (不重複 UID)
+        const activeFans = new Set(txs.filter(tx => tx.status === 'success').map(tx => tx.fanUid));
+        
+        // 3. 已發放限定證明 (總成功贊助次數)
+        const totalBadges = txs.filter(tx => tx.status === 'success').length;
+        
+        // 4. 更新 KPI UI
+        updateKpiUI(monthlyTotal, activeFans.size, totalBadges);
+        
+        // [Task 5 Step 2] 更新 Active Milestones Table
+        renderActiveMilestonesTable(milestones);
+
+        // [Task 5 Step 3] 更新 Recent Top Fans List
+        renderRecentTopFansList(txs);
+        
+    } catch (err) {
+        console.error('[Dashboard] renderDashboardOverview error:', err);
+    }
+};
+
+function updateKpiUI(monthlyTotal, activeFansCount, totalBadges) {
+    const pointsEl = document.getElementById('kpi-monthly-points');
+    if (pointsEl) {
+        pointsEl.innerHTML = `${monthlyTotal.toLocaleString()} <span class="trend positive"><i class="fas fa-arrow-up"></i> 100%</span>`;
+    }
+    
+    const fansEl = document.getElementById('kpi-active-fans');
+    if (fansEl) {
+        fansEl.innerHTML = `${activeFansCount.toLocaleString()} <span class="trend positive"><i class="fas fa-arrow-up"></i> 🆕</span>`;
+    }
+    
+    const badgesEl = document.getElementById('kpi-issued-badges');
+    if (badgesEl) {
+        badgesEl.innerHTML = `${totalBadges.toLocaleString()} <span class="trend neutral">-</span>`;
+    }
+    
+    const viewsEl = document.getElementById('kpi-page-views');
+    if (viewsEl) {
+        const estimatedViews = activeFansCount > 0 ? (activeFansCount * 5.5).toFixed(1) : '0';
+        viewsEl.innerHTML = `${estimatedViews}K <span class="trend positive"><i class="fas fa-arrow-up"></i> 8.4%</span>`;
+    }
+}
+
+function renderActiveMilestonesTable(milestones) {
+    const tbody = document.getElementById('active-milestones-tbody');
+    if (!tbody) return;
+    
+    // 過濾進行中的 (已發布且未過期的，或簡單過濾 published)
+    const active = milestones.filter(m => m.status === 'published' || m.status === 'active');
+    
+    if (active.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">尚無進行中的里程碑</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = active.slice(0, 5).map(m => {
+        const goal = Number(m.targetAmount || m.goal || 0);
+        const current = Number(m.currentAmount || 0);
+        const progress = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
+        
+        // 根據類型選擇圖示
+        let icon = 'fa-bullseye';
+        if (m.type === 'recording') icon = 'fa-microphone';
+        if (m.type === 'model') icon = 'fa-vr-cardboard';
+        if (m.type === 'event') icon = 'fa-calendar-star';
+        
+        return `
+            <tr>
+                <td>
+                    <div class="table-item-title">
+                        <div class="item-icon-small"><i class="fas ${icon}"></i></div>
+                        <span>${escapeHtml(m.title)}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="table-progress">
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" style="width:${progress}%;"></div>
+                        </div>
+                        <span class="progress-percent">${progress}%</span>
+                    </div>
+                </td>
+                <td class="font-mono">${current.toLocaleString()}</td>
+                <td class="font-mono text-muted">${goal.toLocaleString()}</td>
+                <td>
+                    <button class="btn-table-action edit" title="編輯項目" onclick="window.showToast('里程碑編輯功能開發中', 'info')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn-table-action rank" title="查看排行榜" onclick="window.showToast('排行榜功能開發中', 'info')">
+                        <i class="fas fa-list-ol"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }).join('');
+}
+
+function renderRecentTopFansList(txs) {
+    const list = document.getElementById('recent-top-fans-list');
+    if (!list) return;
+
+    // 取得所有成功的交易
+    const successfulTxs = txs.filter(tx => tx.status === 'success');
+    
+    // 依 fanUid 分組統計總金額
+    const fanGroups = {};
+    successfulTxs.forEach(tx => {
+        const uid = tx.fanUid || 'guest-' + tx.fanName; // 處理匿名或無 UID 情況
+        if (!fanGroups[uid]) {
+            fanGroups[uid] = {
+                name: tx.fanName || '匿名粉絲',
+                totalAmount: 0,
+                lastDate: tx.createdAt?.toDate ? tx.createdAt.toDate() : new Date(0)
+            };
+        }
+        fanGroups[uid].totalAmount += (Number(tx.amount) || 0);
+        const txDate = tx.createdAt?.toDate ? tx.createdAt.toDate() : new Date(0);
+        if (txDate > fanGroups[uid].lastDate) {
+            fanGroups[uid].lastDate = txDate;
+        }
+    });
+
+    const topFans = Object.values(fanGroups)
+        .sort((a, b) => b.totalAmount - a.totalAmount)
+        .slice(0, 3);
+
+    if (topFans.length === 0) {
+        list.innerHTML = '<div style="text-align:center; padding:20px; color:var(--text-muted);">尚無贊助紀錄</div>';
+        return;
+    }
+
+    const icons = ['fa-user-astronaut', 'fa-user-ninja', 'fa-user-secret'];
+
+    list.innerHTML = topFans.map((fan, idx) => {
+        const timeStr = formatTimeAgo(fan.lastDate);
+        
+        return `
+            <div class="fan-list-item">
+                <div class="fan-avatar"><i class="fas ${icons[idx] || 'fa-user'}"></i></div>
+                <div class="fan-details">
+                    <span class="fan-name">${escapeHtml(fan.name)}</span>
+                    <span class="fan-time text-muted">${timeStr}</span>
+                </div>
+                <div class="fan-contribution text-primary">+ ${Number(fan.totalAmount || 0).toLocaleString()} 點</div>
+            </div>
+        `;
+    }).join('');
+}
+
+function formatTimeAgo(date) {
+    const now = new Date();
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return '剛才';
+    
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    if (diffInMinutes < 60) return `${diffInMinutes} 分鐘前`;
+    
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} 小時前`;
+    
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 30) return `${diffInDays} 天前`;
+    
+    return date.toLocaleDateString();
+}
+
 // ==== CRM Logic ====
 let crmData = [];
 let crmMilestoneMap = {};
@@ -552,7 +846,6 @@ window.renderCRM = async () => {
 window.applyCRMFilters = () => {
     const searchVal = document.getElementById('crm-search')?.value.toLowerCase() || '';
     const filterMs = document.getElementById('crm-filter-milestone')?.value || '';
-    const sortVal = document.getElementById('crm-sort')?.value || 'date-desc';
     const tbody = document.getElementById('crm-tbody');
     
     if (!tbody) return;
@@ -566,15 +859,23 @@ window.applyCRMFilters = () => {
     });
 
     filtered.sort((a, b) => {
-        const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-        const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-        const amtA = Number(a.amount) || 0;
-        const amtB = Number(b.amount) || 0;
+        let valA = a[crmSortKey];
+        let valB = b[crmSortKey];
 
-        if (sortVal === 'date-desc') return timeB - timeA;
-        if (sortVal === 'date-asc') return timeA - timeB;
-        if (sortVal === 'amount-desc') return amtB - amtA;
-        if (sortVal === 'amount-asc') return amtA - amtB;
+        // Handle timestamps
+        if (crmSortKey === 'createdAt') {
+            valA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+            valB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+        } else if (crmSortKey === 'amount') {
+            valA = Number(a.amount) || 0;
+            valB = Number(b.amount) || 0;
+        } else {
+            valA = String(valA || '').toLowerCase();
+            valB = String(valB || '').toLowerCase();
+        }
+
+        if (valA < valB) return crmSortOrder === 'asc' ? -1 : 1;
+        if (valA > valB) return crmSortOrder === 'asc' ? 1 : -1;
         return 0;
     });
 
@@ -600,8 +901,11 @@ window.applyCRMFilters = () => {
                 <td class="text-primary font-mono">${Number(tx.amount || 0).toLocaleString()}</td>
                 <td>${dateStr}</td>
                 <td>${statusTag}</td>
-                <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${tx.message || ''}">
-                    ${tx.message || '<span style="color:#cbd5e1;">無留言</span>'}
+                <td class="crm-comment-cell">
+                    ${tx.message ? `
+                        <div class="crm-comment-text">${tx.message}</div>
+                        ${tx.message.length > 40 ? '<button class="btn-text-link" onclick="toggleCRMComment(this)">查看更多</button>' : ''}
+                    ` : '<span style="color:#cbd5e1;">無留言</span>'}
                 </td>
             </tr>
         `;
@@ -612,13 +916,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // CRM Events
     document.getElementById('crm-search')?.addEventListener('input', applyCRMFilters);
     document.getElementById('crm-filter-milestone')?.addEventListener('change', applyCRMFilters);
-    document.getElementById('crm-sort')?.addEventListener('change', applyCRMFilters);
     
     document.getElementById('btn-export-crm')?.addEventListener('click', () => {
         if (window.PaymentService && typeof window.PaymentService.exportToCSV === 'function') {
             const searchVal = document.getElementById('crm-search')?.value.toLowerCase() || '';
             const filterMs = document.getElementById('crm-filter-milestone')?.value || '';
-            const sortVal = document.getElementById('crm-sort')?.value || 'date-desc';
             
             let filtered = crmData.filter(tx => {
                 const matchSearch = tx.fanName.toLowerCase().includes(searchVal) || 
@@ -628,14 +930,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 return matchSearch && matchMs;
             });
             filtered.sort((a, b) => {
-                const timeA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
-                const timeB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
-                const amtA = Number(a.amount) || 0;
-                const amtB = Number(b.amount) || 0;
-                if (sortVal === 'date-desc') return timeB - timeA;
-                if (sortVal === 'date-asc') return timeA - timeB;
-                if (sortVal === 'amount-desc') return amtB - amtA;
-                if (sortVal === 'amount-asc') return amtA - amtB;
+                let valA = a[crmSortKey];
+                let valB = b[crmSortKey];
+                if (crmSortKey === 'createdAt') {
+                    valA = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+                    valB = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+                } else if (crmSortKey === 'amount') {
+                    valA = Number(a.amount) || 0;
+                    valB = Number(b.amount) || 0;
+                } else {
+                    valA = String(valA || '').toLowerCase();
+                    valB = String(valB || '').toLowerCase();
+                }
+                if (valA < valB) return crmSortOrder === 'asc' ? -1 : 1;
+                if (valA > valB) return crmSortOrder === 'asc' ? 1 : -1;
                 return 0;
             });
             window.PaymentService.exportToCSV(filtered, 'V-UP_Sponsors_Report.csv');
@@ -643,13 +951,111 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('匯出服務未準備好', 'error');
         }
     });
-
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            if (e.target.dataset.tab === 'panel-crm') {
-                if (typeof window.renderCRM === 'function') window.renderCRM();
-            }
-        });
-    });
 });
+
+// ============================================
+//  AI Suggestion Functions
+// ============================================
+
+window.openMilestoneAIModal = function() {
+    const modal = document.getElementById('milestone-ai-modal');
+    if (modal) modal.style.display = 'flex';
+};
+
+window.closeMilestoneAIModal = function() {
+    const modal = document.getElementById('milestone-ai-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('ms-ai-results').style.display = 'none';
+        document.getElementById('ms-ai-prompt').value = '';
+    }
+};
+
+window.generateMilestoneSuggestions = function() {
+    const btn = document.getElementById('ms-ai-generate-btn');
+    const results = document.getElementById('ms-ai-results');
+    const prompt = document.getElementById('ms-ai-prompt').value;
+
+    if (!prompt.trim()) {
+        showToast('請輸入一些想法 or 靈感', 'warning');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 思考中...';
+
+    // Mock AI Delay
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sparkles"></i> 重新生成提案';
+        results.style.display = 'block';
+        
+        // Insights are now pre-rendered, we could update them here with specific data if needed.
+        
+        results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 1500);
+};
+
+window.selectAISuggestion = function(title, goal, desc) {
+    closeMilestoneAIModal();
+    if (typeof window.openNewMilestoneModal === 'function') {
+        window.openNewMilestoneModal();
+        
+        // Fill the new milestone form
+        document.getElementById('ms-title').value = title;
+        document.getElementById('ms-goal').value = goal;
+        document.getElementById('ms-desc').value = desc;
+        
+        showToast('已套用 AI 建議方案，您可以繼續修改細節。', 'success');
+    }
+};
+
+window.openPostAIModal = function() {
+    const modal = document.getElementById('post-ai-modal');
+    if (modal) modal.style.display = 'flex';
+};
+
+window.closePostAIModal = function() {
+    const modal = document.getElementById('post-ai-modal');
+    if (modal) {
+        modal.style.display = 'none';
+        document.getElementById('post-ai-results').style.display = 'none';
+        document.getElementById('post-ai-prompt').value = '';
+    }
+};
+
+window.generatePostSuggestions = function() {
+    const btn = document.getElementById('post-ai-generate-btn');
+    const results = document.getElementById('post-ai-results');
+    const prompt = document.getElementById('post-ai-prompt').value;
+
+    if (!prompt.trim()) {
+        showToast('請告訴 AI 您想發布什麼樣的內容', 'warning');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI 撰寫中...';
+
+    // Mock AI Delay
+    setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sparkles"></i> 重新生成草稿';
+        results.style.display = 'block';
+
+        // Insights are now pre-rendered, we could update them here with specific data if needed.
+
+        results.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 1500);
+};
+
+window.selectAIPost = function(content) {
+    const input = document.getElementById('vt-post-input');
+    if (input) {
+        input.value = content;
+        closePostAIModal();
+        showToast('已套用 AI 貼文草稿。', 'success');
+    }
+};
+
 
