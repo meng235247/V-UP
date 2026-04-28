@@ -29,8 +29,8 @@
     --accent-light: rgba(224, 248, 252, 0.1);
 
     --text-main: #1e293b;
-    --text-muted: #64748b;
-    --text-light: #94a3b8;
+    --text-muted: #475569; /* improved contrast */
+    --text-light: #64748b; /* improved contrast */
 
     --border-color: #e2e8f0;
     --border-subtle: rgba(244, 114, 182, 0.12);
@@ -79,8 +79,8 @@
     --accent-light: rgba(112, 221, 241, 0.1);
 
     --text-main: #f4f4f5;
-    --text-muted: #a1a1aa;
-    --text-light: #71717a;
+    --text-muted: #d4d4d8; /* improved contrast */
+    --text-light: #a1a1aa; /* improved contrast */
 
     --border-color: #27272a;
     --border-subtle: rgba(45, 212, 191, 0.15);
@@ -117,7 +117,7 @@ body {
     font-family: 'Noto Sans TC', sans-serif;
     background-color: var(--bg-main);
     color: var(--text-main);
-    line-height: 1.6;
+    line-height: 1.7; /* increased for readability */
     -webkit-font-smoothing: antialiased;
     transition: background-color 0.3s, color 0.3s;
 }
