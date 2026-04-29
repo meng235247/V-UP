@@ -49,12 +49,9 @@
                         我是 Sakura Nova！為了能與各位更近距離地互動，現正朝著 3D 化目標前進。
                     </p>
                     <div class="vt-socials">
-                        <a href="#" class="vt-social-btn" id="social-youtube" target="_blank" style="display:none;"><i
-                                class="fab fa-youtube"></i></a>
-                        <a href="#" class="vt-social-btn" id="social-twitter" target="_blank" style="display:none;"><i
-                                class="fa-solid fa-xmark"></i></a>
-                        <a href="#" class="vt-social-btn" id="social-instagram" target="_blank" style="display:none;"><i
-                                class="fab fa-instagram"></i></a>
+                        <a href="#" class="vt-social-btn"><i class="fab fa-youtube"></i></a>
+                        <a href="#" class="vt-social-btn"><i class="fa-solid fa-xmark"></i></a> <!-- Assuming X logo -->
+                        <a href="#" class="vt-social-btn"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -545,7 +542,7 @@
         </div>
 
         <footer class="vt-footer">
-            <a href="#" class="brand" id="footer-brand">SAKURA NOVA</a>
+            <a href="#" class="brand">SAKURA NOVA</a>
             <div class="vt-footer-links">
                 <a href="#">使用條款</a>
                 <a href="#">隱私政策</a>
@@ -564,9 +561,9 @@
             <div class="post-modal-card">
                 <!-- Author strip -->
                 <div class="pmc-author">
-                    <img id="pmc-avatar" src="image/miku_test.png" class="pmc-avatar" alt="Author">
+                    <img src="image/miku_test.png" class="pmc-avatar" alt="Sakura Nova">
                     <div class="pmc-author-info">
-                        <span id="pmc-author-name" class="pmc-name">SAKURA NOVA</span>
+                        <span class="pmc-name">SAKURA NOVA</span>
                         <span class="pmc-time" id="pmc-time"></span>
                     </div>
                     <button class="pmc-close" onclick="closePostModal(null)" aria-label="關閉">
@@ -675,7 +672,7 @@
                 <div class="pm-header">
                     <div class="pm-header-title">
                         <i class="fas fa-heart" style="font-size: 1.8rem;"></i>
-                        <h2 id="pm-vtuber-name">支持 SAKURA NOVA</h2>
+                        <h2>支持 SAKURA NOVA</h2>
                     </div>
                     <button class="pm-close" onclick="closePaymentModal()" aria-label="關閉">
                         <i class="fa-solid fa-xmark"></i>
@@ -752,12 +749,7 @@
             /* =====================================================
                POST MODAL
             ===================================================== */
-            function openPostModal(title, time, iconType, body, imageUrl, mediaType, mediaUrl, authorName, authorAvatar) {
-                if (authorName) {
-                    document.getElementById('pmc-author-name').textContent = authorName;
-                }
-                if (authorAvatar) document.getElementById('pmc-avatar').src = authorAvatar;
-
+            function openPostModal(title, time, iconType, body, imageUrl, mediaType, mediaUrl) {
                 document.getElementById('pmc-title').textContent = title;
                 document.getElementById('pmc-time').textContent = time;
                 document.getElementById('pmc-body').textContent = body;
@@ -888,12 +880,15 @@
 
                 // Render top 10 ranking
                 const rankList = document.getElementById('rmc-rank-list');
-                rankList.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">載入中...</span></div></div>';
-
-                // [Step 3] 呼叫控制器處理動態排行榜
-                if (window.VtuberProfilePage && window.VtuberProfilePage.renderReviewRankings) {
-                    window.VtuberProfilePage.renderReviewRankings(milestoneId);
-                }
+                const medalClass = ['gold', 'silver', 'bronze'];
+                rankList.innerHTML = data.topRanking.map((r, i) => `
+                    <div class="rmc-rank-item">
+                        <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? ['🥇', '🥈', '🥉'][i] : (i + 1)}</span>
+                        <img src="https://i.pravatar.cc/40?u=${r.u}" alt="${r.name}" class="rmc-rank-avatar">
+                        <span class="rmc-rank-name">${r.name}</span>
+                        <span class="rmc-rank-amt">${r.amt}</span>
+                    </div>
+                `).join('');
 
                 // My record
                 document.getElementById('rmc-my-amt').textContent = data.myRecord.amt;
@@ -930,30 +925,6 @@
                 currentItem = itemName;
                 currentMilestoneId = milestoneId; // (#3) Store for simulatePaymentAPI
                 document.getElementById('pm-item-name').textContent = itemName;
-
-                // [修正] 更新 VTuber 名稱與當前使用者資訊
-                const vt = (window.VtuberProfilePage && window.VtuberProfilePage._currentVtuber) ? window.VtuberProfilePage._currentVtuber : null;
-                if (vt) {
-                    const vtName = vt.displayName || vt.name || 'SAKURA NOVA';
-                    document.getElementById('pm-vtuber-name').textContent = `支持 ${vtName}`;
-                }
-
-                const user = (window.auth && window.auth.currentUser) ? window.auth.currentUser : null;
-                const avatarEl = document.getElementById('pm-user-avatar');
-                const nameEl = document.getElementById('pm-user-name');
-                const guestWrap = document.getElementById('pm-guest-name-wrap');
-
-                if (user) {
-                    // 已登入：顯示頭像與名字
-                    avatarEl.src = user.photoURL || `https://i.pravatar.cc/60?u=${user.uid}`;
-                    nameEl.textContent = user.displayName || user.email.split('@')[0];
-                    if (guestWrap) guestWrap.style.display = 'none';
-                } else {
-                    // 未登入：顯示訪客狀態
-                    avatarEl.src = 'https://i.pravatar.cc/60?u=guest';
-                    nameEl.textContent = '訪客 (未登入)';
-                    if (guestWrap) guestWrap.style.display = 'block';
-                }
 
                 // Pull amount from the input field in the clicked card
                 const amountInput = btnElement.previousElementSibling.querySelector('input');

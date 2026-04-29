@@ -40,6 +40,7 @@ const PaymentService = {
       const userData = userSnap.exists() ? userSnap.data() : {};
       
       const fanDisplayName = userData.displayName || (user.displayName || '匿名粉絲');
+      const fanAvatarUrl = userData.photoURL || user.photoURL || null;
       const unlockedMilestones = userData.unlockedMilestones || [];
       const isFirstTime = !unlockedMilestones.includes(milestoneId);
 
@@ -61,6 +62,7 @@ const PaymentService = {
       t.set(txRef, {
         fanUid: user.uid,
         fanName: fanDisplayName,
+        fanAvatarUrl,
         vtuberId,
         milestoneId,
         milestoneTitle,
