@@ -381,36 +381,21 @@ const VtuberProfilePage = {
           if (!rl) return;
           
           // [Step 3] 異步取得排行榜中所有用戶的真實頭像
-          const renderList = await Promise.all(rankList.map(async (r, i) => {
-            let avatar = userAvatarCache.get(r.fanUid);
-            if (avatar === undefined) {
-              try {
-                const snap = await getDoc(doc(db, 'users', r.fanUid));
-                avatar = snap.exists() ? (snap.data().photoURL || snap.data().avatarUrl) : null;
-                // [Step 3 修正] 如果資料庫沒頭像，優先採用交易紀錄中的快照 (Google 帳號頭像通常存於此)
-                if (!avatar && r.avatarUrl) avatar = r.avatarUrl;
-                
-                userAvatarCache.set(r.fanUid, avatar || false);
-              } catch (e) { 
-                console.warn('Fetch avatar failed', r.fanUid, e);
-                avatar = r.avatarUrl || null;
-              }
-            }
-            const displayAvatar = (avatar && avatar !== false) ? avatar : `https://i.pravatar.cc/100?u=${r.fanUid}`;
-
-            return `
-              <div class="rank-item">
-                <span class="r-rank" style="min-width:1.5rem;font-weight:bold;color:var(--vt-pink,#e91e8c)">${i + 1}</span>
-                <img src="${esc(displayAvatar)}" class="r-avatar" alt="${esc(r.displayName)}">
-                <div class="r-info">
-                  <span class="r-name">${esc(r.displayName)}</span>
-                  <span class="r-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
+            const renderList = rankList.map((r, i) => {
+              const displayAvatar = r.avatarUrl || `https://i.pravatar.cc/100?u=${r.fanUid}`;
+              return `
+                <div class="rank-item">
+                  <span class="r-rank" style="min-width:1.5rem;font-weight:bold;color:var(--vt-pink,#e91e8c)">${i + 1}</span>
+                  <img src="${esc(displayAvatar)}" class="r-avatar" alt="${esc(r.displayName)}">
+                  <div class="r-info">
+                    <span class="r-name">${esc(r.displayName)}</span>
+                    <span class="r-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
+                  </div>
                 </div>
-              </div>
-            `;
-          }));
+              `;
+            });
 
-          let html = renderList.length ? renderList.join('') : '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
+            let html = renderList.length ? renderList.join('') : '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
 
           // A-Task 2b: 顯示該用戶在此里程碑的累計金額
           const user = auth.currentUser;
@@ -617,21 +602,8 @@ const VtuberProfilePage = {
       const medalClass = ['gold', 'silver', 'bronze'];
       const medalEmoji = ['🥇', '🥈', '🥉'];
 
-      const renderList = await Promise.all(sorted.map(async (r, i) => {
-        let avatar = userAvatarCache.get(r.fanUid);
-        if (avatar === undefined) {
-          try {
-            const userSnap = await getDoc(doc(db, 'users', r.fanUid));
-            avatar = userSnap.exists() ? (userSnap.data().photoURL || userSnap.data().avatarUrl) : null;
-            if (!avatar && r.avatarUrl) avatar = r.avatarUrl;
-            userAvatarCache.set(r.fanUid, avatar || false);
-          } catch (e) { 
-            console.warn('Fetch avatar failed', r.fanUid, e);
-            avatar = r.avatarUrl || null;
-          }
-        }
-        const displayAvatar = (avatar && avatar !== false) ? avatar : `https://i.pravatar.cc/100?u=${r.fanUid}`;
-
+      const renderList = sorted.map((r, i) => {
+        const displayAvatar = r.avatarUrl || `https://i.pravatar.cc/100?u=${r.fanUid}`;
         return `
           <div class="rmc-rank-item">
             <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? medalEmoji[i] : (i + 1)}</span>
@@ -640,7 +612,7 @@ const VtuberProfilePage = {
             <span class="rmc-rank-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
           </div>
         `;
-      }));
+      });
 
       rl.innerHTML = renderList.join('');
     } catch (err) {
