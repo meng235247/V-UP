@@ -1,0 +1,52 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+# SPA-style redirect: all routes fall back to the matching HTML
+# For MPA, we serve each page's own HTML
+[[redirects]]
+  from = "/dashboard"
+  to = "/dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/auth"
+  to = "/auth.html"
+  status = 200
+
+[[redirects]]
+  from = "/fan_profile"
+  to = "/fan_profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/vtuber_profile"
+  to = "/vtuber_profile.html"
+  status = 200
+
+[[redirects]]
+  from = "/support"
+  to = "/support.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin_login"
+  to = "/admin_login.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin_dashboard"
+  to = "/admin_dashboard.html"
+  status = 200
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
