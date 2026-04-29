@@ -23,7 +23,9 @@ service cloud.firestore {
     // - public read when `isPublic==true`, otherwise only owner/admin
     // ----------------------------
     match /users/{uid} {
-      allow read: if resource.data.isPublic == true || isSignedIn() || isAdmin();
+      allow read: if resource.data.isPublic == true
+                   || (isSignedIn() && request.auth.uid == uid)
+                   || isAdmin();
       allow create: if isSignedIn() && request.auth.uid == uid;
       allow update: if (isSignedIn() && request.auth.uid == uid) || isAdmin();
       allow delete: if isAdmin();
@@ -239,6 +241,7 @@ service cloud.firestore {
             && request.resource.data.keys().hasOnly([
               'fanUid',
               'fanName',
+              'fanAvatarUrl',
               'vtuberId',
               'milestoneId',
               'milestoneTitle',

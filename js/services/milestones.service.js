@@ -103,11 +103,11 @@ const MilestonesService = {
         const tx = d.data();
         if (!tx.fanUid) return;
         if (!map[tx.fanUid]) {
-          map[tx.fanUid] = { 
-            fanUid: tx.fanUid, 
-            displayName: tx.fanName || '匿名', 
-            avatarUrl: tx.fanAvatarUrl || null, 
-            totalAmount: 0 
+          map[tx.fanUid] = {
+            fanUid: tx.fanUid,
+            displayName: tx.fanName || '匿名',
+            avatarUrl: tx.fanAvatarUrl || null,
+            totalAmount: 0
           };
         }
         map[tx.fanUid].totalAmount += (Number(tx.amount) || 0);

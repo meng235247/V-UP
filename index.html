@@ -588,7 +588,7 @@
                 </a>
 
                 <!-- Card 2 -->
-                <a href="vtuber_profile.html" class="v-card" data-cat="game hot">
+                <a href="vtuber_profile.html?id=ryusei" class="v-card" data-cat="game hot">
                     <div class="v-card-banner">
                         <div class="v-card-banner-bg" style="background-image: url('image/banner2.png');"></div>
                         <div class="v-card-banner-overlay"></div>
@@ -834,7 +834,13 @@
             if (sub) document.getElementById('front-sub').innerText = sub;
             if (btn) {
                 const btnEl = document.getElementById('front-btn');
-                if (btnEl) btnEl.innerHTML = `<i class="fas fa-heart"></i> ${btn}`;
+                if (btnEl) {
+                    btnEl.textContent = '';
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-heart';
+                    btnEl.appendChild(icon);
+                    btnEl.appendChild(document.createTextNode(' ' + btn));
+                }
             }
             if (img && img.trim() !== '') {
                 const urls = img.split('\n').map(u => u.trim()).filter(u => u);
