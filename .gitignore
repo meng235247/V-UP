@@ -6,3 +6,4 @@ firestore-debug.log
 pubsub-debug.log
 public/uploads/
 *.log
+dist/
