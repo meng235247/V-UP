@@ -45,8 +45,17 @@ class AuthService {
                 email: user.email,
                 role: role,
                 displayName: displayName || user.displayName || user.email.split('@')[0],
+                // photoURL: 使用者上傳頭像；初始值從 Google 帳號取得（若無則 null）
+                photoURL: user.photoURL || null,
                 createdAt: serverTimestamp()
             });
+        } else {
+            // 若 Google 頭貼更新但 Firestore doc 裡尚無 photoURL，補寫一次
+            const existing = docSnap.data();
+            if (!existing.photoURL && user.photoURL) {
+                const { updateDoc } = await import('firebase/firestore');
+                await updateDoc(userRef, { photoURL: user.photoURL });
+            }
         }
     }
 
