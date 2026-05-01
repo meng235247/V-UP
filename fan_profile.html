@@ -745,13 +745,6 @@
                 const wrapper = document.createElement('div');
                 wrapper.style.textAlign = 'center';
 
-                wrapper.style.cursor = 'pointer';
-                wrapper.onclick = (e) => {
-                    if (e.target.tagName.toLowerCase() !== 'input') {
-                        openBadgeReviewById(badge.id);
-                    }
-                };
-
                 let opacity = badge.locked ? '0.5' : '1';
                 let disabledAttr = badge.locked ? 'disabled' : '';
                 let checkedAttr = badge.selected ? 'checked' : '';
@@ -761,11 +754,14 @@
                     : `<i class="${badge.iconClass}"></i>`;
 
                 wrapper.innerHTML = `
-                    <div class="badge-icon ${badge.style}" style="margin: 0 auto; position:relative; opacity:${opacity};">
+                    <div class="badge-icon ${badge.style}" style="margin: 0 auto; opacity:${opacity}; cursor:pointer;" onclick="if(!${badge.locked}) openBadgeReviewById('${badge.id}')" title="點擊查看詳情">
                         ${innerHTML}
-                        <input type="checkbox" id="chk-${badge.id}" ${checkedAttr} ${disabledAttr} style="position:absolute; bottom:-5px; right:-5px; transform:scale(1.2);">
                     </div>
-                    <h5 style="margin: 8px 0 2px 0; font-size:0.85rem;">${badge.title}</h5>
+                    <h5 style="margin: 8px 0 4px 0; font-size:0.85rem;">${badge.title}</h5>
+                    <label style="display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.8rem; cursor:pointer; color:var(--text-muted); opacity:${opacity};">
+                        <input type="checkbox" id="chk-${badge.id}" ${checkedAttr} ${disabledAttr} style="cursor:pointer; transform:scale(1.1);">
+                        展示
+                    </label>
                 `;
                 settingsBadges.appendChild(wrapper);
             });
@@ -821,6 +817,11 @@
             });
             renderBadgesAndTitles();
             closeSettingsModal();
+
+            if (window.handleBadgeSettingsUpdate) {
+                window.handleBadgeSettingsUpdate(ALL_BADGES, ALL_TITLES);
+            }
+
             setTimeout(() => {
                 alert('徽章與稱號展示設定已更新！');
             }, 300);

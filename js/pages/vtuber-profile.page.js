@@ -215,7 +215,9 @@ const VtuberProfilePage = {
       const socials = [
         { id: 'social-youtube', url: vtuber.youtubeUrl },
         { id: 'social-twitter', url: vtuber.twitterUrl || vtuber.xUrl },
-        { id: 'social-instagram', url: vtuber.instagramUrl }
+        { id: 'social-instagram', url: vtuber.instagramUrl },
+        { id: 'social-facebook', url: vtuber.facebookUrl },
+        { id: 'social-others', url: vtuber.othersUrl }
       ];
       socials.forEach(s => {
         const el = document.getElementById(s.id);
@@ -229,9 +231,15 @@ const VtuberProfilePage = {
         }
       });
 
-      // [修正] 更新全站 Footer 品牌名稱
+      // [修正] 更新全站 Footer 品牌名稱和版權聲明
       const footerBrand = document.getElementById('footer-brand');
       if (footerBrand) footerBrand.textContent = vtuber.displayName || vtuber.name || 'SAKURA NOVA';
+      const footerCopyright = document.getElementById('footer-copyright');
+      if (footerCopyright) {
+        const name = vtuber.displayName || vtuber.name || 'SAKURA NOVA';
+        const year = new Date().getFullYear();
+        footerCopyright.textContent = `© ${year} ${name} 數位展演版權所有`;
+      }
     } catch (err) {
       console.warn('[VtuberProfilePage] renderVtuber partial failure:', err);
     }

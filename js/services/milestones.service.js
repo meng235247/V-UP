@@ -97,9 +97,17 @@ const MilestonesService = {
       where('milestoneId', '==', milestoneId),
       where('status', '==', 'success')
     );
-    return onSnapshot(q, (snap) => {
+    return onSnapshot(q, async (snap) => {
       const map = {};
-      snap.docs.forEach(d => {
+      
+      // 將交易依時間由舊到新排序，確保 map 內記錄的是最新一次交易設定的名字與頭像
+      const docsSortedByTime = snap.docs.sort((a, b) => {
+        const tA = a.data().createdAt?.toMillis ? a.data().createdAt.toMillis() : 0;
+        const tB = b.data().createdAt?.toMillis ? b.data().createdAt.toMillis() : 0;
+        return tA - tB;
+      });
+
+      docsSortedByTime.forEach(d => {
         const tx = d.data();
         if (!tx.fanUid) return;
         if (!map[tx.fanUid]) {
@@ -109,12 +117,34 @@ const MilestonesService = {
             avatarUrl: tx.fanAvatarUrl || null,
             totalAmount: 0
           };
+        } else {
+          // 覆寫為最新一筆交易的名稱與頭像
+          if (tx.fanName) map[tx.fanUid].displayName = tx.fanName;
+          if (tx.fanAvatarUrl) map[tx.fanUid].avatarUrl = tx.fanAvatarUrl;
         }
         map[tx.fanUid].totalAmount += (Number(tx.amount) || 0);
       });
+
       const sorted = Object.values(map)
         .sort((a, b) => b.totalAmount - a.totalAmount)
         .slice(0, lim);
+
+      // [Bug fix] 強制去 users 集合抓取最新設定好的 photoURL，不受限於是否已存在預設頭像字串
+      const avatarFetchTasks = sorted.map(async r => {
+          try {
+            const userSnap = await getDoc(doc(db, 'users', r.fanUid));
+            if (userSnap.exists()) {
+              const data = userSnap.data();
+              // 優先使用 users 的最新大頭貼設定
+              if (data.photoURL) {
+                 r.avatarUrl = data.photoURL;
+              }
+            }
+          } catch (e) {
+            console.warn('[MilestonesService] listenRankings avatar fetch failed:', r.fanUid, e);
+          }
+        });
+      await Promise.allSettled(avatarFetchTasks);
         
       let myAmount = 0;
       const user = auth.currentUser;

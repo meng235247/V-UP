@@ -7,7 +7,7 @@
     <meta name="description" content="V-Up! | SAKURA NOVA 專頁">
     <title>SAKURA NOVA | 陪伴他成長</title>
     <!-- FontAwesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="vtuber_profile.css">
 </head>
 
@@ -49,9 +49,11 @@
                         我是 Sakura Nova！為了能與各位更近距離地互動，現正朝著 3D 化目標前進。
                     </p>
                     <div class="vt-socials">
-                        <a href="#" class="vt-social-btn"><i class="fab fa-youtube"></i></a>
-                        <a href="#" class="vt-social-btn"><i class="fa-solid fa-xmark"></i></a> <!-- Assuming X logo -->
-                        <a href="#" class="vt-social-btn"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="social-youtube" class="vt-social-btn" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a href="#" id="social-twitter" class="vt-social-btn" target="_blank"><i class="fab fa-x-twitter"></i></a>
+                        <a href="#" id="social-instagram" class="vt-social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
+                        <a href="#" id="social-facebook" class="vt-social-btn" target="_blank"><i class="fab fa-facebook"></i></a>
+                        <a href="#" id="social-others" class="vt-social-btn" target="_blank"><i class="fas fa-link"></i></a>
                     </div>
                 </div>
             </div>
@@ -542,14 +544,14 @@
         </div>
 
         <footer class="vt-footer">
-            <a href="#" class="brand">SAKURA NOVA</a>
+            <a href="#" class="brand" id="footer-brand">SAKURA NOVA</a>
             <div class="vt-footer-links">
                 <a href="#">使用條款</a>
                 <a href="#">隱私政策</a>
                 <a href="#">聯繫我們</a>
                 <a href="#">常見問題</a>
             </div>
-            <p>© 2024 Sakura Nova 數位展演版權所有</p>
+            <p id="footer-copyright">© 2024 Sakura Nova 數位展演版權所有</p>
         </footer>
 
         <!-- ===== Celebration Overlay (hidden, triggered by JS) ===== -->
@@ -683,11 +685,11 @@
                 <div class="pm-row">
                     <!-- Logged in Account Section -->
                     <div class="pm-user-info">
-                        <img id="pm-user-avatar" src="https://i.pravatar.cc/60?u=current_user" alt="User Avatar"
-                            class="pm-user-avatar">
+                        <img id="pm-user-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=guest"
+                            alt="User Avatar" class="pm-user-avatar">
                         <div class="pm-user-detail">
-                            <span class="pm-user-label">當前登入帳號</span>
-                            <span id="pm-user-name" class="pm-user-name">SakuraFan_001</span>
+                            <span class="pm-user-label" id="pm-user-label">帳號狀態</span>
+                            <span id="pm-user-name" class="pm-user-name">尚未登入</span>
                         </div>
                     </div>
 
@@ -712,11 +714,11 @@
                     </div>
                 </div>
 
-                <!-- Guest display name (visible when not logged in) -->
+                <!-- Display name — always visible; prefilled when logged in -->
                 <div class="pm-row">
-                    <div class="pm-guest-name" id="pm-guest-name-wrap" style="display:none;">
-                        <label class="pm-label">顯示名稱 (未登入時顯示，選填)</label>
-                        <input type="text" id="pm-guest-name" class="pm-input" placeholder="例如：匿名粉絲、愛心小天使">
+                    <div class="pm-guest-name" id="pm-guest-name-wrap">
+                        <label class="pm-label" id="pm-display-name-label">贊助顯示名稱 (選填)</label>
+                        <input type="text" id="pm-guest-name" class="pm-input" placeholder="留空則使用帳號名稱">
                     </div>
                 </div>
 
@@ -931,6 +933,10 @@
                 const defaultAmount = amountInput && amountInput.value ? amountInput.value : 500;
                 document.getElementById('pm-amount').value = defaultAmount;
 
+                // 同步 auth 狀態到 modal UI（使用最新的 window.auth）
+                const liveUser = window.auth && window.auth.currentUser ? window.auth.currentUser : null;
+                updateAuthUI(liveUser);
+
                 document.getElementById('payment-modal').classList.add('open');
             }
 
@@ -965,11 +971,14 @@
                     const isSignedIn = !!effectiveUser;
 
                     if (isSignedIn) {
-                        await window.PaymentService.initiate(currentMilestoneId, amount, selectedMethod, msg);
+                        // \u8b80\u53d6\u7528\u6236\u81ea\u8a02\u986f\u793a\u540d\u7a31\uff08\u5982\u679c\u6709\u586b\uff09\uff0c\u50b3\u5165 initiate \u8986\u84cb\u9810\u8a2d\u5e33\u865f\u540d
+                        const customNameEl = document.getElementById('pm-guest-name');
+                        const customName = customNameEl && customNameEl.value.trim() ? customNameEl.value.trim() : null;
+                        await window.PaymentService.initiate(currentMilestoneId, amount, selectedMethod, msg, customName);
                     } else {
                         // Guest UI flow: optional guest display name field
                         const guestNameEl = document.getElementById('pm-guest-name');
-                        const guestName = guestNameEl ? (guestNameEl.value || null) : null;
+                        const guestName = guestNameEl ? (guestNameEl.value.trim() || null) : null;
                         const vtuberId = (window.VtuberProfilePage && window.VtuberProfilePage._currentVtuber && window.VtuberProfilePage._currentVtuber.uid) ? window.VtuberProfilePage._currentVtuber.uid : null;
                         await window.PaymentService.initiateGuest(vtuberId, currentMilestoneId, amount, selectedMethod, msg, guestName);
                     }
@@ -1046,15 +1055,39 @@
             function updateAuthUI(user) {
                 const avatar = document.getElementById('pm-user-avatar');
                 const name = document.getElementById('pm-user-name');
-                const guestWrap = document.getElementById('pm-guest-name-wrap');
+                const label = document.getElementById('pm-user-label');
+                const displayNameLabel = document.getElementById('pm-display-name-label');
+                const displayNameInput = document.getElementById('pm-guest-name');
+
                 if (user) {
-                    if (avatar) avatar.src = user.photoURL || avatar.src;
-                    if (name) name.textContent = user.displayName || name.textContent;
-                    if (guestWrap) guestWrap.style.display = 'none';
+                    // 已登入：從 Firestore users doc 或 auth 物件取得資料
+                    const userData = window._pmCurrentUserData || {};
+                    const displayName = userData.displayName || user.displayName || user.email || '未命名用戶';
+                    const avatarSrc = userData.photoURL || user.photoURL || null;
+
+                    if (avatar && avatarSrc) avatar.src = avatarSrc;
+                    if (name) name.textContent = displayName;
+                    if (label) label.textContent = '當前登入帳號';
+
+                    // 顯示名稱欄位：已登入時預填帳號名，可覆蓋
+                    if (displayNameLabel) displayNameLabel.textContent = '贊助顯示名稱 (選填，留空使用帳號名稱)';
+                    if (displayNameInput && !displayNameInput._userModified) {
+                        displayNameInput.placeholder = displayName;
+                        // 只在尚未被用戶主動修改時預填，避免覆蓋用戶輸入
+                        displayNameInput.value = '';
+                    }
                 } else {
-                    // Not logged in — optionally show login prompt in payment modal
+                    // 未登入
+                    if (avatar) avatar.src = 'https://api.dicebear.com/7.x/notionists/svg?seed=guest';
                     if (name) name.textContent = '尚未登入';
-                    if (guestWrap) guestWrap.style.display = '';
+                    if (label) label.textContent = '帳號狀態';
+
+                    if (displayNameLabel) displayNameLabel.textContent = '顯示名稱 (選填)';
+                    if (displayNameInput) {
+                        displayNameInput.placeholder = '例如：匿名粉絲、愛心小天使';
+                        displayNameInput.value = '';
+                        displayNameInput._userModified = false;
+                    }
                 }
             }
 
@@ -1191,6 +1224,37 @@
             window.seedData = seedData;
             window.PaymentService = PaymentService;
             window.auth = auth;
+
+            // ── 即時監聽 Auth 狀態，更新 payment modal 的用戶區塊 ──
+            import { onAuthStateChanged } from 'firebase/auth';
+            import { doc, getDoc } from 'firebase/firestore';
+            import { db } from './js/firebase-config.js';
+
+            onAuthStateChanged(auth, async (user) => {
+                // 快取 Firestore users doc 資料（含用戶自訂 displayName / photoURL）
+                if (user) {
+                    try {
+                        const snap = await getDoc(doc(db, 'users', user.uid));
+                        window._pmCurrentUserData = snap.exists() ? snap.data() : {};
+                    } catch (e) {
+                        window._pmCurrentUserData = {};
+                    }
+                } else {
+                    window._pmCurrentUserData = {};
+                }
+                // 若 payment modal 已開啟，即時更新
+                if (document.getElementById('payment-modal')?.classList.contains('open')) {
+                    if (typeof updateAuthUI === 'function') updateAuthUI(user);
+                }
+            });
+
+            // 監聽用戶主動修改顯示名稱欄位，標記避免被自動覆蓋
+            document.addEventListener('DOMContentLoaded', () => {
+                const dnInput = document.getElementById('pm-guest-name');
+                if (dnInput) {
+                    dnInput.addEventListener('input', () => { dnInput._userModified = dnInput.value.length > 0; });
+                }
+            });
 
             // Wait for DOM to be ready, then import and initialize page
             if (document.readyState === 'loading') {
