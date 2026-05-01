@@ -55,6 +55,58 @@ function renderHero(user, userDocData) {
   const taglineEl = document.querySelector('.fan-tagline');
   if (taglineEl && userDocData?.tagline) taglineEl.textContent = userDocData.tagline;
 
+  // 套用儲存的主題顏色
+  if (userDocData?.themeColorPrimary && userDocData?.themeColorSecondary) {
+    const cp = userDocData.themeColorPrimary;
+    const cs = userDocData.themeColorSecondary;
+    
+    // 更新 modal 內的 input
+    const cpInput = el('theme-color-primary');
+    const csInput = el('theme-color-secondary');
+    if (cpInput && !cpInput._fbFilled) { cpInput.value = cp; cpInput._fbFilled = true; }
+    if (csInput && !csInput._fbFilled) { csInput.value = cs; csInput._fbFilled = true; }
+
+    // 更新 DOM CSS 變數
+    const root = document.documentElement;
+    root.style.setProperty('--text-pink', cp);
+    root.style.setProperty('--text-blue', cs);
+
+    const mixPinkLight = `color-mix(in srgb, ${cp} 10%, white)`;
+    const mixBlueLight = `color-mix(in srgb, ${cs} 10%, white)`;
+    root.style.setProperty('--bg-pink-light', mixPinkLight);
+    root.style.setProperty('--bg-blue-light', mixBlueLight);
+
+    const supporterTagText = document.querySelector('.supporter-tag');
+    if (supporterTagText) supporterTagText.style.color = ''; 
+    const supporterIcon = document.querySelector('.supporter-tag i');
+    if (supporterIcon) supporterIcon.style.color = cp;
+
+    document.querySelectorAll('.section-title .text-pink').forEach(element => {
+        if (!element.closest('.fixed-theme')) element.style.color = cp;
+    });
+
+    root.style.setProperty('--grad-left', `color-mix(in srgb, ${cp} 15%, white)`);
+    root.style.setProperty('--grad-right', `color-mix(in srgb, ${cs} 15%, white)`);
+    const bgGradient = document.querySelector('.bg-gradient');
+    if (bgGradient) bgGradient.style.background = `linear-gradient(90deg, var(--grad-left, #FCE7F3) 0%, var(--grad-right, #E0F2FE) 100%)`;
+
+    const shadowMix = `color-mix(in srgb, ${cp} 20%, transparent)`;
+    const fanCard = document.querySelector('.fan-card:not(.fixed-theme)');
+    if (fanCard) fanCard.style.boxShadow = `0 10px 40px ${shadowMix}`;
+
+    const avatarWrap = document.querySelector('.avatar-wrapper');
+    if (avatarWrap) avatarWrap.style.boxShadow = `0 0 30px ${shadowMix}`;
+
+    const brmShadow = el('brm-shadow');
+    if (brmShadow) brmShadow.style.boxShadow = `0 10px 25px ${shadowMix}`;
+
+    document.querySelectorAll('.v-link').forEach(link => {
+        link.style.color = cp;
+        link.onmouseover = () => { link.style.borderColor = `color-mix(in srgb, ${cp} 30%, white)`; };
+        link.onmouseleave = () => { link.style.borderColor = 'rgba(255, 255, 255, 0.9)'; };
+    });
+  }
+
   // 更新年月份 (DECEMBER 2024 -> 實際年月份)
   const dateBadge = document.querySelector('.date-badge');
   if (dateBadge) {
@@ -406,7 +458,7 @@ function initFanProfile() {
 }
 
 /**
- * 儲存介面設定（名稱、簽名檔、頭像上傳）
+ * 儲存介面設定（名稱、簽名檔、主題顏色、頭像上傳）
  */
 window.handleInterfaceSettingsUpdate = async () => {
   const user = auth.currentUser;
@@ -415,11 +467,15 @@ window.handleInterfaceSettingsUpdate = async () => {
   const newName = el('theme-name').value;
   const newTagline = el('theme-tagline').value;
   const avatarInput = el('theme-avatar');
+  const colorPrimary = el('theme-color-primary').value;
+  const colorSecondary = el('theme-color-secondary').value;
   
   const userDocRef = doc(db, 'users', user.uid);
   const updates = {
     displayName: newName,
     tagline: newTagline,
+    themeColorPrimary: colorPrimary,
+    themeColorSecondary: colorSecondary,
     updatedAt: new Date()
   };
 
@@ -441,6 +497,59 @@ window.handleInterfaceSettingsUpdate = async () => {
   } catch (err) {
     console.error('[fan-profile] Failed to save settings:', err);
     alert('儲存失敗：' + err.message);
+  }
+};
+
+/**
+ * 儲存徽章與稱號展示設定
+ */
+window.handleBadgeSettingsUpdate = async (badges, titles) => {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const userDocRef = doc(db, 'users', user.uid);
+  try {
+    const snap = await getDoc(userDocRef);
+    if (!snap.exists()) return;
+    const data = snap.data();
+    
+    let firestoreBadges = data.badges || [];
+    let firestoreTitles = data.honorTitles || [];
+
+    // 更新 badges 的 selected 狀態
+    firestoreBadges = firestoreBadges.map((fb, i) => {
+      const id = fb.id || `fb_badge_${i}`;
+      const uiBadge = badges.find(b => b.id === id);
+      if (uiBadge) {
+        fb.selected = uiBadge.selected;
+      }
+      return fb;
+    });
+
+    // 更新 honorTitles 的 selected 狀態 (支援字串或物件格式)
+    firestoreTitles = firestoreTitles.map((ft, i) => {
+      let id = typeof ft === 'string' ? `fb_title_${i}` : (ft.id || `fb_title_${i}`);
+      const uiTitle = titles.find(t => t.id === id);
+      
+      if (typeof ft === 'string') {
+        if (uiTitle) return { title: ft, selected: uiTitle.selected, id };
+        return { title: ft, selected: true, id };
+      }
+      
+      if (uiTitle) {
+        ft.selected = uiTitle.selected;
+      }
+      return ft;
+    });
+
+    await updateDoc(userDocRef, {
+      badges: firestoreBadges,
+      honorTitles: firestoreTitles,
+      updatedAt: new Date()
+    });
+    console.log('[fan-profile] Badge settings updated in Firebase');
+  } catch (err) {
+    console.error('[fan-profile] Failed to update badge settings:', err);
   }
 };
 

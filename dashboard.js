@@ -170,6 +170,16 @@ function switchTab(tabId) {
     if (panel) panel.classList.add('active');
     else showToast(`「${cfg.title}」頁面開發中，敬請期待！`, 'info');
 
+    // Show/hide Topbar FAB (Add Milestone) based on tab relevance
+    const fab = document.getElementById('topbar-add-milestone');
+    if (fab) {
+        if (tabId === 'overview' || tabId === 'milestones') {
+            fab.style.display = ''; // Restore default
+        } else {
+            fab.style.display = 'none'; // Hide on other tabs
+        }
+    }
+
     if (tabId === 'posts') {
         if (typeof window.refreshPostMilestoneOptions === 'function') window.refreshPostMilestoneOptions();
         if (typeof window.renderPosts === 'function') window.renderPosts();
