@@ -16,7 +16,7 @@ const PaymentService = {
    * @param {string} message - 粉絲留言
    * @returns {{ txId: string, status: 'success' }}
    */
-  initiate: async (milestoneId, amount, method, message) => {
+  initiate: async (milestoneId, amount, method, message, customName = null) => {
     const user = auth.currentUser;
     if (!user) throw new Error('請先登入');
     if (!milestoneId) throw new Error('缺少里程碑 ID');
@@ -39,7 +39,9 @@ const PaymentService = {
       const userSnap = await t.get(userDocRef);
       const userData = userSnap.exists() ? userSnap.data() : {};
       
-      const fanDisplayName = userData.displayName || (user.displayName || '匿名粉絲');
+      const baseDisplayName = userData.displayName || (user.displayName || '匿名粉絲');
+      // customName 優先（用戶在 modal 自填），否則用帳號名
+      const fanDisplayName = (customName && customName.trim()) ? customName.trim() : baseDisplayName;
       const fanAvatarUrl = userData.photoURL || user.photoURL || null;
       const unlockedMilestones = userData.unlockedMilestones || [];
       const isFirstTime = !unlockedMilestones.includes(milestoneId);
