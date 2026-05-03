@@ -5,7 +5,7 @@
 [build.environment]
   NODE_VERSION = "20"
   GIT_SUBMODULE_STRATEGY = "none"
-  NPM_FLAGS = "--prefer-offline --no-optional"
+  NPM_FLAGS = "--include=optional"
 
 # SPA-style redirect: all routes fall back to the matching HTML
 # For MPA, we serve each page's own HTML
