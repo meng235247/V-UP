@@ -4,6 +4,7 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  GIT_SUBMODULE_STRATEGY = "none"
 
 # SPA-style redirect: all routes fall back to the matching HTML
 # For MPA, we serve each page's own HTML
