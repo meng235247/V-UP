@@ -1,5 +1,14 @@
 {
   "version": 1,
+  "sources": {
+    "firebase/agent-skills": {
+      "sourceType": "github"
+    },
+    "sickn33/antigravity-awesome-skills": {
+      "sourceType": "github",
+      "installPath": ".agents/skills"
+    }
+  },
   "skills": {
     "developing-genkit-dart": {
       "source": "firebase/agent-skills",
@@ -60,6 +69,11 @@
       "source": "firebase/agent-skills",
       "sourceType": "github",
       "computedHash": "f3e47896a49b76db787f47ee97f8cb2e23c51e4b18a73cd2ded32d6cc8c02869"
+    },
+    "*": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "installPath": ".agents/skills"
     }
   }
 }

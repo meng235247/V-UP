@@ -23,7 +23,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "engines": { "node": ">=18.0.0" },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bugs": {
     "url": "https://github.com/meng235247/V-UP/issues"
   },
@@ -34,6 +36,7 @@
     "vite": "^8.0.8"
   },
   "devDependencies": {
-    "firebase-tools": "^15.15.0"
+    "firebase-tools": "^15.15.0",
+    "vite-plugin-static-copy": "^4.1.0"
   }
 }
