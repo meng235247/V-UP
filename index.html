@@ -386,16 +386,35 @@
             box-shadow: 0 4px 16px var(--primary-glow);
         }
 
-        .how-steps-panel { display: none; }
-        .how-steps-panel.active { display: block; }
+        .how-steps-panel {
+            display: none;
+        }
+
+        .how-steps-panel.active {
+            display: block;
+        }
 
         /* Why section: split creator / fan columns */
         .why-split {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 960px;
+            gap: 4.5rem;
+            max-width: 1040px;
             margin: 0 auto;
+            position: relative;
+        }
+
+        @media (min-width: 769px) {
+            .why-split::after {
+                content: "";
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 1px;
+                height: 85%;
+                background: linear-gradient(to bottom, transparent, var(--border-color), transparent);
+            }
         }
 
         .why-col-title {
@@ -409,8 +428,13 @@
             gap: 8px;
         }
 
-        .why-col-title.creator { color: #f472b6; }
-        .why-col-title.fan     { color: #70ddf1; }
+        .why-col-title.creator {
+            color: #f472b6;
+        }
+
+        .why-col-title.fan {
+            color: #70ddf1;
+        }
 
         /* Demo CTA section */
         .demo-cta-section {
@@ -426,8 +450,8 @@
             position: absolute;
             inset: 0;
             background:
-                radial-gradient(ellipse at 20% 60%, rgba(244,114,182,0.12) 0%, transparent 55%),
-                radial-gradient(ellipse at 80% 30%, rgba(112,221,241,0.12) 0%, transparent 55%);
+                radial-gradient(ellipse at 20% 60%, rgba(244, 114, 182, 0.12) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 30%, rgba(112, 221, 241, 0.12) 0%, transparent 55%);
             pointer-events: none;
         }
 
@@ -440,7 +464,7 @@
         }
 
         .demo-cta-section p {
-            color: rgba(255,255,255,0.55);
+            color: rgba(255, 255, 255, 0.55);
             font-size: 1rem;
             max-width: 520px;
             margin: 0 auto 2.5rem;
@@ -457,8 +481,8 @@
         }
 
         .demo-card {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 2rem 2.5rem;
             width: 280px;
@@ -472,10 +496,10 @@
         }
 
         .demo-card:hover {
-            background: rgba(255,255,255,0.09);
-            border-color: rgba(244,114,182,0.35);
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(244, 114, 182, 0.35);
             transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
             color: white;
         }
 
@@ -490,12 +514,12 @@
         }
 
         .demo-card-icon.creator-icon {
-            background: rgba(244,114,182,0.15);
+            background: rgba(244, 114, 182, 0.15);
             color: #f472b6;
         }
 
         .demo-card-icon.fan-icon {
-            background: rgba(112,221,241,0.15);
+            background: rgba(112, 221, 241, 0.15);
             color: #70ddf1;
         }
 
@@ -508,7 +532,7 @@
 
         .demo-card p {
             font-size: 0.85rem;
-            color: rgba(255,255,255,0.5);
+            color: rgba(255, 255, 255, 0.5);
             margin: 0;
             line-height: 1.6;
         }
@@ -534,25 +558,64 @@
         }
 
         .demo-card-btn.fan-btn {
-            background: rgba(112,221,241,0.15);
+            background: rgba(112, 221, 241, 0.15);
             color: #70ddf1;
-            border: 1.5px solid rgba(112,221,241,0.3);
+            border: 1.5px solid rgba(112, 221, 241, 0.3);
         }
 
-        .demo-card:hover .demo-card-btn.creator-btn { filter: brightness(1.1); }
-        .demo-card:hover .demo-card-btn.fan-btn { background: rgba(112,221,241,0.25); }
+        .demo-card:hover .demo-card-btn.creator-btn {
+            filter: brightness(1.1);
+        }
 
-        .demo-note {
-            margin-top: 2rem;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.35);
-            position: relative;
+        .demo-card:hover .demo-card-btn.fan-btn {
+            background: rgba(112, 221, 241, 0.25);
+        }
+
+        .demo-feedback-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 3rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 99px;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .demo-feedback-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .demo-feedback-btn i {
+            color: var(--primary);
+            font-size: 1.1rem;
         }
 
         @media (max-width: 768px) {
-            .why-split { grid-template-columns: 1fr; }
-            .demo-cards { flex-direction: column; align-items: center; }
-            .demo-card { width: 100%; max-width: 320px; }
+            .why-split {
+                grid-template-columns: 1fr;
+                gap: 3.5rem;
+            }
+
+            .demo-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .demo-card {
+                width: 100%;
+                max-width: 320px;
+            }
         }
 
         /* Section label */
@@ -577,6 +640,7 @@
             .hero-cta-group {
                 flex-direction: column;
                 align-items: center;
+                gap: 1rem;
             }
         }
 
@@ -700,7 +764,7 @@
     <!-- ── 導航：粉絲視角，完全不混入創作者後台 ── -->
     <nav class="navbar">
         <div class="nav-container">
-            <a href="index.html" class="nav-logo-vup">V-UP!</a>
+            <a href="index.html" class="brand-logo">V-UP!</a>
             <div class="nav-links">
                 <a href="#discover" class="nav-item active">探索 VTuber</a>
                 <a href="#why" class="nav-item">平台特色</a>
@@ -730,14 +794,16 @@
             <!-- Pill badge -->
             <div class="hero-pill"
                 style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.2);padding:6px 18px;border-radius:99px;font-size:0.87rem;font-weight:700;color:rgba(255,255,255,0.9);margin-bottom:1.5rem;animation:fadeInUp 0.6s ease both;">
-                <span style="width:8px;height:8px;background:#f472b6;border-radius:50%;animation:livePulse 1.5s infinite;display:inline-block;"></span>
+                <span
+                    style="width:8px;height:8px;background:#f472b6;border-radius:50%;animation:livePulse 1.5s infinite;display:inline-block;"></span>
                 體驗版開放中 — 歡迎試玩並給我們意見！
             </div>
 
             <h1 class="hero-title" id="front-h1">讓粉絲的愛，化成<br><span class="font-vup">VTuber</span> 踏上舞台的每一步</h1>
 
             <!-- Dual-audience subtitle -->
-            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:2.5rem;animation:fadeInUp 0.8s 0.15s ease both;">
+            <div
+                style="display:flex;flex-direction:column;gap:0.5rem;margin-bottom:2.5rem;animation:fadeInUp 0.8s 0.15s ease both;">
                 <p style="font-size:1rem;color:rgba(255,255,255,0.75);font-weight:500;margin:0;">
                     <span style="color:#f9a8d4;font-weight:700;">✦ VTuber 創作者：</span>設定有意義的里程碑，讓每一份應援都有去向
                 </p>
@@ -748,95 +814,21 @@
 
             <!-- CTA: creator first -->
             <div class="hero-cta-group">
-                <a href="dashboard.html" class="btn-hero-creator">
+                <a href="#demo-section" class="btn-hero-creator">
                     <i class="fas fa-star"></i> 我是 VTuber 創作者
                 </a>
-                <a href="vtuber_profile.html?id=ryusei" class="btn-hero-fan" id="front-btn">
+                <a href="#demo-section" class="btn-hero-fan" id="front-btn">
                     <i class="fas fa-play-circle"></i> 粉絲試玩體驗
                 </a>
             </div>
 
-            <p style="margin-top:1.25rem;font-size:0.8rem;color:rgba(255,255,255,0.4);animation:fadeInUp 0.8s 0.5s ease both;">
-                無需帳號 · 無需信用卡 · 2 分鐘感受完整應援流程
+            <p
+                style="margin-top:1.25rem;font-size:0.8rem;color:rgba(255,255,255,0.4);animation:fadeInUp 0.8s 0.5s ease both;">
+                無需註冊 · 2 分鐘感受完整應援流程
             </p>
         </div>
     </header>
 
-
-    <!-- ── 探索 VTuber ── -->
-    <section class="discover-section" id="discover">
-        <div class="container">
-            <div class="discover-header">
-                <span class="section-label">DISCOVER</span>
-                <h2 class="font-vup">探索正在追夢的 VTuber ✨</h2>
-                <p>她們的下一個里程碑，正在等你一起完成</p>
-            </div>
-
-            <div class="discover-filters">
-                <button class="filter-btn active" data-filter="all">全部</button>
-                <button class="filter-btn" data-filter="music"><i class="fas fa-music"></i> 歌手</button>
-                <button class="filter-btn" data-filter="game"><i class="fas fa-gamepad"></i> 遊戲</button>
-                <button class="filter-btn" data-filter="art"><i class="fas fa-paint-brush"></i> 創作</button>
-                <button class="filter-btn" data-filter="hot"><i class="fas fa-fire"></i> 熱門</button>
-            </div>
-
-            <div class="vtuber-grid">
-                <!-- Card 1 (Placeholder) -->
-                <a href="dashboard.html" class="v-card-placeholder">
-                    <i class="fas fa-plus-circle"></i>
-                    <h3>期待更多夢想加入</h3>
-                    <p>你是也在尋找舞台的創作者嗎？<br>立即加入 V-Up! 綻放計畫</p>
-                </a>
-
-                <!-- Card 2 -->
-                <a href="vtuber_profile.html?id=ryusei" class="v-card" data-cat="game hot">
-                    <div class="v-card-banner">
-                        <div class="v-card-banner-bg" style="background-image: url('image/banner2.png');"></div>
-                        <div class="v-card-banner-overlay"></div>
-                        <div class="category-badge"><i class="fas fa-gamepad"></i> 遊戲</div>
-                    </div>
-                    <div class="v-card-body">
-                        <div class="v-card-avatar-wrap">
-                            <img src="image/v_head_ryusei.jpg" alt="電玩少女_小葵" class="v-card-avatar">
-                            <div class="v-card-name-row">
-                                <h3>川雲爪日</h3>
-
-                            </div>
-                        </div>
-                        <div class="v-card-tags">
-                            <span class="tag"><i class="fas fa-gamepad"></i> 繪圖</span>
-                            <span class="tag t-blue-sub">國畫</span>
-                        </div>
-                        <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
-                            夢想：爪日神秘身世冒險，帝國起源動畫第二集!</div>
-                        <div class="v-card-progress-wrap">
-                            <div class="v-card-progress-header">
-                                <span class="raised">42,000 / 100,000 點</span>
-                                <span class="pct">42%</span>
-                            </div>
-                            <div class="v-card-progress">
-                                <div class="v-card-progress-fill" style="width:42%;"></div>
-                            </div>
-                        </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持這份夢想！</div>
-                    </div>
-                </a>
-
-                <!-- Card 3 (Placeholder) -->
-                <a href="dashboard.html" class="v-card-placeholder">
-                    <i class="fas fa-sparkles"></i>
-                    <h3>下一個明星就是你</h3>
-                    <p>連接 VTuber 與粉絲的夢想應援平台<br>讓每一份支持，都化作永恆的傳奇</p>
-                </a>
-            </div>
-
-            <!-- VTuber 來訓中占位 -->
-            <div style="margin-top:3rem;padding:2.5rem 2rem;border:1.5px dashed var(--border-color);border-radius:var(--radius-lg);text-align:center;opacity:0.7;">
-                <p style="font-size:1.2rem;font-weight:800;color:var(--text-main);margin-bottom:0.4rem;">🌟 更多 VTuber 即將加入</p>
-                <p style="font-size:0.88rem;color:var(--text-muted);">V-UP! 導入期限定公開——我們正在尋找第一批勇敢追夢的 VTuber 創作者。你是創作者嗎？<a href="dashboard.html" style="color:var(--primary);font-weight:700;"> 來詳諳看看 →</a></p>
-            </div>
-        </div>
-    </section>
 
     <!-- ── Why V-UP (split: creator / fan) ── -->
     <section class="why-section" id="why">
@@ -899,8 +891,10 @@
             </div>
             <!-- Tab buttons -->
             <div class="how-tabs">
-                <button class="how-tab-btn active" onclick="switchHowTab('creator', this)"><i class="fas fa-star"></i> 我是 VTuber 創作者</button>
-                <button class="how-tab-btn" onclick="switchHowTab('fan', this)"><i class="fas fa-heart"></i> 我是粉絲</button>
+                <button class="how-tab-btn active" onclick="switchHowTab('creator', this)"><i class="fas fa-star"></i>
+                    我是 VTuber 創作者</button>
+                <button class="how-tab-btn" onclick="switchHowTab('fan', this)"><i class="fas fa-heart"></i>
+                    我是粉絲</button>
             </div>
             <!-- Creator steps -->
             <div class="how-steps-panel active" id="how-creator">
@@ -922,7 +916,7 @@
                     </div>
                 </div>
                 <div style="text-align:center;margin-top:2.5rem;">
-                    <a href="dashboard.html" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
                         <i class="fas fa-rocket"></i> 試看看創作者後台
                     </a>
                 </div>
@@ -943,11 +937,11 @@
                     <div class="how-step">
                         <div class="how-icon"><i class="fas fa-medal"></i></div>
                         <h3>③ 見證傳說，永久榮耀</h3>
-                        <p>企劃達成，你獲得限定稱號與徽章，永久記錄在她的成就頁面——你是故事的一部分。</p>
+                        <p>企劃達成，你獲得限定稱號與徽章，永久記錄在成就頁面——你是故事的一部分。</p>
                     </div>
                 </div>
                 <div style="text-align:center;margin-top:2.5rem;">
-                    <a href="vtuber_profile.html?id=ryusei" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
                         <i class="fas fa-play-circle"></i> 立刻去試玩粉絲體驗
                     </a>
                 </div>
@@ -956,7 +950,7 @@
     </section>
 
     <!-- ── Demo CTA ── -->
-    <section class="demo-cta-section">
+    <section class="demo-cta-section" id="demo-section">
         <div class="container">
             <span class="section-label" style="-webkit-text-fill-color:rgba(244,114,182,0.8);">體驗看看</span>
             <h2>親手試玩，才知道有多不一樣 ✨</h2>
@@ -975,46 +969,128 @@
                     <span class="demo-card-btn fan-btn"><i class="fas fa-play-circle"></i> 進入粉絲體驗</span>
                 </a>
             </div>
-            <p class="demo-note">💬 試玩後，我們道就會請你留下对平台的想法——你的回饋對我們非常重要！</p>
         </div>
     </section>
 
-    <!-- ── 最新情報 ── -->
-    <section class="news-section" id="news">
+    <!-- ── 概念體驗區 (探索 VTuber) ── -->
+    <section class="discover-section" id="discover">
         <div class="container">
-            <div class="text-center">
-                <span class="news-label">NEWS &amp; SCHEDULE</span>
-                <h2 class="news-title">最新公告與情報</h2>
+            <div class="discover-header">
+                <span class="section-label">CONCEPT DEMOS</span>
+                <h2 class="font-vup">看看我們準備的概念示範 ✨</h2>
+                <p>點擊立刻體驗專屬粉絲視角的里程碑應援流程</p>
             </div>
-            <div class="news-list">
-                <a href="#" class="news-item">
-                    <span class="news-date">2026.03.18</span>
-                    <span class="news-badge badge-event">EVENT</span>
-                    <span class="news-text" id="news-text-1">星宮夢 1st 3D Live「綻放的星光」門票開賣！</span>
-                    <i class="fas fa-arrow-up-right-from-square news-link-icon"></i>
+
+            <div class="vtuber-grid">
+                <!-- Card 1 -->
+                <a href="#demo-section" class="v-card" data-cat="game hot">
+                    <div class="v-card-banner">
+                        <div class="v-card-banner-bg" style="background-image: url('image/banner2.png');"></div>
+                        <div class="v-card-banner-overlay"></div>
+                        <div class="category-badge"><i class="fas fa-gamepad"></i> 遊戲</div>
+                    </div>
+                    <div class="v-card-body">
+                        <div class="v-card-avatar-wrap">
+                            <img src="image/v_head_ryusei.jpg" alt="電玩少女_小葵" class="v-card-avatar">
+                            <div class="v-card-name-row">
+                                <h3>川雲爪日</h3>
+
+                            </div>
+                        </div>
+                        <div class="v-card-tags">
+                            <span class="tag"><i class="fas fa-gamepad"></i> 繪圖</span>
+                            <span class="tag t-blue-sub">國畫</span>
+                        </div>
+                        <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
+                            夢想：爪日神秘身世冒險，帝國起源動畫第二集!</div>
+                        <div class="v-card-progress-wrap">
+                            <div class="v-card-progress-header">
+                                <span class="raised">42,000 / 100,000 點</span>
+                                <span class="pct">42%</span>
+                            </div>
+                            <div class="v-card-progress">
+                                <div class="v-card-progress-fill" style="width:42%;"></div>
+                            </div>
+                        </div>
+                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持這份夢想！</div>
+                    </div>
                 </a>
-                <a href="#" class="news-item" style="animation-delay:.07s">
-                    <span class="news-date">2026.03.15</span>
-                    <span class="news-badge badge-release">RELEASE</span>
-                    <span class="news-text">神樂零 首張原創單曲《Cyber Pulse》數位上架</span>
-                    <i class="fas fa-arrow-up-right-from-square news-link-icon"></i>
+
+                <!-- Card 2 (New VTuber Template) -->
+                <a href="#demo-section" class="v-card" data-cat="music hot">
+                    <div class="v-card-banner">
+                        <div class="v-card-banner-bg" style="background-color: rgba(255,255,255,0.05);"></div>
+                        <div class="v-card-banner-overlay"></div>
+                        <div class="category-badge"><i class="fas fa-music"></i> 歌手</div>
+                    </div>
+                    <div class="v-card-body">
+                        <div class="v-card-avatar-wrap">
+                            <div class="v-card-avatar" style="background-color: rgba(255,255,255,0.1);"></div>
+                            <div class="v-card-name-row">
+                                <h3>拜風</h3>
+                            </div>
+                        </div>
+                        <div class="v-card-tags">
+                            <span class="tag"><i class="fas fa-tag"></i> 標籤一</span>
+                            <span class="tag t-blue-sub">標籤二</span>
+                        </div>
+                        <div class="v-card-milestone"><i class="fas fa-bullseye" style="color:var(--primary);"></i>
+                            夢想：[請填寫里程碑目標]</div>
+                        <div class="v-card-progress-wrap">
+                            <div class="v-card-progress-header">
+                                <span class="raised">0 / 100,000 點</span>
+                                <span class="pct">0%</span>
+                            </div>
+                            <div class="v-card-progress">
+                                <div class="v-card-progress-fill" style="width:0%;"></div>
+                            </div>
+                        </div>
+                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持這份夢想！</div>
+                    </div>
                 </a>
-                <a href="#" class="news-item" style="animation-delay:.14s">
-                    <span class="news-date">2026.03.10</span>
-                    <span class="news-badge badge-info">INFO</span>
-                    <span class="news-text">V-Up! Project 官方周邊商城正式開幕</span>
-                    <i class="fas fa-arrow-up-right-from-square news-link-icon"></i>
-                </a>
-                <a href="#" class="news-item" style="animation-delay:.21s">
-                    <span class="news-date">2026.03.05</span>
-                    <span class="news-badge badge-live">LIVE</span>
-                    <span class="news-text">全員集合！春季特別聯動直播節目預告</span>
-                    <i class="fas fa-arrow-up-right-from-square news-link-icon"></i>
+
+                <!-- Card 3 (Merged Placeholder) -->
+                <a href="#demo-section" class="v-card-placeholder">
+                    <i class="fas fa-sparkles"></i>
+                    <h3>下一個明星就是你</h3>
+                    <p>你是也在尋找舞台的創作者嗎？<br>立即加入 V-Up! 綻放計畫，讓每一份支持化作永恆的傳奇</p>
                 </a>
             </div>
-            <div class="news-footer">
-                <a href="#"><i class="fas fa-calendar-days"></i> 查看完整行事曆</a>
+
+            <!-- VTuber 來訓中占位 -->
+            <div
+                style="margin-top:3rem;padding:2.5rem 2rem;border:1.5px dashed var(--border-color);border-radius:var(--radius-lg);text-align:center;opacity:0.7;">
+                <p style="font-size:1.2rem;font-weight:800;color:var(--text-main);margin-bottom:0.4rem;">🌟 歡迎實際體驗創作者後台
+                </p>
+                <p style="font-size:0.88rem;color:var(--text-muted);">除了粉絲視角，你也可以切換成 VTuber 的身份，看看後台如何運作。<a
+                        href="#demo-section" style="color:var(--primary);font-weight:700;"> 立刻前往創作者體驗 →</a></p>
             </div>
+        </div>
+    </section>
+
+    <!-- ── 真實聲音招募區 (Feedback) ── -->
+    <section class="feedback-section" id="feedback"
+        style="padding: 6rem 20px; background: var(--bg-surface); text-align: center; border-top: 1px solid var(--border-color);">
+        <div class="container"
+            style="max-width: 800px; background: var(--gradient-primary); padding: 4rem 2rem; border-radius: var(--radius-xl); box-shadow: 0 20px 40px var(--primary-glow); position: relative; overflow: hidden;">
+            <div
+                style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none;">
+            </div>
+            <div
+                style="position: absolute; bottom: -50px; left: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.1); border-radius: 50%; pointer-events: none;">
+            </div>
+
+            <h2 class="font-vup"
+                style="color: white; font-size: 2.4rem; margin-bottom: 1rem; position: relative; z-index: 1;">
+                試玩結束了嗎？<br>我們需要你的真實聲音！</h2>
+            <p
+                style="color: rgba(255,255,255,0.9); font-size: 1.15rem; margin-bottom: 2.5rem; line-height: 1.7; position: relative; z-index: 1;">
+                我們正在打造最懂 VTuber 與粉絲的應援平台。<br>你的每一個建議、甚至批評，都將成為 V-UP! 成長最重要的養分。
+            </p>
+            <a href="javascript:void(0)" class="btn"
+                style="background: white; color: var(--primary); font-size: 1.1rem; padding: 1rem 3rem; border-radius: 99px; font-weight: 800; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; z-index: 1; text-decoration: none;">
+                <i class="fas fa-paper-plane"></i> 填寫試玩回饋表單
+            </a>
         </div>
     </section>
 
