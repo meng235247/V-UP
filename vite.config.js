@@ -1,7 +1,19 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 export default defineConfig({
+  plugins: [
+    // Copy the image/ folder to dist/image/ so paths like /image/xxx.png work on Netlify
+    viteStaticCopy({
+      targets: [
+        {
+          src: 'image',
+          dest: '',
+        },
+      ],
+    }),
+  ],
   // Multi-Page Application (MPA) entry points
   build: {
     rollupOptions: {
