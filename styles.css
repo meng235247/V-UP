@@ -174,6 +174,11 @@ img {
     color: var(--text-muted);
 }
 
+.font-vup {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+}
+
 /* ---- Keyframe Animations ---- */
 @keyframes fadeInUp {
     from {
@@ -1293,15 +1298,37 @@ footer {
     }
 
     .hero-title {
-        font-size: 2.8rem;
+        font-size: 1.85rem !important;
+        line-height: 1.3;
     }
 
     .hero {
-        padding: 5rem 20px;
+        padding: 4rem 20px 3rem;
+    }
+
+    .nav-container {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding-top: 1rem;
+        padding-bottom: 0.5rem;
     }
 
     .nav-links {
-        gap: 0.75rem;
+        width: 100%;
+        gap: 1rem;
+        overflow-x: auto;
+        white-space: nowrap;
+        justify-content: flex-start;
+        padding-bottom: 0.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-item {
+        font-size: 0.85rem;
     }
 
     .vtuber-grid {
