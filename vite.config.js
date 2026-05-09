@@ -11,6 +11,10 @@ export default defineConfig({
           src: 'image',
           dest: '',
         },
+        {
+          src: 'dashboard.js',
+          dest: '',
+        },
       ],
     }),
   ],
