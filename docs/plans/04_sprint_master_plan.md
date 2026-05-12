@@ -37,7 +37,7 @@
 | **A. Index 重構（文案 + 新 Sections）** | **你** | 6-8h |
 | **B. Demo 沙盒系統（粉絲 + 創作者）** | **你** | 8-10h |
 | **C. UI/UX 改善** | **組員** | 6-8h |
-| **D. GA4 開通 + 表單建立** | **共同（各30min）** | 1h |
+| **D. 表單建立與埋設** | **共同** | 1h |
 
 ---
 
@@ -215,11 +215,9 @@ if (window.__DEMO_MODE__) {
 
 ### 工作包 D：GA4 + 表單（共同，各30分鐘）
 
-#### D1. GA4 帳號建立（組員做，5分鐘）
-1. 前往 [analytics.google.com](https://analytics.google.com)
-2. 建立 Property → 選「網站」→ 填入 Netlify 網址
-3. 取得 `G-XXXXXXXXXX` Measurement ID
-4. 把這個 ID 告訴你 → 你填入 `demo-sandbox.js` 的 gtag config
+#### D1. GA4 帳號建立（✅ 組員已完成）
+- 組員已在全站 `<head>` 放入 `gtag.js` 標記。
+- **你的後續動作**：這不影響你的開發！你後續寫 `demo-sandbox.js` 時，直接呼叫 `gtag('event', '...')` 即可，GA 會自動抓取現有的基礎標記，**不用請組員刪除**。
 
 #### D2. Google Form 建立（組員做，30分鐘）
 - **表單A（粉絲版）**：5個問題（見 `demo_build_plan.md` 第六節）
@@ -240,8 +238,7 @@ Day 1（今天）
     └── B2 email-gate.js       (1.5h)
   
   組員：
-    ├── D1 開 GA4 帳號         (10min)  ← Netlify 已完成，這是現在最優先
-    └── D2 建立兩份 Google Form (30min)
+    ├── D2 建立兩份 Google Form (30min)
 
 Day 2
   你：
@@ -283,7 +280,7 @@ Day 4（測試與收尾）
 | `vtuber_profile.html` | 修改（引入 demo scripts） | 你 | P1 |
 | `dashboard.html` | 修改（引入 demo scripts） | 你 | P1 |
 | `js/demo/demo-guide.js` | 新增 | 你 | P1 |
-| 所有 HTML `<head>` | 修改（加 GA4） | 組員 | P1（等 D1 完成） |
+| ~~所有 HTML `<head>`~~ | ~~修改（加 GA4）~~ | ~~組員~~ | ✅ 已完成 |
 | Google Form | 新建 | 組員 | P1（可晚） |
 | ~~Netlify 設定~~ | ~~確認~~ | ~~組員~~ | ✅ 已完成 |
 
@@ -332,11 +329,10 @@ Day 4（測試與收尾）
       ↓（引導要在完整流程跑通之後才寫腳本）
   最終 End-to-End 測試
 
-鏈 2：GA4 安裝（跨人依賴，注意！）
-  D1 組員：開 GA4 帳號 → 取得 G-XXXXXXXXXX
-      ↓（ID 沒拿到，下面兩個都做不了）
-  C4 組員：各頁 <head> 加 gtag.js snippet
-  + 你：demo-sandbox.js 裡填入 gtag('config', 'G-XXXXXXXXXX')
+鏈 2：GA4 安裝（✅ 基礎標記已完成）
+  組員：已在各頁 <head> 加 gtag.js snippet
+      ↓（這件事已完成，完美解鎖你的下一步）
+  你：直接在 demo-sandbox.js 裡寫 gtag('event', '...') 即可，不須額外設定
 
 鏈 3：Google Form URL（最晚的依賴）
   D2 組員：建立 Form → 取得短網址
@@ -371,9 +367,10 @@ Day 4（測試與收尾）
 
 **建議協作方式**：
 ```
-index.html 的修改 → 統一由「你」負責整理後推 PR
-               → 組員的 UI 改動如果需要動 index.html，
-                 先跟你說，再由你整合一起推
+1. 每次你開始改 index.html 之前，務必先執行 `git pull`！
+   （確保你拿到組員最新改的 UI，然後在上面疊加你的文案）
+2. index.html 的修改 → 統一由「你」負責整理後推 PR
+3. 組員如果還需要大改 index.html，請他先跟你說。
 ```
 
 ### 📋 最彈性的工作切割建議
@@ -386,7 +383,5 @@ index.html 的修改 → 統一由「你」負責整理後推 PR
 3. B2 Email Gate Modal（90min，獨立）
 
 **組員有閒暇時**（按建議順序）：
-1. D1 開 GA4 帳號（10min，解鎖後續）
-2. D2 建立 Google Form（30min，可晚點做）
-3. C1 RWD 修正（任何時候都可以）
-4. C4 加 GA4 snippet（等 D1 完成後）
+1. D2 建立 Google Form（30min，可晚點做）
+2. C1 RWD 修正（任何時候都可以）
