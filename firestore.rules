@@ -80,6 +80,13 @@ service cloud.firestore {
     // - server-controlled fields: currentAmount, totalSupporters, achievedAt, archivedAt
     // ----------------------------
     match /milestones/{mid} {
+      function milestoneTargetAmount(data) {
+        return (data.targetAmount is number) ? data.targetAmount
+          : (data.goal is number) ? data.goal
+          : (data.target is number) ? data.target
+          : 0;
+      }
+
       function hasPublicMilestoneStatus() {
         return resource.data.get('status', '__missing__') in ['published','active','achieved','archived'];
       }
@@ -125,7 +132,7 @@ service cloud.firestore {
                              || request.resource.data.status == resource.data.get('status', '__missing__')
                              // allow owner to mark as 'achieved' only when fully funded
                              || (request.resource.data.status == 'achieved'
-                                 && resource.data.get('currentAmount', 0) >= resource.data.get('targetAmount', 1))
+                               && resource.data.get('currentAmount', 0) >= milestoneTargetAmount(resource.data))
                            )
                        )
                     // 2a) Fan sponsor update - normal progress update
@@ -140,7 +147,7 @@ service cloud.firestore {
                         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentAmount', 'totalSupporters', 'updatedAt', 'status', 'achievedAt'])
                         && request.resource.data.status == 'achieved'
                         && resource.data.get('status', '') != 'achieved'
-                        && request.resource.data.currentAmount >= resource.data.get('targetAmount', 1)
+                      && request.resource.data.currentAmount >= milestoneTargetAmount(resource.data)
                         && request.resource.data.currentAmount >= resource.data.get('currentAmount', 0)
                         && request.resource.data.totalSupporters >= resource.data.get('totalSupporters', 0)
                        );

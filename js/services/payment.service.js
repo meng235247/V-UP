@@ -58,10 +58,28 @@ const PaymentService = {
       const newSupporters = prevSupporters + 1;
 
       // ── Compute whether this payment tips the milestone over the goal ──
-      const targetAmt = Number(msData.targetAmount || msData.goal || msData.target || 0);
+      const targetCandidates = [
+        { key: 'targetAmount', value: msData.targetAmount },
+        { key: 'goal', value: msData.goal },
+        { key: 'target', value: msData.target }
+      ];
+      let targetAmt = 0;
+      let targetKey = null;
+      for (const c of targetCandidates) {
+        const raw = c.value;
+        const num = (typeof raw === 'number') ? raw : (typeof raw === 'string' ? Number(raw) : NaN);
+        if (Number.isFinite(num) && num > 0) {
+          targetAmt = num;
+          targetKey = c.key;
+          break;
+        }
+      }
       const prevStatus = msData.status || 'published';
       const willAchieve = targetAmt > 0 && newAmount >= targetAmt
         && prevStatus !== 'achieved' && prevStatus !== 'archived' && prevStatus !== 'cancelled';
+      if (willAchieve && targetKey !== 'targetAmount') {
+        console.warn('[PaymentService] Using legacy target field for auto-achieve:', { targetKey, targetAmt, milestoneId });
+      }
 
       // 1. 更新里程碑累積金額與支持者數（若達標則同時寫入 achieved 狀態）
       const milestoneUpdate = {
