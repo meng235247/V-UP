@@ -1,5 +1,5 @@
 import { db, auth } from '../firebase-config.js';
-import { collection, query, where, getDocs, orderBy, limit as _limit, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, getDocs, getDoc, orderBy, limit as _limit, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 
 const COLLECTION = 'milestones';
 
