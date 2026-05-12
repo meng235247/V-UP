@@ -138,6 +138,88 @@ const VtuberProfilePage = {
     }
   },
 
+  /**
+   * [Step 3] 渲染回顧彈窗中的過往貼文
+   */
+  renderReviewPosts: async (milestoneId) => {
+    const container = document.getElementById('rmc-posts-scroll');
+    if (!container || !milestoneId) return;
+
+    container.innerHTML = '<div class="rmc-exc-post"><div class="rmc-exc-post-info"><div class="rmc-exc-text"><h4>載入中...</h4><p>請稍候</p></div></div></div>';
+
+    try {
+      const posts = await PostsService.getPublishedPostsByMilestone(milestoneId, {
+        limit: 12,
+        tryIncludeSupporters: true
+      });
+
+      if (!posts.length) {
+        container.innerHTML = '<div class="rmc-exc-post"><div class="rmc-exc-post-info"><div class="rmc-exc-text"><h4>尚無貼文</h4><p>目前沒有可顯示的回顧內容</p></div></div></div>';
+        return;
+      }
+
+      const rows = posts.map((post) => {
+        const title = buildPostTitle(post);
+        const time = timeAgo(post.publishedAt || post.updatedAt || post.createdAt);
+        const mediaType = getPostMediaType(post);
+        const iconClass = MEDIA_ICON_CLASS[mediaType] || MEDIA_ICON_CLASS.text;
+        const cacheKey = `review:${milestoneId}:${post.id}`;
+        const media = getPostPrimaryMedia(post);
+        const vt = VtuberProfilePage._currentVtuber || {};
+
+        postModalCache.set(cacheKey, {
+          title,
+          time,
+          iconType: mediaType,
+          body: post.content || '',
+          imageUrl: media.imageUrl,
+          mediaType: media.mediaType === 'text' || media.mediaType === 'file' ? null : media.mediaType,
+          mediaUrl: media.mediaUrl,
+          authorName: vt.displayName || vt.name || 'SAKURA NOVA',
+          authorAvatar: vt.bannerUrl || vt.avatarUrl || 'image/miku_test.png'
+        });
+
+        return `
+          <div class="rmc-exc-post">
+            <div class="rmc-exc-post-info">
+              <div class="rmc-exc-tag"><i class="${iconClass}"></i></div>
+              <div class="rmc-exc-text">
+                <h4>${esc(title)}</h4>
+                <p>${esc(time)}</p>
+              </div>
+            </div>
+            <button class="rmc-exc-btn" type="button" data-review-post-key="${esc(cacheKey)}">
+              展開 <i class="fa-solid fa-chevron-down"></i>
+            </button>
+          </div>
+        `;
+      });
+
+      container.innerHTML = rows.join('');
+      container.querySelectorAll('[data-review-post-key]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const cacheKey = btn.getAttribute('data-review-post-key');
+          const payload = postModalCache.get(cacheKey);
+          if (!payload || typeof window.openPostModal !== 'function') return;
+          window.openPostModal(
+            payload.title,
+            payload.time,
+            payload.iconType,
+            payload.body,
+            payload.imageUrl,
+            payload.mediaType,
+            payload.mediaUrl,
+            payload.authorName,
+            payload.authorAvatar
+          );
+        });
+      });
+    } catch (err) {
+      console.error('[VtuberProfilePage] renderReviewPosts error:', err);
+      container.innerHTML = '<div class="rmc-exc-post"><div class="rmc-exc-post-info"><div class="rmc-exc-text"><h4>載入失敗</h4><p>請稍後再試</p></div></div></div>';
+    }
+  },
+
   renderVtuber: (vtuber) => {
     // helper: color mixing utilities
     function hexToRgb(hex) {
@@ -653,7 +735,21 @@ const VtuberProfilePage = {
    */
   renderReviewRankings: async (milestoneId) => {
     const rl = document.getElementById('rmc-rank-list');
+    const myAmtEl = document.getElementById('rmc-my-amt');
+    const myTitleEl = document.getElementById('rmc-my-title-badge');
     if (!rl || !milestoneId) return;
+
+    const setMyRecord = (amount, title) => {
+      if (myAmtEl) {
+        if (amount === null) myAmtEl.textContent = '請先登入';
+        else if (!amount) myAmtEl.textContent = '尚未贊助';
+        else myAmtEl.textContent = `${Number(amount).toLocaleString()} NTD`;
+      }
+      if (myTitleEl) myTitleEl.textContent = title || '';
+    };
+
+    const user = auth.currentUser;
+    if (!user) setMyRecord(null, '');
 
     try {
       // 取得 Top 10 排行 (靜態一次性讀取)
@@ -686,28 +782,60 @@ const VtuberProfilePage = {
 
       if (!sorted.length) {
         rl.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">尚無贊助紀錄</span></div></div>';
-        return;
       }
 
       const medalClass = ['gold', 'silver', 'bronze'];
       const medalEmoji = ['🥇', '🥈', '🥉'];
 
-      const renderList = sorted.map((r, i) => {
-        const displayAvatar = r.avatarUrl || `https://i.pravatar.cc/100?u=${r.fanUid}`;
-        return `
-          <div class="rmc-rank-item">
-            <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? medalEmoji[i] : (i + 1)}</span>
-            <img src="${esc(displayAvatar)}" alt="${esc(r.displayName)}" class="rmc-rank-avatar">
-            <span class="rmc-rank-name">${esc(r.displayName)}</span>
-            <span class="rmc-rank-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
-          </div>
-        `;
-      });
+      if (sorted.length) {
+        const renderList = sorted.map((r, i) => {
+          const displayAvatar = r.avatarUrl || `https://i.pravatar.cc/100?u=${r.fanUid}`;
+          return `
+            <div class="rmc-rank-item">
+              <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? medalEmoji[i] : (i + 1)}</span>
+              <img src="${esc(displayAvatar)}" alt="${esc(r.displayName)}" class="rmc-rank-avatar">
+              <span class="rmc-rank-name">${esc(r.displayName)}</span>
+              <span class="rmc-rank-amt">${Number(r.totalAmount).toLocaleString()} NTD</span>
+            </div>
+          `;
+        });
 
-      rl.innerHTML = renderList.join('');
+        rl.innerHTML = renderList.join('');
+      }
+
+      if (user) {
+        const myAmount = map[user.uid] ? map[user.uid].totalAmount : 0;
+        let badgeTitle = null;
+
+        const cached = window._pmCurrentUserData;
+        if (cached && Array.isArray(cached.badges)) {
+          const badge = cached.badges.find(b => b && b.milestoneId === milestoneId);
+          if (badge && badge.name) badgeTitle = badge.name;
+        }
+
+        if (!badgeTitle) {
+          try {
+            const userSnap = await getDoc(doc(db, 'users', user.uid));
+            if (userSnap.exists()) {
+              const userData = userSnap.data();
+              if (!window._pmCurrentUserData) window._pmCurrentUserData = userData;
+              const badge = Array.isArray(userData.badges)
+                ? userData.badges.find(b => b && b.milestoneId === milestoneId)
+                : null;
+              if (badge && badge.name) badgeTitle = badge.name;
+            }
+          } catch (e) {
+            console.warn('[VtuberProfilePage] renderReviewRankings badge lookup failed:', e);
+          }
+        }
+
+        if (!badgeTitle) badgeTitle = myAmount > 0 ? '贊助者' : '尚未贊助';
+        setMyRecord(myAmount, badgeTitle);
+      }
     } catch (err) {
       console.error('[VtuberProfilePage] renderReviewRankings error:', err);
       rl.innerHTML = '<div class="rank-item"><div class="r-info"><span class="r-name">載入失敗</span></div></div>';
+      if (!auth.currentUser) setMyRecord(null, '');
     }
   }
 };

@@ -849,43 +849,9 @@
             }
 
             /* =====================================================
-               REVIEW MODAL  (#8 — Data keyed by milestoneId)
+               REVIEW MODAL  (#8 — Dynamic data)
             ===================================================== */
-            const REVIEW_DATA = {
-                // Fallback / shared placeholder — replaced per-milestone when API is ready
-                _default: {
-                    posts: [
-                        { title: '幕後花絮：錄音現場直擊', time: '3 個月前', icon: 'audio', body: '錄音過程中的珍貴片段！每一個音符都灌注了滿滿的心意 💕\n\n這次錄音一共花了三天，每個細節都反覆確認，謝謝大家的耐心等待！', img: null, mediaType: 'audio', mediaUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-                        { title: '贊助者 Q&A 回顧精華', time: '4 個月前', icon: 'image', body: '感謝大家提出這麼多有趣的問題！精華回顧整理完成了 🎤\n\n看到大家的支持真的好感動，每一個問題都認真回答了喔！', img: 'https://picsum.photos/seed/rv2/600/350', mediaType: null, mediaUrl: null },
-                        { title: '里程碑達成紀念直播', time: '5 個月前', icon: 'video', body: '達成目標當天的紀念直播完整回放，一起回味那個感動時刻 ✨\n\n那天的留言區讓我感動到哭，謝謝每一位陪伴的你們！', img: null, mediaType: 'video', mediaUrl: 'https://www.w3schools.com/html/mov_bbb.mp4' },
-                        { title: '贊助者感謝信', time: '6 個月前', icon: 'star', body: '寫給每一位贊助者的感謝信 🌸\n\n你們的支持讓我可以繼續走下去，真的謝謝每一個人！', img: 'https://picsum.photos/seed/rv4/600/350', mediaType: null, mediaUrl: null },
-                        { title: '3D 模型初次亮相！', time: '7 個月前', icon: 'image', body: '第一次在大家面前展示 3D 模型！雖然還是初版，但已經非常接近最終效果了 🤩', img: 'https://picsum.photos/seed/rv5/600/350', mediaType: null, mediaUrl: null },
-                    ],
-                    topRanking: [
-                        { name: 'StarCollector_99', amt: '12,500 NTD', u: 'r1' },
-                        { name: 'Luv.Sakura', amt: '10,200 NTD', u: 'r2' },
-                        { name: 'Nova_Fan99', amt: '8,800 NTD', u: 'r3' },
-                        { name: 'MoonlightDancer', amt: '7,500 NTD', u: 'r4' },
-                        { name: 'CherryBlossom_K', amt: '6,200 NTD', u: 'r5' },
-                        { name: 'SakuraKnight', amt: '5,000 NTD', u: 'r6' },
-                        { name: 'StarlightViewer', amt: '4,300 NTD', u: 'r7' },
-                        { name: 'CosmicStar88', amt: '3,800 NTD', u: 'r8' },
-                        { name: 'PinkBlossom_J', amt: '2,900 NTD', u: 'r9' },
-                        { name: 'SakuraDreamer', amt: '2,100 NTD', u: 'r10' },
-                    ],
-                    myRecord: { amt: '8,00 NTD', title: '銀星贊助者' },
-                },
-                // TODO: When API is ready, populate per milestone:
-                // milestone_3d_model: { posts: [...], topRanking: [...], myRecord: {...} },
-                // milestone_music_prod: { ... },
-                // milestone_studio_upgrade: { ... },
-                // milestone_first_photo: { ... },
-            };
-
-            // (#8) openReviewModal now accepts milestoneId; uses per-milestone data when available
             function openReviewModal(title, date, amt, badgeImgUrl, desc, supporters, milestoneId) {
-                const data = (milestoneId && REVIEW_DATA[milestoneId]) ? REVIEW_DATA[milestoneId] : REVIEW_DATA._default;
-
                 document.getElementById('rmc-title').textContent = title;
                 document.getElementById('rmc-date').textContent = date + ' 達成';
                 document.getElementById('rmc-amt').textContent = amt;
@@ -893,39 +859,23 @@
                 document.getElementById('rmc-supporters').textContent = supporters.toLocaleString();
                 document.getElementById('rmc-badge-img').src = badgeImgUrl;
 
-                // Render past posts
                 const postsScroll = document.getElementById('rmc-posts-scroll');
-                const iconMap = { image: 'fa-regular fa-image', audio: 'fa-solid fa-headphones', video: 'fa-solid fa-video', star: 'fa-solid fa-star' };
-                postsScroll.innerHTML = data.posts.map((p, idx) => `
-                    <div class="rmc-exc-post">
-                        <div class="rmc-exc-post-info">
-                            <div class="rmc-exc-tag"><i class="${iconMap[p.icon] || 'fa-regular fa-image'}"></i></div>
-                            <div class="rmc-exc-text">
-                                <h4>${p.title}</h4>
-                                <p>${p.time}</p>
-                            </div>
-                        </div>
-                        <button class="rmc-exc-btn" onclick="openRmcPost(${idx}, '${milestoneId || '_default'}')">
-                            展開 <i class="fa-solid fa-chevron-down"></i>
-                        </button>
-                    </div>
-                `).join('');
-
-                // Render top 10 ranking
+                if (postsScroll) postsScroll.innerHTML = '<div class="rmc-exc-post"><div class="rmc-exc-post-info"><div class="rmc-exc-text"><h4>載入中...</h4><p>請稍候</p></div></div></div>';
                 const rankList = document.getElementById('rmc-rank-list');
-                const medalClass = ['gold', 'silver', 'bronze'];
-                rankList.innerHTML = data.topRanking.map((r, i) => `
-                    <div class="rmc-rank-item">
-                        <span class="rmc-rank-num ${medalClass[i] || ''}">${i < 3 ? ['🥇', '🥈', '🥉'][i] : (i + 1)}</span>
-                        <img src="https://i.pravatar.cc/40?u=${r.u}" alt="${r.name}" class="rmc-rank-avatar">
-                        <span class="rmc-rank-name">${r.name}</span>
-                        <span class="rmc-rank-amt">${r.amt}</span>
-                    </div>
-                `).join('');
+                if (rankList) rankList.innerHTML = '<div class="rmc-rank-item"><span class="rmc-rank-name">載入中...</span></div>';
+                const myAmt = document.getElementById('rmc-my-amt');
+                const myTitle = document.getElementById('rmc-my-title-badge');
+                if (myAmt) myAmt.textContent = '載入中...';
+                if (myTitle) myTitle.textContent = '';
 
-                // My record
-                document.getElementById('rmc-my-amt').textContent = data.myRecord.amt;
-                document.getElementById('rmc-my-title-badge').textContent = data.myRecord.title;
+                if (window.VtuberProfilePage) {
+                    if (typeof window.VtuberProfilePage.renderReviewPosts === 'function') {
+                        window.VtuberProfilePage.renderReviewPosts(milestoneId);
+                    }
+                    if (typeof window.VtuberProfilePage.renderReviewRankings === 'function') {
+                        window.VtuberProfilePage.renderReviewRankings(milestoneId);
+                    }
+                }
 
                 document.querySelector('.review-modal-card').scrollTop = 0;
                 document.getElementById('review-modal').classList.add('open');
@@ -938,13 +888,7 @@
                 document.body.style.overflow = '';
             }
 
-            // (#8) openRmcPost now receives milestoneId to pull correct dataset
-            function openRmcPost(idx, milestoneId) {
-                const data = (milestoneId && REVIEW_DATA[milestoneId]) ? REVIEW_DATA[milestoneId] : REVIEW_DATA._default;
-                const p = data.posts[idx];
-                if (!p) return;
-                openPostModal(p.title, p.time, p.icon, p.body, p.img || null, p.mediaType || null, p.mediaUrl || null);
-            }
+            // review modal post rendering handled by VtuberProfilePage
 
             /* =====================================================
                PAYMENT MODAL  (#3 — carries milestoneId)
