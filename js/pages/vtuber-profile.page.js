@@ -13,6 +13,7 @@ const MEDIA_ICON_CLASS = {
 
 const postModalCache = new Map();
 const userAvatarCache = new Map(); // [Step 3] 快取使用者頭像，避免重複讀取
+const viewerSupportCache = new Map(); // cache viewer support check per milestone
 
 function esc(s) {
   return s ? String(s).replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch])) : '';
@@ -61,6 +62,59 @@ function buildPostTitle(post) {
   return '未命名貼文';
 }
 
+async function resolveUserAvatarUrl(uid, fallbackUrl) {
+  if (!uid) return fallbackUrl || null;
+  if (userAvatarCache.has(uid)) {
+    const cached = userAvatarCache.get(uid);
+    return cached || fallbackUrl || null;
+  }
+  try {
+    const snap = await getDoc(doc(db, 'users', uid));
+    if (snap.exists()) {
+      const data = snap.data();
+      if (data && data.photoURL) {
+        userAvatarCache.set(uid, data.photoURL);
+        return data.photoURL;
+      }
+    }
+  } catch (err) {
+    console.warn('[VtuberProfilePage] resolveUserAvatarUrl failed:', err);
+  }
+  if (fallbackUrl) {
+    userAvatarCache.set(uid, fallbackUrl);
+    return fallbackUrl;
+  }
+  userAvatarCache.set(uid, false);
+  return null;
+}
+
+async function resolveViewerSupportState(milestoneId) {
+  const user = auth.currentUser;
+  if (!user || !milestoneId) return false;
+
+  const unlocked = VtuberProfilePage._viewerUnlockedMilestones || [];
+  if (unlocked.includes(milestoneId)) return true;
+
+  if (viewerSupportCache.has(milestoneId)) return viewerSupportCache.get(milestoneId);
+
+  try {
+    const q = query(
+      collection(db, 'transactions'),
+      where('milestoneId', '==', milestoneId),
+      where('status', '==', 'success'),
+      where('fanUid', '==', user.uid)
+    );
+    const snap = await getDocs(q);
+    const hasPaid = !snap.empty;
+    viewerSupportCache.set(milestoneId, hasPaid);
+    return hasPaid;
+  } catch (err) {
+    console.warn('[VtuberProfilePage] resolveViewerSupportState failed:', err);
+  }
+  viewerSupportCache.set(milestoneId, false);
+  return false;
+}
+
 // VTuber profile page controller
 const VtuberProfilePage = {
   _currentVtuber: null,
@@ -74,6 +128,7 @@ const VtuberProfilePage = {
 
     // [修正] 監聽 Auth 狀態，確保登入後能從 Firestore 讀取已解鎖清單
     onAuthStateChanged(auth, async (user) => {
+      viewerSupportCache.clear();
       if (user) {
         console.log('[VtuberProfilePage] Auth settled: user=', user.uid);
         try {
@@ -158,6 +213,13 @@ const VtuberProfilePage = {
         return;
       }
 
+      const needsSupportCheck = posts.some(p => p && (p.visibility === 'supporters' || p.isExclusive === true));
+      const viewerHasPaid = needsSupportCheck ? await resolveViewerSupportState(milestoneId) : false;
+      const viewerUid = auth && auth.currentUser ? auth.currentUser.uid : null;
+      const vtuberUid = VtuberProfilePage._currentVtuber && VtuberProfilePage._currentVtuber.uid
+        ? VtuberProfilePage._currentVtuber.uid
+        : null;
+
       const rows = posts.map((post) => {
         const title = buildPostTitle(post);
         const time = timeAgo(post.publishedAt || post.updatedAt || post.createdAt);
@@ -166,6 +228,14 @@ const VtuberProfilePage = {
         const cacheKey = `review:${milestoneId}:${post.id}`;
         const media = getPostPrimaryMedia(post);
         const vt = VtuberProfilePage._currentVtuber || {};
+        const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
+        const isSupporterOnly = post.visibility === 'supporters' || post.isExclusive === true;
+        const canViewSupporterPost = !isSupporterOnly || (!!viewerUid && (
+          (vtuberUid && viewerUid === vtuberUid)
+          || allowList.includes(viewerUid)
+          || viewerHasPaid
+        ));
+        const shouldLock = isSupporterOnly && !canViewSupporterPost;
 
         postModalCache.set(cacheKey, {
           title,
@@ -188,7 +258,7 @@ const VtuberProfilePage = {
                 <p>${esc(time)}</p>
               </div>
             </div>
-            <button class="rmc-exc-btn" type="button" data-review-post-key="${esc(cacheKey)}">
+            <button class="rmc-exc-btn" type="button" data-review-post-key="${esc(cacheKey)}" data-locked="${shouldLock ? '1' : '0'}">
               展開 <i class="fa-solid fa-chevron-down"></i>
             </button>
           </div>
@@ -199,6 +269,10 @@ const VtuberProfilePage = {
       container.querySelectorAll('[data-review-post-key]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const cacheKey = btn.getAttribute('data-review-post-key');
+          const locked = btn.getAttribute('data-locked') === '1';
+          if (locked) {
+            return;
+          }
           const payload = postModalCache.get(cacheKey);
           if (!payload || typeof window.openPostModal !== 'function') return;
           window.openPostModal(
@@ -737,6 +811,7 @@ const VtuberProfilePage = {
     const rl = document.getElementById('rmc-rank-list');
     const myAmtEl = document.getElementById('rmc-my-amt');
     const myTitleEl = document.getElementById('rmc-my-title-badge');
+    const myAvatarImg = document.querySelector('#rmc-my-record .rmc-my-avatar img');
     if (!rl || !milestoneId) return;
 
     const setMyRecord = (amount, title) => {
@@ -807,6 +882,9 @@ const VtuberProfilePage = {
         const myAmount = map[user.uid] ? map[user.uid].totalAmount : 0;
         let badgeTitle = null;
 
+        // Store support state cache for this milestone
+        viewerSupportCache.set(milestoneId, myAmount > 0);
+
         const cached = window._pmCurrentUserData;
         if (cached && Array.isArray(cached.badges)) {
           const badge = cached.badges.find(b => b && b.milestoneId === milestoneId);
@@ -831,6 +909,11 @@ const VtuberProfilePage = {
 
         if (!badgeTitle) badgeTitle = myAmount > 0 ? '贊助者' : '尚未贊助';
         setMyRecord(myAmount, badgeTitle);
+
+        if (myAvatarImg) {
+          const avatarUrl = await resolveUserAvatarUrl(user.uid, user.photoURL || null);
+          if (avatarUrl) myAvatarImg.src = avatarUrl;
+        }
       }
     } catch (err) {
       console.error('[VtuberProfilePage] renderReviewRankings error:', err);
