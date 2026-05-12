@@ -121,6 +121,7 @@ const VtuberProfilePage = {
   _unsubMilestones: null,
   _unsubRankings: [],
   _viewerUnlockedMilestones: [],
+  _lastRenderedMilestones: [],
   init: async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const vtuberHandle = urlParams.get('id');
@@ -161,7 +162,9 @@ const VtuberProfilePage = {
       VtuberProfilePage._currentVtuber = seedData.vtuber;
       VtuberProfilePage.renderVtuber(seedData.vtuber);
       VtuberProfilePage.renderMilestones(seedData.milestones);
-      document.body.insertAdjacentHTML('afterbegin', '<div class="demo-banner">🎭 Demo 展示模式</div>');
+      if (!document.getElementById('demo-banner')) {
+        document.body.insertAdjacentHTML('afterbegin', '<div id="demo-banner">🎭 Demo 展示模式</div>');
+      }
     } else {
       try {
         // 使用 vtuberService 從 vtubers 集合讀取最新的設定資料
@@ -404,6 +407,7 @@ const VtuberProfilePage = {
   },
 
   renderMilestones: (milestones) => {
+    VtuberProfilePage._lastRenderedMilestones = Array.isArray(milestones) ? milestones : [];
     const section = document.querySelector('#milestones');
     if (!section) return console.warn('[VtuberProfilePage] no #milestones section found to render into');
 
@@ -448,7 +452,8 @@ const VtuberProfilePage = {
         }
       });
 
-      sorted.forEach(m => {
+      const activeCards = sorted.filter((m) => m && m.status !== 'archived');
+      activeCards.forEach(m => {
         const card = document.createElement('div');
         card.className = 'ms-card';
         card.dataset.generated = 'true';
@@ -558,6 +563,14 @@ const VtuberProfilePage = {
         const unsubRank = MilestonesService.listenRankings(m.id, 10, async (rankList, myAmount) => {
           const rl = card.querySelector(`#rank-list-${m.id}`);
           if (!rl) return;
+
+          const demoFanMode = window.DemoSandbox
+            && typeof window.DemoSandbox.isFanDemoMode === 'function'
+            && window.DemoSandbox.isFanDemoMode();
+          const demoAmount = demoFanMode && typeof window.DemoSandbox.getDemoFanSupportAmount === 'function'
+            ? window.DemoSandbox.getDemoFanSupportAmount(m.id)
+            : 0;
+          const resolvedMyAmount = demoAmount > 0 ? demoAmount : myAmount;
           
           // [Step 3] 異步取得排行榜中所有用戶的真實頭像
             const renderList = rankList.map((r, i) => {
@@ -586,10 +599,27 @@ const VtuberProfilePage = {
                 <img src="${esc(myAvatar)}" class="r-avatar" alt="您">
                 <div class="r-info">
                   <span class="r-name">您目前的累計贊助</span>
-                  <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(myAmount || 0).toLocaleString()} NTD</span>
+                  <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(resolvedMyAmount || 0).toLocaleString()} NTD</span>
                 </div>
               </div>
             `;
+          }
+
+          if (!user && demoFanMode) {
+            const demoFan = typeof window.DemoSandbox.getDemoFanProfile === 'function'
+              ? window.DemoSandbox.getDemoFanProfile()
+              : null;
+            if (demoFan) {
+              html += `
+                <div class="rank-item you" style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
+                  <img src="${esc(demoFan.photoURL || 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter')}" class="r-avatar" alt="You">
+                  <div class="r-info">
+                    <span class="r-name">你的贊助</span>
+                    <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(resolvedMyAmount || 0).toLocaleString()} NTD</span>
+                  </div>
+                </div>
+              `;
+            }
           }
           
           rl.innerHTML = html;
@@ -697,6 +727,56 @@ const VtuberProfilePage = {
         if (viewLogsBtn) viewLogsBtn.style.display = archivedList.length > 3 ? '' : 'none';
       }
     }
+
+    if (!VtuberProfilePage._demoPaymentListenerAttached) {
+      VtuberProfilePage._demoPaymentListenerAttached = true;
+      window.addEventListener('vup:demo-payment-completed', (event) => {
+        const detail = event && event.detail ? event.detail : null;
+        const milestoneId = detail ? detail.milestoneId : null;
+        if (!milestoneId) return;
+        if (!(window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode())) {
+          return;
+        }
+
+        const card = document.querySelector(`.ms-card[data-milestone-id="${milestoneId}"]`);
+        if (!card) return;
+
+        if (typeof PostsService?.getPublishedPostsByMilestone === 'function') {
+          PostsService.getPublishedPostsByMilestone(milestoneId, { limit: 12, tryIncludeSupporters: true })
+            .then((posts) => VtuberProfilePage.renderMilestonePosts(card, milestoneId, posts))
+            .catch((err) => console.warn('[VtuberProfilePage] demo refresh posts error:', err));
+        }
+
+        const list = card.querySelector('.rank-list');
+        if (!list) return;
+        const demoAmount = typeof window.DemoSandbox.getDemoFanSupportAmount === 'function'
+          ? window.DemoSandbox.getDemoFanSupportAmount(milestoneId)
+          : 0;
+
+        let myRow = list.querySelector('.rank-item.you');
+        if (!myRow) {
+          const demoFan = typeof window.DemoSandbox.getDemoFanProfile === 'function'
+            ? window.DemoSandbox.getDemoFanProfile()
+            : null;
+          const avatar = demoFan && demoFan.photoURL
+            ? demoFan.photoURL
+            : 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter';
+          myRow = document.createElement('div');
+          myRow.className = 'rank-item you';
+          myRow.style.cssText = 'border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;';
+          myRow.innerHTML = `
+            <img src="${esc(avatar)}" class="r-avatar" alt="You">
+            <div class="r-info">
+              <span class="r-name">你的贊助</span>
+              <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;"></span>
+            </div>
+          `;
+          list.appendChild(myRow);
+        }
+        const amtEl = myRow.querySelector('.r-amt');
+        if (amtEl) amtEl.textContent = `${Number(demoAmount || 0).toLocaleString()} NTD`;
+      });
+    }
   },
 
   renderMilestonePosts: (card, milestoneId, posts) => {
@@ -708,18 +788,40 @@ const VtuberProfilePage = {
 
     const publishedPosts = Array.isArray(posts) ? posts.filter(p => p && p.status === 'published') : [];
     if (publishedPosts.length === 0) {
-      container.innerHTML = `
-        <div class="exc-post">
-          <div class="exc-post-info">
-            <div class="exc-tag"><i class="fa-regular fa-file-lines"></i></div>
-            <div class="exc-text">
-              <h4>尚未發布任何貼文</h4>
-              <p>發布後會顯示在這裡</p>
+      const demoFanMode = window.DemoSandbox
+        && typeof window.DemoSandbox.isFanDemoMode === 'function'
+        && window.DemoSandbox.isFanDemoMode();
+      const unlockedMilestones = VtuberProfilePage._viewerUnlockedMilestones || [];
+      const demoAmount = demoFanMode && typeof window.DemoSandbox.getDemoFanSupportAmount === 'function'
+        ? window.DemoSandbox.getDemoFanSupportAmount(milestoneId)
+        : 0;
+      const demoUnlocked = demoFanMode && (unlockedMilestones.includes(milestoneId) || demoAmount > 0);
+
+      container.innerHTML = demoUnlocked
+        ? `
+          <div class="exc-post">
+            <div class="exc-post-info">
+              <div class="exc-tag"><i class="fa-solid fa-lock-open"></i></div>
+              <div class="exc-text">
+                <h4>已解鎖限定內容</h4>
+                <p>Demo 模式暫無更多內容</p>
+              </div>
             </div>
+            <button class="btn-read-more" type="button" disabled>已解鎖</button>
           </div>
-          <button class="btn-read-more" type="button" disabled>待發布</button>
-        </div>
-      `;
+        `
+        : `
+          <div class="exc-post">
+            <div class="exc-post-info">
+              <div class="exc-tag"><i class="fa-regular fa-file-lines"></i></div>
+              <div class="exc-text">
+                <h4>尚未發布任何貼文</h4>
+                <p>發布後會顯示在這裡</p>
+              </div>
+            </div>
+            <button class="btn-read-more" type="button" disabled>待發布</button>
+          </div>
+        `;
       return;
     }
 
@@ -750,12 +852,19 @@ const VtuberProfilePage = {
         : null;
       const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
       const unlockedMilestones = VtuberProfilePage._viewerUnlockedMilestones || [];
+      const demoFanMode = window.DemoSandbox
+        && typeof window.DemoSandbox.isFanDemoMode === 'function'
+        && window.DemoSandbox.isFanDemoMode();
+      const demoSupportAmount = demoFanMode && typeof window.DemoSandbox.getDemoFanSupportAmount === 'function'
+        ? window.DemoSandbox.getDemoFanSupportAmount(milestoneId)
+        : 0;
+      const demoUnlocked = demoFanMode && (unlockedMilestones.includes(milestoneId) || demoSupportAmount > 0);
       const canReadSupporterPost = !!viewerUid && (
         (vtuberUid && viewerUid === vtuberUid)
         || allowList.includes(viewerUid)
         || post.viewerUnlocked === true
         || unlockedMilestones.includes(milestoneId)
-      );
+      ) || demoUnlocked;
       const shouldLock = isSupporterOnly && !canReadSupporterPost;
       const visibilityLabel = isSupporterOnly ? '限定' : '公開';
       const visibilityClass = isSupporterOnly ? 'is-supporters' : 'is-public';

@@ -23,6 +23,187 @@ import { vtuberService } from '../services/vtuber.service.js';
 const el = (id) => document.getElementById(id);
 const vtuberNameCache = {};
 
+const DEMO_FAN_UID = 'demo_fan_local';
+const DEMO_KEYS = {
+  profile: 'vup_demo_fan_profile',
+  fanTransactions: 'vup_demo_fan_transactions',
+  sharedTransactions: 'vup_demo_transactions'
+};
+const DEMO_VTUBER_PROFILE_URL = 'vtuber_profile.html?id=ryusei&mode=fan';
+const DEMO_VTUBER_MAP = {
+  demo: { handle: 'demo', displayName: 'SAKURA NOVA', avatarUrl: 'image/miku_test.png' },
+  ryusei: { handle: 'ryusei', displayName: '流星 Ryusei', avatarUrl: 'image/v_head_ryusei.jpg' },
+  baifu: { handle: 'baifu', displayName: '拜風', avatarUrl: 'image/v_head_ryusei.jpg' }
+};
+const DEMO_MILESTONE_TITLES = {
+  milestone_3d_stage: '邁向全新 3D 舞台',
+  milestone_orig_song: '挑戰!全新原創曲製作',
+  milestone_live: '線上演唱會準備'
+};
+
+function readJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return fallback;
+    return JSON.parse(raw);
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJSON(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function isFanProfileDemoMode() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('mode') === 'demo';
+}
+
+function fakeTs(ms) {
+  const t = Number(ms || Date.now());
+  return {
+    toDate() {
+      return new Date(t);
+    }
+  };
+}
+
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function ensureDemoProfile() {
+  const cached = readJSON(DEMO_KEYS.profile, null);
+  if (cached) return cached;
+
+  const seed = {
+    uid: DEMO_FAN_UID,
+    displayName: 'Demo Supporter',
+    photoURL: 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter',
+    email: 'demo.fan@local',
+    tagline: 'Demo 模式粉絲檔案',
+    themeColorPrimary: '#ec4899',
+    themeColorSecondary: '#0ea5e9',
+    supportedVtubers: ['demo', 'ryusei'],
+    badges: [
+      {
+        id: 'demo_badge_1',
+        badgeUrl: 'image/miku_test.png',
+        name: '首位應援',
+        milestoneTitle: '邁向全新 3D 舞台',
+        vtuberId: 'demo',
+        vtuberName: 'SAKURA NOVA',
+        contribution: 1500,
+        awardedAt: '2026-05-01',
+        style: 'bg-pink-light',
+        selected: true
+      },
+      {
+        id: 'demo_badge_2',
+        badgeUrl: 'image/v_head_ryusei.jpg',
+        name: '共演夥伴',
+        milestoneTitle: '線上演唱會準備',
+        vtuberId: 'ryusei',
+        vtuberName: '流星 Ryusei',
+        contribution: 900,
+        awardedAt: '2026-04-18',
+        style: 'bg-blue-light',
+        selected: true
+      }
+    ],
+    honorTitles: [
+      { id: 'demo_title_1', iconClass: 'fa-solid fa-star text-pink', title: 'Demo 粉絲', origin: 'Demo 模式', selected: true },
+      { id: 'demo_title_2', iconClass: 'fa-solid fa-heart text-blue', title: '熱情應援者', origin: '累積贊助達標', selected: true }
+    ],
+    longestSupportDays: 120,
+    milestoneRate: 68
+  };
+
+  writeJSON(DEMO_KEYS.profile, seed);
+  return seed;
+}
+
+function ensureDemoTransactionsSeed() {
+  const cached = readJSON(DEMO_KEYS.fanTransactions, null);
+  if (Array.isArray(cached) && cached.length) return cached;
+
+  const now = Date.now();
+  const seed = [
+    {
+      id: 'demo_tx_seed_1',
+      vtuberId: 'demo',
+      milestoneId: 'milestone_3d_stage',
+      milestoneTitle: '邁向全新 3D 舞台',
+      amount: 500,
+      status: 'success',
+      createdAtMs: now - 1000 * 60 * 60 * 24 * 3
+    },
+    {
+      id: 'demo_tx_seed_2',
+      vtuberId: 'ryusei',
+      milestoneId: 'milestone_live',
+      milestoneTitle: '線上演唱會準備',
+      amount: 1200,
+      status: 'success',
+      createdAtMs: now - 1000 * 60 * 60 * 24 * 8
+    },
+    {
+      id: 'demo_tx_seed_3',
+      vtuberId: 'demo',
+      milestoneId: 'milestone_orig_song',
+      milestoneTitle: '挑戰!全新原創曲製作',
+      amount: 300,
+      status: 'success',
+      createdAtMs: now - 1000 * 60 * 60 * 24 * 14
+    }
+  ];
+
+  writeJSON(DEMO_KEYS.fanTransactions, seed);
+  return seed;
+}
+
+function buildDemoTransactions() {
+  const shared = readJSON(DEMO_KEYS.sharedTransactions, []);
+  const base = Array.isArray(shared) && shared.length ? shared : ensureDemoTransactionsSeed();
+  return base.map((tx, i) => ({
+    id: tx.id || `demo_tx_${i}`,
+    vtuberId: tx.vtuberId || 'demo',
+    milestoneId: tx.milestoneId || 'milestone_demo',
+    milestoneTitle: tx.milestoneTitle || DEMO_MILESTONE_TITLES[tx.milestoneId] || '里程碑',
+    amount: Number(tx.amount || 0),
+    status: tx.status || 'success',
+    createdAt: fakeTs(tx.createdAtMs || Date.now())
+  }));
+}
+
+function patchDemoVtuberService() {
+  if (vtuberService.__demoFanPatched) return;
+  const oldGetByHandle = vtuberService.getProfileByHandle
+    ? vtuberService.getProfileByHandle.bind(vtuberService)
+    : null;
+  vtuberService.getProfileByHandle = async (handle) => {
+    const key = String(handle || '').toLowerCase();
+    if (DEMO_VTUBER_MAP[key]) return { ...DEMO_VTUBER_MAP[key], handle: key };
+    if (oldGetByHandle) return oldGetByHandle(handle);
+    return null;
+  };
+  vtuberService.__demoFanPatched = true;
+}
+
+function applyDemoVtuberLinks() {
+  window.__DEMO_VTUBER_PROFILE_URL = DEMO_VTUBER_PROFILE_URL;
+  document.querySelectorAll('a[href^="vtuber_profile.html"]').forEach((link) => {
+    const hash = link.hash || '';
+    link.href = `${DEMO_VTUBER_PROFILE_URL}${hash}`;
+  });
+}
+
 /**
  * 更新 Hero 區塊：名稱、頭像、Email
  */
@@ -289,7 +470,7 @@ async function renderSupportedVtubers(vtuberIds = []) {
       <img src="${v.avatar}" alt="${v.name}" class="w-full h-auto"
            onerror="this.src='image/v_head_ryusei.jpg'">
       <span class="v-name">${v.name}</span>
-      <a href="vtuber_profile.html?id=${v.handle}" class="v-link">前往專頁</a>
+      <a href="${isFanProfileDemoMode() ? DEMO_VTUBER_PROFILE_URL : `vtuber_profile.html?id=${v.handle}`}" class="v-link">前往專頁</a>
     </div>
   `).join('');
 }
@@ -363,9 +544,48 @@ function renderTransactions(txList = []) {
   }
 }
 
+async function initFanProfileDemo() {
+  const profile = ensureDemoProfile();
+  patchDemoVtuberService();
+  applyDemoVtuberLinks();
+
+  const demoUser = {
+    uid: DEMO_FAN_UID,
+    displayName: profile.displayName,
+    photoURL: profile.photoURL,
+    email: profile.email || 'demo.fan@local'
+  };
+
+  renderHero(demoUser, profile);
+  const badgeList = Array.isArray(profile.badges) ? profile.badges : [];
+  const titleList = Array.isArray(profile.honorTitles) ? profile.honorTitles : [];
+  if (badgeList.length && (badgeList[0].imgSrc || badgeList[0].title)) {
+    if (window.updateBadgesAndTitles) window.updateBadgesAndTitles(badgeList, titleList);
+  } else {
+    await updateBadgesAndTitlesFromFirebase(null, badgeList, titleList);
+  }
+  renderStats(profile);
+
+  const vtuberIds = Array.isArray(profile.supportedVtubers) ? profile.supportedVtubers : [];
+  if (vtuberIds.length) {
+    await renderSupportedVtubers(vtuberIds);
+  }
+
+  const txList = buildDemoTransactions();
+  txList.forEach((tx) => {
+    const meta = tx.vtuberId ? DEMO_VTUBER_MAP[tx.vtuberId] : null;
+    if (meta && meta.displayName) vtuberNameCache[tx.vtuberId] = meta.displayName;
+  });
+  renderTransactions(txList);
+}
+
 // ─── 主初始化 ────────────────────────────────────────────────────────────────
 
 function initFanProfile() {
+  if (isFanProfileDemoMode()) {
+    initFanProfileDemo();
+    return;
+  }
   onAuthStateChanged(auth, (user) => {
     if (!user) {
       // 未登入 → 跳轉
@@ -462,6 +682,34 @@ function initFanProfile() {
  */
 window.handleInterfaceSettingsUpdate = async () => {
   const user = auth.currentUser;
+  if (isFanProfileDemoMode()) {
+    const newName = el('theme-name').value;
+    const newTagline = el('theme-tagline').value;
+    const avatarInput = el('theme-avatar');
+    const colorPrimary = el('theme-color-primary').value;
+    const colorSecondary = el('theme-color-secondary').value;
+
+    const profile = ensureDemoProfile();
+    const updates = {
+      displayName: newName,
+      tagline: newTagline,
+      themeColorPrimary: colorPrimary,
+      themeColorSecondary: colorSecondary
+    };
+
+    if (avatarInput && avatarInput.files && avatarInput.files[0]) {
+      updates.photoURL = await fileToDataUrl(avatarInput.files[0]);
+    }
+
+    const next = { ...profile, ...updates, updatedAt: new Date().toISOString() };
+    writeJSON(DEMO_KEYS.profile, next);
+    renderHero({
+      displayName: next.displayName,
+      photoURL: next.photoURL,
+      email: next.email || 'demo.fan@local'
+    }, next);
+    return;
+  }
   if (!user) return;
 
   const newName = el('theme-name').value;
@@ -505,6 +753,20 @@ window.handleInterfaceSettingsUpdate = async () => {
  */
 window.handleBadgeSettingsUpdate = async (badges, titles) => {
   const user = auth.currentUser;
+  if (isFanProfileDemoMode()) {
+    const profile = ensureDemoProfile();
+    const next = {
+      ...profile,
+      badges: Array.isArray(badges) ? badges : profile.badges,
+      honorTitles: Array.isArray(titles) ? titles : profile.honorTitles,
+      updatedAt: new Date().toISOString()
+    };
+    writeJSON(DEMO_KEYS.profile, next);
+    if (window.updateBadgesAndTitles) {
+      window.updateBadgesAndTitles(next.badges, next.honorTitles);
+    }
+    return;
+  }
   if (!user) return;
 
   const userDocRef = doc(db, 'users', user.uid);
