@@ -9,6 +9,7 @@
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="vtuber_profile.css">
+    <link rel="stylesheet" href="css/demo.css">
     <!-- Anime.js for celebration effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.2/anime.min.js"></script>
 </head>
@@ -906,11 +907,32 @@
                 // Pull amount from the input field in the clicked card
                 const amountInput = btnElement.previousElementSibling.querySelector('input');
                 const defaultAmount = amountInput && amountInput.value ? amountInput.value : 500;
-                document.getElementById('pm-amount').value = defaultAmount;
+                let amountToUse = defaultAmount;
+                if (window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode()) {
+                    try {
+                        const list = (window.VtuberProfilePage && Array.isArray(window.VtuberProfilePage._lastRenderedMilestones))
+                            ? window.VtuberProfilePage._lastRenderedMilestones
+                            : [];
+                        const row = list.find((m) => m && m.id === milestoneId);
+                        if (row) {
+                            const current = Number(row.currentAmount || row.current || 0);
+                            const target = Number(row.targetAmount || row.goal || row.target || 0);
+                            const remain = Math.max(100, target - current);
+                            amountToUse = remain > 0 ? remain : Math.max(100, Number(defaultAmount || 500));
+                        }
+                    } catch (e) {
+                        amountToUse = defaultAmount;
+                    }
+                }
+                document.getElementById('pm-amount').value = amountToUse;
 
                 // 同步 auth 狀態到 modal UI（使用最新的 window.auth）
                 const liveUser = window.auth && window.auth.currentUser ? window.auth.currentUser : null;
-                updateAuthUI(liveUser);
+                const demoFanMode = window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode();
+                const demoProfile = demoFanMode && window.DemoSandbox && typeof window.DemoSandbox.getDemoFanProfile === 'function'
+                    ? window.DemoSandbox.getDemoFanProfile()
+                    : null;
+                updateAuthUI(liveUser || demoProfile);
 
                 document.getElementById('payment-modal').classList.add('open');
             }
@@ -943,23 +965,29 @@
                     const effectiveUser = (window.auth && window.auth.currentUser)
                         ? window.auth.currentUser
                         : (window.firebase && window.firebase.auth && window.firebase.auth().currentUser ? window.firebase.auth().currentUser : null);
+                    const demoFanMode = window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode();
+                    const demoProfile = demoFanMode && window.DemoSandbox && typeof window.DemoSandbox.getDemoFanProfile === 'function'
+                        ? window.DemoSandbox.getDemoFanProfile()
+                        : null;
                     
                     // Fallback to our user data if auth isn't fully ready but we know we're logged in
-                    const isActuallySignedIn = !!effectiveUser || (window._pmCurrentUserData && Object.keys(window._pmCurrentUserData).length > 0);
+                    const isActuallySignedIn = demoFanMode || !!effectiveUser || (window._pmCurrentUserData && Object.keys(window._pmCurrentUserData).length > 0);
                     let result = null; // will hold PaymentService return value
 
-                    if (isActuallySignedIn && !effectiveUser) {
+                    if (isActuallySignedIn && !effectiveUser && !demoFanMode) {
                         alert('登入狀態同步中，請稍候幾秒再試');
                         btn.innerHTML = originalText;
                         btn.disabled = false;
                         return;
                     }
-                    const isSignedIn = !!effectiveUser;
+                    const isSignedIn = demoFanMode || !!effectiveUser;
 
                     if (isSignedIn) {
                         // 讀取用戶自訂顯示名稱（如果有填），傳入 initiate 覆蓋預設帳號名
                         const customNameEl = document.getElementById('pm-guest-name');
-                        const customName = customNameEl && customNameEl.value.trim() ? customNameEl.value.trim() : null;
+                        const customName = customNameEl && customNameEl.value.trim()
+                            ? customNameEl.value.trim()
+                            : (demoProfile ? demoProfile.displayName : null);
                         result = await window.PaymentService.initiate(currentMilestoneId, amount, selectedMethod, msg, customName);
                     } else {
                         // Guest UI flow: optional guest display name field
@@ -999,7 +1027,13 @@
                         return; // 跳過下方的普通 alert
                     }
 
-                    alert(`感謝您的贊助！金額: ${amount} NTD`);
+                    if (window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode()) {
+                        if (typeof window.DemoSandbox.showCompletionModal === 'function') {
+                            window.DemoSandbox.showCompletionModal('fan');
+                        }
+                    } else {
+                        alert(`感謝您的贊助！金額: ${amount} NTD`);
+                    }
                     closePaymentModal();
 
                     btn.innerHTML = originalText;
@@ -1012,6 +1046,22 @@
                     btn.disabled = false;
                 }
             }
+
+            window.addEventListener('vup:demo-payment-completed', (event) => {
+                const detail = event && event.detail ? event.detail : null;
+                if (!detail || !detail.milestoneId) return;
+                const card = document.querySelector(`.ms-card[data-milestone-id="${detail.milestoneId}"]`);
+                if (!card) return;
+
+                const pct = detail.targetAmount > 0
+                    ? Math.min(100, Math.round((detail.currentAmount / detail.targetAmount) * 100))
+                    : 0;
+
+                const pctEl = card.querySelector('[data-bind="progress-pct"]');
+                const barEl = card.querySelector('[data-bind="progress-bar"]');
+                if (pctEl) pctEl.textContent = `${pct}%`;
+                if (barEl) barEl.style.width = `${pct}%`;
+            });
 
             /* =====================================================
                LOCK STATE CONTROL  (#4)
@@ -1405,6 +1455,9 @@
             import MilestonesService from './js/services/milestones.service.js';
             import seedData from './js/data/seed-data.js';
             import PaymentService from './js/services/payment.service.js';
+            import PostsService from './js/services/posts.service.js';
+            import { initVtuberProfileDemoSandbox, isDemoFanMode } from './js/demo/demo-sandbox.js';
+            import { startDemoGuide } from './js/demo/demo-guide.js';
 
             // Make services and data globally available for inline scripts
             window.vtuberService = vtuberService;
@@ -1412,6 +1465,15 @@
             window.seedData = seedData;
             window.PaymentService = PaymentService;
             window.auth = auth;
+            window.PostsService = PostsService;
+
+            const demoCtx = initVtuberProfileDemoSandbox({
+                seedData,
+                PaymentService,
+                MilestonesService,
+                PostsService,
+                vtuberService
+            });
 
             // ── 即時監聽 Auth 狀態，更新 payment modal 的用戶區塊 ──
             import { onAuthStateChanged } from 'firebase/auth';
@@ -1456,6 +1518,41 @@
                 import('./js/pages/vtuber-profile.page.js').then(() => {
                     // The script will auto-initialize via VtuberProfilePage.init()
                     console.log('[vtuber_profile.html] VtuberProfilePage initialized successfully');
+                    if (isDemoFanMode()) {
+                        setTimeout(() => {
+                            startDemoGuide([
+                                {
+                                    target: '.ms-progress-bar',
+                                    text: '這裡是里程碑進度。先看看目標完成比例。',
+                                    buttonText: '了解'
+                                },
+                                {
+                                    target: '.btn-support-now',
+                                    text: '點這裡開始模擬贊助。贊助完成後，會看到達標動畫與解鎖。',
+                                    buttonText: '我來試試'
+                                },
+                                {
+                                    target: '.ms-exclusive-content',
+                                    text: '贊助完成後，這裡會顯示已解鎖的限定內容。',
+                                    buttonText: '下一步',
+                                    waitForEvent: 'vup:demo-payment-completed',
+                                    waitAfterEventMs: 1800
+                                },
+                                {
+                                    target: '.ms-ranking',
+                                    text: '你的名字也會出現在榜單上，方便你確認體驗結果。',
+                                    buttonText: '完成'
+                                }
+                            ]);
+                        }, 1400);
+                    } else if (demoCtx && demoCtx.mode === 'creator-preview') {
+                        setTimeout(() => {
+                            startDemoGuide([
+                                { target: '.vt-hero', text: '這是你的公開頁預覽，資料來自本機試玩內容。', buttonText: '下一步' },
+                                { target: '#milestones', text: '你在創作者 Demo 發布的里程碑會出現在這裡。', buttonText: '知道了' }
+                            ]);
+                        }, 1200);
+                    }
                 }).catch(err => {
                     console.error('[vtuber_profile.html] Failed to load VtuberProfilePage:', err);
                     alert('加載 VTuber 檔案失敗，請稍後重試');

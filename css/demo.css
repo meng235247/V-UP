@@ -1,0 +1,140 @@
+#demo-banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 9999;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #0f172a, #1e293b);
+  color: #f8fafc;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+body.demo-has-banner {
+  padding-top: 46px;
+}
+
+.demo-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+}
+
+.demo-modal-card {
+  width: min(520px, 100%);
+  background: #fff;
+  color: #0f172a;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 24px 48px rgba(2, 6, 23, 0.24);
+}
+
+.demo-modal-card h3 {
+  margin: 0 0 10px;
+  font-size: 1.2rem;
+}
+
+.demo-modal-card p {
+  margin: 0 0 14px;
+  line-height: 1.55;
+}
+
+.demo-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.demo-btn {
+  border: 0;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+}
+
+.demo-btn-primary {
+  background: #e11d48;
+  color: #fff;
+}
+
+.demo-btn-secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.demo-email-input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 2px solid #fb7185;
+  border-radius: 10px;
+  margin-bottom: 12px;
+  font-size: 0.96rem;
+}
+
+.demo-guide-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  background: rgba(2, 6, 23, 0.35);
+}
+
+.demo-guide-tip {
+  position: absolute;
+  z-index: 9998;
+  width: min(340px, calc(100vw - 24px));
+  background: #ffffff;
+  color: #0f172a;
+  border-radius: 12px;
+  box-shadow: 0 16px 32px rgba(2, 6, 23, 0.25);
+  padding: 12px;
+}
+
+.demo-guide-tip p {
+  margin: 0 0 10px;
+  line-height: 1.45;
+}
+
+.demo-guide-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.demo-highlight {
+  position: relative;
+  z-index: 9999;
+  outline: 3px solid #fb7185;
+  border-radius: 10px;
+  animation: demoPulse 1.3s infinite;
+}
+
+@keyframes demoPulse {
+  0%,
+  100% {
+    outline-color: #fb7185;
+  }
+  50% {
+    outline-color: #22d3ee;
+  }
+}
+
+@media (max-width: 768px) {
+  #demo-banner {
+    font-size: 0.8rem;
+    padding: 9px 12px;
+  }
+  body.demo-has-banner {
+    padding-top: 56px;
+  }
+}
