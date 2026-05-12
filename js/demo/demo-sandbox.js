@@ -211,6 +211,13 @@ function saveTransactions(list) {
   writeJSON(DEMO_KEYS.transactions, list);
 }
 
+export function getDemoFanSupportAmount(milestoneId) {
+  const txs = readTransactions().filter((t) => t && t.status === 'success' && t.fanUid === DEMO_FAN_PROFILE.uid);
+  return txs
+    .filter((t) => !milestoneId || t.milestoneId === milestoneId)
+    .reduce((sum, t) => sum + Number(t.amount || 0), 0);
+}
+
 function patchFanPaymentService(PaymentService, seedData) {
   if (!PaymentService || PaymentService.__demoFanPatched) return;
 
@@ -349,7 +356,9 @@ function patchFanMilestonesService(MilestonesService) {
       map[key].totalAmount += Number(t.amount || 0);
     });
     const ranks = Object.values(map).sort((a, b) => b.totalAmount - a.totalAmount).slice(0, lim);
-    callback(ranks, ranks[0]?.totalAmount || 0);
+    const myKey = DEMO_FAN_PROFILE.uid;
+    const myAmount = map[myKey] ? map[myKey].totalAmount : 0;
+    callback(ranks, myAmount);
     return () => {};
   };
 
@@ -394,6 +403,7 @@ export function initFanDemoSandbox({ seedData, PaymentService, MilestonesService
     isDemoCreatorMode,
     isCreatorPreviewMode,
     getDemoFanProfile,
+    getDemoFanSupportAmount,
     trackDemoEvent,
     showCompletionModal
   };
@@ -479,6 +489,7 @@ export function initVtuberProfileDemoSandbox({ seedData, PaymentService, Milesto
       isDemoCreatorMode,
       isCreatorPreviewMode,
       getDemoFanProfile,
+      getDemoFanSupportAmount,
       trackDemoEvent,
       showCompletionModal
     };
@@ -750,6 +761,7 @@ export async function initCreatorDemoSandbox({ vtuberService, MilestonesService,
     isDemoCreatorMode,
     isCreatorPreviewMode,
     getDemoFanProfile,
+    getDemoFanSupportAmount,
     trackDemoEvent,
     showCompletionModal
   };

@@ -868,6 +868,10 @@
             }
         }
 
+        function getDemoVtuberProfileUrl() {
+            return window.__DEMO_VTUBER_PROFILE_URL || null;
+        }
+
         /**
          * renderNotifications(notifications)
          * TODO: Replace MOCK_NOTIFICATIONS with fetch('GET /api/user/notifications')
@@ -881,7 +885,8 @@
                 li.style.cssText = 'padding:10px; border-bottom:1px solid #f3f4f6; display:flex; gap:10px; align-items:start; cursor:pointer; border-radius:8px; transition:background 0.2s;';
                 li.onclick = () => {
                     // TODO: call PATCH /api/user/notifications/{n.id}/read
-                    location.href = n.profileUrl || 'vtuber_profile.html';
+                    const demoUrl = getDemoVtuberProfileUrl();
+                    location.href = demoUrl || n.profileUrl || 'vtuber_profile.html';
                 };
                 li.innerHTML = `
                     <img src="${n.avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;">
@@ -1013,7 +1018,11 @@
 
             const vtLinkEl = document.getElementById('brm-vtuber-link');
             if (vtLinkEl) {
-                if (vtuberId) {
+                const demoUrl = getDemoVtuberProfileUrl();
+                if (demoUrl) {
+                    vtLinkEl.href = `${demoUrl}#achieved`;
+                    vtLinkEl.style.display = 'flex';
+                } else if (vtuberId) {
                     vtLinkEl.href = `vtuber_profile.html?id=${vtuberId}#achieved`;
                     vtLinkEl.style.display = 'flex';
                 } else {
