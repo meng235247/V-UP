@@ -906,22 +906,25 @@
 
                 // Pull amount from the input field in the clicked card
                 const amountInput = btnElement.previousElementSibling.querySelector('input');
-                const defaultAmount = amountInput && amountInput.value ? amountInput.value : 500;
+                const hasCardInput = amountInput && String(amountInput.value || '').trim() !== '';
+                const defaultAmount = hasCardInput ? amountInput.value : 500;
                 let amountToUse = defaultAmount;
                 if (window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode()) {
-                    try {
-                        const list = (window.VtuberProfilePage && Array.isArray(window.VtuberProfilePage._lastRenderedMilestones))
-                            ? window.VtuberProfilePage._lastRenderedMilestones
-                            : [];
-                        const row = list.find((m) => m && m.id === milestoneId);
-                        if (row) {
-                            const current = Number(row.currentAmount || row.current || 0);
-                            const target = Number(row.targetAmount || row.goal || row.target || 0);
-                            const remain = Math.max(100, target - current);
-                            amountToUse = remain > 0 ? remain : Math.max(100, Number(defaultAmount || 500));
+                    if (!hasCardInput) {
+                        try {
+                            const list = (window.VtuberProfilePage && Array.isArray(window.VtuberProfilePage._lastRenderedMilestones))
+                                ? window.VtuberProfilePage._lastRenderedMilestones
+                                : [];
+                            const row = list.find((m) => m && m.id === milestoneId);
+                            if (row) {
+                                const current = Number(row.currentAmount || row.current || 0);
+                                const target = Number(row.targetAmount || row.goal || row.target || 0);
+                                const remain = Math.max(100, target - current);
+                                amountToUse = remain > 0 ? remain : Math.max(100, Number(defaultAmount || 500));
+                            }
+                        } catch (e) {
+                            amountToUse = defaultAmount;
                         }
-                    } catch (e) {
-                        amountToUse = defaultAmount;
                     }
                 }
                 document.getElementById('pm-amount').value = amountToUse;
@@ -1475,6 +1478,12 @@
                 vtuberService
             });
 
+            if (isDemoFanMode()) {
+                document.querySelectorAll('.btn-fan').forEach((link) => {
+                    link.href = 'fan_profile.html?mode=demo';
+                });
+            }
+
             // ── 即時監聽 Auth 狀態，更新 payment modal 的用戶區塊 ──
             import { onAuthStateChanged } from 'firebase/auth';
             import { doc, getDoc } from 'firebase/firestore';
@@ -1522,29 +1531,37 @@
                         setTimeout(() => {
                             startDemoGuide([
                                 {
-                                    target: '.ms-progress-bar',
+                                    target: '.ms-card[data-generated] .ms-progress-bar, .ms-card .ms-progress-bar',
                                     text: '這裡是里程碑進度。先看看目標完成比例。',
-                                    buttonText: '了解'
+                                    buttonText: '了解',
+                                    scrollBlock: 'center',
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.btn-support-now',
+                                    target: '.ms-card[data-generated] .btn-support-now, .ms-card .btn-support-now',
                                     text: '點這裡開始模擬贊助。贊助完成後，會看到達標動畫與解鎖。',
-                                    buttonText: '我來試試'
+                                    buttonText: '我來試試',
+                                    scrollBlock: 'center',
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.ms-exclusive-content',
+                                    target: '.ms-card[data-generated] .ms-exclusive-content, .ms-card .ms-exclusive-content',
                                     text: '贊助完成後，這裡會顯示已解鎖的限定內容。',
                                     buttonText: '下一步',
                                     waitForEvent: 'vup:demo-payment-completed',
-                                    waitAfterEventMs: 1800
+                                    waitAfterEventMs: 2800,
+                                    scrollBlock: 'center',
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.ms-ranking',
+                                    target: '.ms-card[data-generated] .ms-ranking, .ms-card .ms-ranking',
                                     text: '你的名字也會出現在榜單上，方便你確認體驗結果。',
-                                    buttonText: '完成'
+                                    buttonText: '完成',
+                                    scrollBlock: 'center',
+                                    scrollSettleMs: 520
                                 }
                             ]);
-                        }, 1400);
+                        }, 2000);
                     } else if (demoCtx && demoCtx.mode === 'creator-preview') {
                         setTimeout(() => {
                             startDemoGuide([
