@@ -249,8 +249,16 @@ const VtuberProfilePage = {
           authorAvatar: vt.bannerUrl || vt.avatarUrl || 'image/miku_test.png'
         });
 
+        const lockOverlay = shouldLock
+          ? '<div class="ms-lock-overlay"><i class="fa-solid fa-lock"></i><span>贊助此里程碑即可解鎖</span></div>'
+          : '';
+        const btnHtml = shouldLock
+          ? '<button class="rmc-exc-btn" type="button" disabled>贊助解鎖 <i class="fa-solid fa-lock"></i></button>'
+          : `<button class="rmc-exc-btn" type="button" data-review-post-key="${esc(cacheKey)}" data-locked="0">展開 <i class="fa-solid fa-chevron-down"></i></button>`;
+
         return `
-          <div class="rmc-exc-post">
+          <div class="rmc-exc-post ${shouldLock ? 'locked' : ''}">
+            ${lockOverlay}
             <div class="rmc-exc-post-info">
               <div class="rmc-exc-tag"><i class="${iconClass}"></i></div>
               <div class="rmc-exc-text">
@@ -258,9 +266,7 @@ const VtuberProfilePage = {
                 <p>${esc(time)}</p>
               </div>
             </div>
-            <button class="rmc-exc-btn" type="button" data-review-post-key="${esc(cacheKey)}" data-locked="${shouldLock ? '1' : '0'}">
-              展開 <i class="fa-solid fa-chevron-down"></i>
-            </button>
+            ${btnHtml}
           </div>
         `;
       });
@@ -269,10 +275,6 @@ const VtuberProfilePage = {
       container.querySelectorAll('[data-review-post-key]').forEach((btn) => {
         btn.addEventListener('click', () => {
           const cacheKey = btn.getAttribute('data-review-post-key');
-          const locked = btn.getAttribute('data-locked') === '1';
-          if (locked) {
-            return;
-          }
           const payload = postModalCache.get(cacheKey);
           if (!payload || typeof window.openPostModal !== 'function') return;
           window.openPostModal(
