@@ -1949,6 +1949,7 @@ body {
                 padding: 12px 14px;
                 border-bottom: 1px solid #F8FAFC;
                 transition: background 0.15s;
+                position: relative;
             }
 
             .rmc-exc-post:last-child {
@@ -1957,6 +1958,33 @@ body {
 
             .rmc-exc-post:hover {
                 background: #FFF5F9;
+            }
+
+            .rmc-exc-post.locked:hover {
+                background: transparent;
+            }
+
+            .rmc-exc-post.locked .rmc-exc-post-info,
+            .rmc-exc-post.locked .rmc-exc-btn {
+                pointer-events: none;
+                user-select: none;
+                filter: blur(4px);
+                opacity: 0.4;
+            }
+
+            .rmc-exc-post .ms-lock-overlay {
+                position: absolute;
+                inset: 0;
+                z-index: 20;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: rgba(255, 255, 255, 0.6);
+                backdrop-filter: blur(4px);
+                border-radius: 12px;
+                color: var(--vt-pink-dark);
+                pointer-events: auto;
             }
 
             .rmc-exc-post-info {
