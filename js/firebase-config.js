@@ -31,14 +31,18 @@ try {
     const isBrowser = (typeof window !== 'undefined' && typeof window.location !== 'undefined');
     const host = isBrowser ? window.location.hostname : null;
     const envFlag = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR);
-    const localFlag = isBrowser && localStorage.getItem('useEmulator') === 'true';
+    const localOverride = isBrowser ? localStorage.getItem('useEmulator') : null;
+    const localForceOn = localOverride === 'true';
+    const localForceOff = localOverride === 'false';
     const hostnameMatch = host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0';
     
     // 預設如果是在 localhost 或是 env 設定 true 就開啟 Emulator
-    let useEmulator = isBrowser && (hostnameMatch || localFlag || envFlag === 'true');
+    let useEmulator = isBrowser && (hostnameMatch || envFlag === 'true');
+    if (localForceOn) useEmulator = true;
+    if (localForceOff) useEmulator = false;
     
     // 但是如果 .env 裡面明確寫了 false，就強制連上雲端，無視 localhost
-    if (envFlag === 'false') {
+    if (!localForceOn && !localForceOff && envFlag === 'false') {
         useEmulator = false;
     }
 
@@ -57,7 +61,7 @@ try {
             .catch((err) => {
                 console.warn('[firebase-config] analytics init skipped:', err && err.message ? err.message : err);
             });
-        console.info('[firebase-config] not connecting to emulators', { host, envFlag, localFlag });
+        console.info('[firebase-config] not connecting to emulators', { host, envFlag, localOverride });
     }
 } catch (e) {
     console.warn('[firebase-config] emulator connect skipped:', e && e.message ? e.message : e);

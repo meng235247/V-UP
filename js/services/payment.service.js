@@ -54,11 +54,44 @@ const PaymentService = {
       const prevSupporters = typeof msData.totalSupporters === 'number' ? msData.totalSupporters : 0;
 
       // 1. 更新里程碑累積金額與支持者數
-      t.update(milestoneRef, {
-        currentAmount: prevAmount + Number(amount),
-        totalSupporters: prevSupporters + 1,
+      const newAmount = prevAmount + Number(amount);
+      const newSupporters = prevSupporters + 1;
+
+      // ── Compute whether this payment tips the milestone over the goal ──
+      const targetCandidates = [
+        { key: 'targetAmount', value: msData.targetAmount },
+        { key: 'goal', value: msData.goal },
+        { key: 'target', value: msData.target }
+      ];
+      let targetAmt = 0;
+      let targetKey = null;
+      for (const c of targetCandidates) {
+        const raw = c.value;
+        const num = (typeof raw === 'number') ? raw : (typeof raw === 'string' ? Number(raw) : NaN);
+        if (Number.isFinite(num) && num > 0) {
+          targetAmt = num;
+          targetKey = c.key;
+          break;
+        }
+      }
+      const prevStatus = msData.status || 'published';
+      const willAchieve = targetAmt > 0 && newAmount >= targetAmt
+        && prevStatus !== 'achieved' && prevStatus !== 'archived' && prevStatus !== 'cancelled';
+      if (willAchieve && targetKey !== 'targetAmount') {
+        console.warn('[PaymentService] Using legacy target field for auto-achieve:', { targetKey, targetAmt, milestoneId });
+      }
+
+      // 1. 更新里程碑累積金額與支持者數（若達標則同時寫入 achieved 狀態）
+      const milestoneUpdate = {
+        currentAmount: newAmount,
+        totalSupporters: newSupporters,
         updatedAt: serverTimestamp()
-      });
+      };
+      if (willAchieve) {
+        milestoneUpdate.status = 'achieved';
+        milestoneUpdate.achievedAt = serverTimestamp();
+      }
+      t.update(milestoneRef, milestoneUpdate);
 
       // 2. 建立交易紀錄
       t.set(txRef, {
@@ -87,19 +120,27 @@ const PaymentService = {
           milestoneId,
           name: milestoneTitle || '贊助者',
           icon: '🏅',
-          badgeUrl: msData.badgeUrl || '', // [新增] 從里程碑資料中取得徽章圖網址
+          badgeUrl: msData.badgeUrl || '',
           awardedAt: new Date().toISOString()
         };
         userUpdates.badges = arrayUnion(newBadge);
         console.log('[PaymentService] First time sponsor! Awarding badge with URL:', msData.badgeUrl);
       }
 
-      t.update(userDocRef, userUpdates);
+      t.set(userDocRef, userUpdates, { merge: true });
+
+      // 暫存達標結果供 transaction 外使用
+      PaymentService._justAchieved = willAchieve;
     });
 
-    console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount });
-    return { txId: txRef.id, status: 'success' };
+    const justAchieved = !!PaymentService._justAchieved;
+    PaymentService._justAchieved = null;
+    if (justAchieved) console.log('[PaymentService] Milestone auto-achieved:', milestoneId);
+
+    console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount, justAchieved });
+    return { txId: txRef.id, status: 'success', justAchieved };
   },
+
 
   /**
    * Guest initiate: allow unauthenticated users to create a transaction.
