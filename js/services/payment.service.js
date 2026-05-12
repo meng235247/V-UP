@@ -29,6 +29,8 @@ const PaymentService = {
     let vtuberId = '';
     let milestoneTitle = '';
 
+    let justAchieved = false;
+
     // --- 原子操作：同時更新里程碑進度 + 建立交易紀錄 + 更新使用者資料 ---
     await runTransaction(db, async (t) => {
       const msSnap = await t.get(milestoneRef);
@@ -53,12 +55,44 @@ const PaymentService = {
       const prevAmount = typeof msData.currentAmount === 'number' ? msData.currentAmount : 0;
       const prevSupporters = typeof msData.totalSupporters === 'number' ? msData.totalSupporters : 0;
 
-      // 1. 更新里程碑累積金額與支持者數
-      t.update(milestoneRef, {
-        currentAmount: prevAmount + Number(amount),
-        totalSupporters: prevSupporters + 1,
+      const newAmount = prevAmount + Number(amount);
+      const newSupporters = prevSupporters + 1;
+
+      // ── Compute whether this payment tips the milestone over the goal ──
+      const targetCandidates = [
+        { key: 'targetAmount', value: msData.targetAmount },
+        { key: 'goal', value: msData.goal },
+        { key: 'target', value: msData.target }
+      ];
+      let targetAmt = 0;
+      let targetKey = null;
+      for (const c of targetCandidates) {
+        const raw = c.value;
+        const num = (typeof raw === 'number') ? raw : (typeof raw === 'string' ? Number(raw) : NaN);
+        if (Number.isFinite(num) && num > 0) {
+          targetAmt = num;
+          targetKey = c.key;
+          break;
+        }
+      }
+      const prevStatus = msData.status || 'published';
+      const willAchieve = targetAmt > 0 && newAmount >= targetAmt
+        && prevStatus !== 'achieved' && prevStatus !== 'archived' && prevStatus !== 'cancelled';
+      if (willAchieve && targetKey !== 'targetAmount') {
+        console.warn('[PaymentService] Using legacy target field for auto-achieve:', { targetKey, targetAmt, milestoneId });
+      }
+
+      // 1. 更新里程碑累積金額與支持者數（若達標則同時寫入 achieved 狀態）
+      const milestoneUpdate = {
+        currentAmount: newAmount,
+        totalSupporters: newSupporters,
         updatedAt: serverTimestamp()
-      });
+      };
+      if (willAchieve) {
+        milestoneUpdate.status = 'achieved';
+        milestoneUpdate.achievedAt = serverTimestamp();
+      }
+      t.update(milestoneRef, milestoneUpdate);
 
       // 2. 建立交易紀錄
       t.set(txRef, {
@@ -94,11 +128,13 @@ const PaymentService = {
         console.log('[PaymentService] First time sponsor! Awarding badge with URL:', msData.badgeUrl);
       }
 
-      t.update(userDocRef, userUpdates);
+      t.set(userDocRef, userUpdates, { merge: true });
+
+      justAchieved = willAchieve;
     });
 
-    console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount });
-    return { txId: txRef.id, status: 'success' };
+    console.log('[PaymentService] initiate success', { txId: txRef.id, milestoneId, amount, justAchieved });
+    return { txId: txRef.id, status: 'success', justAchieved };
   },
 
   /**
