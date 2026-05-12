@@ -2534,3 +2534,79 @@ body {
                 filter: brightness(1.1);
                 transform: translateY(-1px);
             }
+
+/* =============================================
+   MILESTONE ACHIEVED — Visual Elements
+   ============================================= */
+
+/* Achieved status badge variant */
+.ms-status-badge--achieved {
+    background: linear-gradient(135deg, #FFF0F6, #EEF9FF) !important;
+    color: transparent !important;
+    background-clip: text !important;
+    -webkit-background-clip: text !important;
+    background-image: linear-gradient(135deg, var(--vt-pink-dark), var(--vt-blue)) !important;
+    border: 1.5px solid var(--vt-pink-light) !important;
+    position: relative;
+}
+
+/* Achieved ribbon — floats along the bottom edge of ms-card */
+.ms-achieved-ribbon {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px 24px;
+    background: linear-gradient(90deg, var(--vt-pink-dark) 0%, var(--vt-blue) 100%);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 0 0 30px 30px;
+    box-shadow: 0 -4px 20px rgba(255, 107, 158, 0.15);
+    z-index: 5;
+}
+
+/* Subtle shimmer on achieved cards */
+.ms-card:has(.ms-achieved-ribbon) {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(255, 133, 178, 0.2);
+}
+
+/* Achieved card glow pulse */
+@keyframes achievedGlow {
+    0%, 100% { box-shadow: 0 30px 60px rgba(0,0,0,0.05), 0 0 0 2px rgba(255,133,178,0.2); }
+    50%       { box-shadow: 0 30px 60px rgba(0,0,0,0.05), 0 0 0 4px rgba(255,133,178,0.4), 0 0 40px rgba(255,133,178,0.12); }
+}
+.ms-card:has(.ms-achieved-ribbon) {
+    animation: achievedGlow 3s ease-in-out infinite;
+}
+
+/* Progress bar animated fill */
+.ms-progress-animated {
+    transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Celebration overlay backdrop (semi-dark behind popup) */
+#milestone-celebrate-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 5, 25, 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+#celebrate-popup {
+    position: absolute;
+    z-index: 10;
+}
+#celebrate-canvas {
+    position: absolute;
+    z-index: 5;
+    pointer-events: none;
+}
+
