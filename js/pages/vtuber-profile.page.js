@@ -300,7 +300,9 @@ const VtuberProfilePage = {
         const goal = Number(m.goal || m.targetAmount || m.target || 0);
         const pct = goal > 0 ? Math.min(100, Math.round((current / goal) * 100)) : 0;
         const badge = m.badgeDataUrl || m.badgeImageUrl || (m.badgeUrl || 'https://picsum.photos/seed/badge/80/80');
-        const statusLabel = (m.status === 'published' || m.status === 'active') ? '進行中!' : (m.status === 'achieved' ? '已達成' : (m.status || '公開'));
+        const statusLabel = (m.status === 'published' || m.status === 'active') ? '進行中!' :
+          (m.status === 'achieved' ? '✨ 已達成' : (m.status || '公開'));
+        const isAchieved = (m.status === 'achieved' || m.status === 'completed');
 
         let collabHtml = '';
         if (m.isCollab && m.collaboratorsMeta && m.collaboratorsMeta.length > 0) {
@@ -382,6 +384,17 @@ const VtuberProfilePage = {
 
         // 改用 appendChild 確保排序與 UI 呈現一致
         section.appendChild(card);
+
+        // 若里程碑已達成，立即標示並檢查晃祝中狀態
+        if (isAchieved) {
+          if (typeof window.markCardAsAchieved === 'function') window.markCardAsAchieved(m.id);
+          // Check if returning user hasn't seen celebration yet
+          let seen = false;
+          try { seen = !!localStorage.getItem('celebSeen_' + m.id); } catch(e) {}
+          if (!seen && typeof window.triggerCelebration === 'function') {
+            setTimeout(() => window.triggerCelebration(m.id, m.title || '', false), 900);
+          }
+        }
 
         // A-Task 2b: 即時監聽排行榜（依 transactions 彙整粉絲累積金額）
         const unsubRank = MilestonesService.listenRankings(m.id, 10, async (rankList, myAmount) => {
