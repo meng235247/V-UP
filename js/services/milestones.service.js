@@ -65,7 +65,7 @@ const MilestonesService = {
    * @param {string[]} statuses - 要監聽的狀態，預設公開狀態
    * @returns unsubscribe function
    */
-  listenPublicMilestones: (vtuberId, callback, statuses = ['published', 'active', 'achieved']) => {
+  listenPublicMilestones: (vtuberId, callback, statuses = ['published', 'active', 'achieved', 'archived']) => {
     const q = query(
       collection(db, COLLECTION),
       where('vtuberId', '==', vtuberId),

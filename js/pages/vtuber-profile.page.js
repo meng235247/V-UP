@@ -453,21 +453,90 @@ const VtuberProfilePage = {
       });
     }
 
-    // Achieved section logic: show placeholder if no achieved items
+    // Achieved section logic: render archived milestones only
     const achievedContainer = document.getElementById('milestones-achieved');
+    const achievedMoreContainer = document.getElementById('more-milestones');
     const achievedTimeline = document.querySelector('.achieved-timeline');
     const viewLogsBtn = document.querySelector('.btn-view-logs');
+
+    const formatAchievedDate = (ts) => {
+      const ms = toMillis(ts);
+      if (!ms) return '';
+      const d = new Date(ms);
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      return `${d.getFullYear()}.${mm}`;
+    };
+
+    const archivedList = (milestones || [])
+      .filter(m => m && m.status === 'archived')
+      .sort((a, b) => {
+        const tA = toMillis(a.archivedAt || a.achievedAt || a.updatedAt || a.createdAt);
+        const tB = toMillis(b.archivedAt || b.achievedAt || b.updatedAt || b.createdAt);
+        return tB - tA;
+      });
+
+    const buildAchievedCard = (m) => {
+      const goal = Number(m.goal || m.targetAmount || m.target || 0);
+      const amountLabel = goal ? `${Number(goal).toLocaleString()} NTD` : '—';
+      const badge = m.badgeDataUrl || m.badgeImageUrl || (m.badgeUrl || 'https://picsum.photos/seed/acbadge/60/60');
+      const dateLabel = formatAchievedDate(m.archivedAt || m.achievedAt || m.updatedAt);
+      const desc = m.desc || m.description || '感謝每一位支持者的陪伴。';
+      const supporters = Number(m.totalSupporters || 0);
+
+      return `
+        <div class="achieved-card" data-milestone-id="${esc(m.id)}">
+          <div class="ac-top">
+            <span>ACHIEVED</span>
+            <div class="ac-badge-img"><img src="${esc(badge)}" alt="徽章"></div>
+          </div>
+          <h3 class="ac-title">${esc(m.title || '（無標題）')}</h3>
+          <div class="ac-progress-bar"><div class="ac-progress-fill"></div></div>
+          <div class="ac-stats">
+            <span>100% 達成</span>
+            <span class="amt">${esc(amountLabel)}</span>
+          </div>
+          <div class="ac-footer">
+            <button class="btn-review" onclick="openReviewModal('${esc(m.title || '')}', '${esc(dateLabel)}', '${esc(amountLabel)}', '${esc(badge)}', '${esc(desc)}', ${supporters}, '${esc(m.id)}')">查看回顧
+              <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            </button>
+          </div>
+        </div>
+      `;
+    };
+
     if (achievedContainer) {
-      const hasAchieved = milestones && milestones.some(m => m.status === 'achieved' || m.status === 'completed' || m.isAchieved);
-      if (!hasAchieved) {
+      if (!archivedList.length) {
         achievedContainer.innerHTML = `<div style="padding:40px; text-align:center; font-weight:900; color:var(--text-muted);">期待夢想成真的那天</div>`;
+        if (achievedMoreContainer) achievedMoreContainer.innerHTML = '';
         if (achievedTimeline) {
-          const items = achievedTimeline.querySelector('.timeline-items'); if (items) items.style.display = 'none';
+          const items = achievedTimeline.querySelector('.timeline-items');
+          if (items) items.style.display = 'none';
         }
         if (viewLogsBtn) viewLogsBtn.style.display = 'none';
       } else {
-        if (achievedTimeline) { const items = achievedTimeline.querySelector('.timeline-items'); if (items) items.style.display = ''; }
-        if (viewLogsBtn) viewLogsBtn.style.display = '';
+        const mainCards = archivedList.slice(0, 3).map(buildAchievedCard).join('');
+        const moreCards = archivedList.slice(3).map(buildAchievedCard).join('');
+        achievedContainer.innerHTML = mainCards;
+        if (achievedMoreContainer) achievedMoreContainer.innerHTML = moreCards;
+
+        if (achievedTimeline) {
+          const items = achievedTimeline.querySelector('.timeline-items');
+          if (items) {
+            items.style.display = '';
+            items.innerHTML = archivedList.map((m) => {
+              const dateLabel = formatAchievedDate(m.archivedAt || m.achievedAt || m.updatedAt);
+              return `
+                <div class="timeline-marker">
+                  <div class="timeline-date">${esc(dateLabel)}</div>
+                  <div class="timeline-dot"></div>
+                  <div class="timeline-label">${esc(m.title || '里程碑')}</div>
+                </div>
+              `;
+            }).join('');
+          }
+        }
+
+        if (viewLogsBtn) viewLogsBtn.style.display = archivedList.length > 3 ? '' : 'none';
       }
     }
   },
