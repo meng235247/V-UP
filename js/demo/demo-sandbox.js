@@ -551,14 +551,18 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
     MilestonesService.getMilestones = async () =>
       readCreatorMilestones().map((m) => ({
         ...m,
+        // normalize date helpers
         createdAt: fakeTs(m.createdAtMs),
         updatedAt: fakeTs(m.updatedAtMs || m.createdAtMs),
-        publishedAt: m.publishedAtMs ? fakeTs(m.publishedAtMs) : null
+        publishedAt: m.publishedAtMs ? fakeTs(m.publishedAtMs) : null,
+        // support dashboard preview which expects `badgeDataUrl` when using embedded data URLs
+        badgeDataUrl: m.badgeDataUrl || (m.badgeUrl && String(m.badgeUrl).startsWith('data:') ? m.badgeUrl : null)
       }));
 
     MilestonesService.createDraft = async (milestone) => {
       const now = Date.now();
       const list = readCreatorMilestones();
+      const badgeUrl = milestone.badgeUrl || null;
       const item = {
         id: `demo_ms_${now}_${Math.floor(Math.random() * 999)}`,
         vtuberId: DEMO_CREATOR_UID,
@@ -567,7 +571,9 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
         targetAmount: Number(milestone.goal || milestone.targetAmount || 0),
         currentAmount: 0,
         totalSupporters: 0,
-        badgeUrl: milestone.badgeUrl || null,
+        badgeUrl: badgeUrl,
+        // If the uploaded badge is a data URL, keep a dedicated field for preview usages
+        badgeDataUrl: badgeUrl && String(badgeUrl).startsWith('data:') ? badgeUrl : null,
         status: 'draft',
         createdAtMs: now,
         updatedAtMs: now
@@ -582,13 +588,17 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
       const now = Date.now();
       const list = readCreatorMilestones().map((m) =>
         m.id === milestoneId
-          ? {
-              ...m,
-              ...milestone,
-              targetAmount: Number(milestone.goal || milestone.targetAmount || m.targetAmount || 0),
-              badgeUrl: milestone.badgeUrl || m.badgeUrl || null,
-              updatedAtMs: now
-            }
+          ? (() => {
+              const badgeUrl = milestone.badgeUrl !== undefined ? milestone.badgeUrl : m.badgeUrl || null;
+              return {
+                ...m,
+                ...milestone,
+                targetAmount: Number(milestone.goal || milestone.targetAmount || m.targetAmount || 0),
+                badgeUrl: badgeUrl,
+                badgeDataUrl: badgeUrl && String(badgeUrl).startsWith('data:') ? badgeUrl : (m.badgeDataUrl || null),
+                updatedAtMs: now
+              };
+            })()
           : m
       );
       saveCreatorMilestones(list);
