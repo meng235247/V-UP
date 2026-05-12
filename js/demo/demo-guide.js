@@ -5,9 +5,11 @@ export function startDemoGuide(steps = []) {
   const overlay = document.createElement('div');
   overlay.className = 'demo-guide-overlay';
   overlay.id = 'demo-guide-overlay';
+  overlay.style.display = 'none';
   const tip = document.createElement('div');
   tip.className = 'demo-guide-tip';
   tip.id = 'demo-guide-tip';
+  tip.style.display = 'none';
 
   function clearHighlight() {
     document.querySelectorAll('.demo-highlight').forEach((el) => el.classList.remove('demo-highlight'));
@@ -29,6 +31,18 @@ export function startDemoGuide(steps = []) {
     });
   }
 
+  function isCelebrationOpen() {
+    const overlay = document.getElementById('milestone-celebrate-overlay');
+    if (!overlay) return false;
+    const style = window.getComputedStyle(overlay);
+    return style.display !== 'none' && style.pointerEvents !== 'none';
+  }
+
+  function waitForCelebrationClose() {
+    if (!isCelebrationOpen()) return Promise.resolve();
+    return waitForEventOnce('vup:celebration-closed');
+  }
+
   function wait(ms = 0) {
     if (!ms || ms <= 0) return Promise.resolve();
     return new Promise((resolve) => setTimeout(resolve, ms));
@@ -41,6 +55,8 @@ export function startDemoGuide(steps = []) {
       return;
     }
     clearHighlight();
+    overlay.style.display = 'none';
+    tip.style.display = 'none';
     const step = steps[idx];
     if (step.waitForEvent) {
       await waitForEventOnce(step.waitForEvent);
@@ -48,6 +64,7 @@ export function startDemoGuide(steps = []) {
     if (step.waitAfterEventMs) {
       await wait(step.waitAfterEventMs);
     }
+    await waitForCelebrationClose();
     const target = document.querySelector(step.target);
     if (!target) {
       next();
@@ -61,13 +78,8 @@ export function startDemoGuide(steps = []) {
       });
       await wait(step.scrollSettleMs || 380);
     }
+    overlay.style.display = 'block';
     target.classList.add('demo-highlight');
-    const rect = target.getBoundingClientRect();
-    const top = Math.min(window.innerHeight - 160, rect.bottom + 10);
-    const left = Math.max(12, Math.min(rect.left, window.innerWidth - 360));
-
-    tip.style.top = `${top + window.scrollY}px`;
-    tip.style.left = `${left + window.scrollX}px`;
     tip.innerHTML = `
       <p>${step.text || ''}</p>
       <div class="demo-guide-actions">
@@ -75,6 +87,49 @@ export function startDemoGuide(steps = []) {
         <button id="demo-guide-skip" class="demo-btn demo-btn-secondary">跳過</button>
       </div>
     `;
+    tip.style.visibility = 'hidden';
+    tip.style.display = 'block';
+
+    await new Promise((resolve) => requestAnimationFrame(resolve));
+
+    const rect = target.getBoundingClientRect();
+    const tipRect = tip.getBoundingClientRect();
+    const gap = Number(step.tipGap || 12);
+    const pad = Number(step.viewportPadding || 12);
+    const placements = Array.isArray(step.placements) && step.placements.length
+      ? step.placements
+      : ['right', 'bottom', 'left', 'top'];
+
+    const candidates = placements.map((place) => {
+      let left = rect.left;
+      let top = rect.top;
+      if (place === 'right') {
+        left = rect.right + gap;
+        top = rect.top + (rect.height - tipRect.height) / 2;
+      } else if (place === 'left') {
+        left = rect.left - tipRect.width - gap;
+        top = rect.top + (rect.height - tipRect.height) / 2;
+      } else if (place === 'top') {
+        left = rect.left + (rect.width - tipRect.width) / 2;
+        top = rect.top - tipRect.height - gap;
+      } else {
+        left = rect.left + (rect.width - tipRect.width) / 2;
+        top = rect.bottom + gap;
+      }
+      const fits = left >= pad
+        && top >= pad
+        && (left + tipRect.width) <= (window.innerWidth - pad)
+        && (top + tipRect.height) <= (window.innerHeight - pad);
+      return { place, left, top, fits };
+    });
+
+    const chosen = candidates.find((c) => c.fits) || candidates[0];
+    const clampedLeft = Math.min(Math.max(chosen.left, pad), window.innerWidth - tipRect.width - pad);
+    const clampedTop = Math.min(Math.max(chosen.top, pad), window.innerHeight - tipRect.height - pad);
+
+    tip.style.left = `${clampedLeft + window.scrollX}px`;
+    tip.style.top = `${clampedTop + window.scrollY}px`;
+    tip.style.visibility = 'visible';
     tip.querySelector('#demo-guide-next')?.addEventListener('click', next);
     tip.querySelector('#demo-guide-skip')?.addEventListener('click', end);
   }

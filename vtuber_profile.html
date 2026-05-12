@@ -1288,6 +1288,7 @@
                         document.body.style.overflow = '';
                         // Reset popup for next use
                         if (popup) { popup.style.opacity = '0'; popup.style.transform = 'translate(-50%,-50%) scale(0.4)'; }
+                        window.dispatchEvent(new CustomEvent('vup:celebration-closed'));
                     }
                 });
             }
