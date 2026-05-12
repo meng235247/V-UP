@@ -121,6 +121,7 @@ const VtuberProfilePage = {
   _unsubMilestones: null,
   _unsubRankings: [],
   _viewerUnlockedMilestones: [],
+  _lastRenderedMilestones: [],
   init: async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const vtuberHandle = urlParams.get('id');
@@ -161,7 +162,9 @@ const VtuberProfilePage = {
       VtuberProfilePage._currentVtuber = seedData.vtuber;
       VtuberProfilePage.renderVtuber(seedData.vtuber);
       VtuberProfilePage.renderMilestones(seedData.milestones);
-      document.body.insertAdjacentHTML('afterbegin', '<div class="demo-banner">🎭 Demo 展示模式</div>');
+      if (!document.getElementById('demo-banner')) {
+        document.body.insertAdjacentHTML('afterbegin', '<div id="demo-banner">🎭 Demo 展示模式</div>');
+      }
     } else {
       try {
         // 使用 vtuberService 從 vtubers 集合讀取最新的設定資料
@@ -404,6 +407,7 @@ const VtuberProfilePage = {
   },
 
   renderMilestones: (milestones) => {
+    VtuberProfilePage._lastRenderedMilestones = Array.isArray(milestones) ? milestones : [];
     const section = document.querySelector('#milestones');
     if (!section) return console.warn('[VtuberProfilePage] no #milestones section found to render into');
 
@@ -448,7 +452,8 @@ const VtuberProfilePage = {
         }
       });
 
-      sorted.forEach(m => {
+      const activeCards = sorted.filter((m) => m && m.status !== 'archived');
+      activeCards.forEach(m => {
         const card = document.createElement('div');
         card.className = 'ms-card';
         card.dataset.generated = 'true';
@@ -590,6 +595,23 @@ const VtuberProfilePage = {
                 </div>
               </div>
             `;
+          }
+
+          if (!user && window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode()) {
+            const demoFan = typeof window.DemoSandbox.getDemoFanProfile === 'function'
+              ? window.DemoSandbox.getDemoFanProfile()
+              : null;
+            if (demoFan) {
+              html += `
+                <div class="rank-item you" style="border-top: 1px solid var(--border); padding-top: 0.5rem; margin-top: 0.5rem;">
+                  <img src="${esc(demoFan.photoURL || 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter')}" class="r-avatar" alt="You">
+                  <div class="r-info">
+                    <span class="r-name">你的贊助</span>
+                    <span class="r-amt" style="color:var(--vt-blue,#2196f3);font-weight:bold;">${Number(myAmount || 0).toLocaleString()} NTD</span>
+                  </div>
+                </div>
+              `;
+            }
           }
           
           rl.innerHTML = html;
