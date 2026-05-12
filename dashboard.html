@@ -10,6 +10,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="css/demo.css">
 </head>
 
 <body>
@@ -815,8 +816,42 @@
         import PostsService from './js/services/posts.service.js';
         import MilestonesService from './js/services/milestones.service.js';
         import PaymentService from './js/services/payment.service.js';
+        import { isDemoCreatorMode, initCreatorDemoSandbox } from './js/demo/demo-sandbox.js';
+        import { startDemoGuide } from './js/demo/demo-guide.js';
 
         let currentUid = null;
+        const demoCreatorMode = isDemoCreatorMode();
+
+        const fileToDataUrl = (file) => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+
+        if (demoCreatorMode) {
+            const demoCtx = await initCreatorDemoSandbox({
+                vtuberService,
+                MilestonesService,
+                PostsService,
+                PaymentService
+            });
+            const demoProfile = demoCtx.profile || { displayName: 'Demo Creator', role: 'vtuber' };
+            const demoUser = {
+                uid: demoCtx.uid || 'demo_creator_local',
+                displayName: demoProfile.displayName || 'Demo Creator',
+                email: 'demo.creator@local'
+            };
+            authService.onAuthChange = (callback) => {
+                Promise.resolve().then(() => callback(demoUser));
+                return () => { };
+            };
+            authService.getUserProfile = async () => demoProfile;
+            authService.logout = async () => true;
+            storageService.uploadFile = async (file) => fileToDataUrl(file);
+            const pubLink = document.getElementById('btn-view-public');
+            if (pubLink) pubLink.href = `vtuber_profile.html?id=demo_creator_local&mode=creator-preview`;
+        }
 
         // 進入頁面時強制檢查登入
         authService.onAuthChange(async (user) => {
@@ -851,7 +886,7 @@
             if (navbarLogoutBtn) {
                 navbarLogoutBtn.onclick = async () => {
                     await authService.logout();
-                    window.location.href = "auth.html";
+                    window.location.href = demoCreatorMode ? "index.html" : "auth.html";
                 };
             }
 
@@ -906,7 +941,9 @@
                 // 動態設定「前往公開頁面」連結
                 const pubLink = document.getElementById('btn-view-public');
                 if (pubLink && vtProfile.handle) {
-                    pubLink.href = `vtuber_profile.html?id=${vtProfile.handle}`;
+                    pubLink.href = demoCreatorMode
+                        ? `vtuber_profile.html?id=demo_creator_local&mode=creator-preview`
+                        : `vtuber_profile.html?id=${vtProfile.handle}`;
                 }
             }
 
@@ -916,6 +953,16 @@
             if (typeof renderMilestones === 'function') renderMilestones();
             // [Task 5] Render KPI Overview
             if (typeof window.renderDashboardOverview === 'function') window.renderDashboardOverview(user.uid);
+
+            if (demoCreatorMode) {
+                setTimeout(() => {
+                    startDemoGuide([
+                        { target: '[data-tab=\"milestones\"]', text: '先從里程碑管理開始，建立你的第一個目標。', buttonText: '下一步' },
+                        { target: '#topbar-add-milestone', text: '點這裡快速新增里程碑。', buttonText: '下一步' },
+                        { target: '#btn-view-public', text: '編輯完成後，可從這裡開啟你的公開頁預覽。', buttonText: '開始試玩' }
+                    ]);
+                }, 1300);
+            }
         });
 
         // 登出綁定
@@ -961,7 +1008,11 @@
                 // 儲存後同步更新公開頁面連結
                 const handle = document.getElementById('vt-handle')?.value;
                 const pubLink = document.getElementById('btn-view-public');
-                if (pubLink && handle) pubLink.href = `vtuber_profile.html?id=${handle}`;
+                if (pubLink && handle) {
+                    pubLink.href = demoCreatorMode
+                        ? `vtuber_profile.html?id=demo_creator_local&mode=creator-preview`
+                        : `vtuber_profile.html?id=${handle}`;
+                }
             } catch (err) {
                 console.error(err);
                 alert('儲存失敗，請稍後再試');
@@ -1344,6 +1395,14 @@
         window.MilestonesService = MilestonesService;
         window.PaymentService = PaymentService;
         window.vtuberService = vtuberService;
+
+        if (demoCreatorMode) {
+            window.addEventListener('vup:demo-milestone-published', () => {
+                if (window.DemoSandbox && typeof window.DemoSandbox.showCompletionModal === 'function') {
+                    window.DemoSandbox.showCompletionModal('creator');
+                }
+            });
+        }
 
         if (postAttachmentInput) {
             postAttachmentInput.addEventListener('change', renderComposerAttachmentPreview);
