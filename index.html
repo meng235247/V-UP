@@ -263,9 +263,14 @@
 
         /* How section */
         .how-section {
-            background: var(--bg-surface);
+            background: #0d1117;
             padding: 5rem 20px;
             transition: background 0.3s;
+            color: white;
+        }
+
+        [data-theme="dark"] .how-section {
+            border-top: 1px solid var(--border-color);
         }
 
         .how-grid {
@@ -298,12 +303,12 @@
         .how-step h3 {
             font-size: 1.05rem;
             margin-bottom: 0.4rem;
-            color: var(--text-main);
+            color: white;
         }
 
         .how-step p {
             font-size: 0.87rem;
-            color: var(--text-muted);
+            color: rgba(255, 255, 255, 0.65);
         }
 
         /* Dual CTA in Hero — creator-first order */
@@ -371,12 +376,17 @@
             border-radius: 99px;
             font-size: 0.95rem;
             font-weight: 700;
-            border: 2px solid var(--border-color);
-            color: var(--text-muted);
-            background: var(--bg-surface);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.05);
             cursor: pointer;
             transition: all 0.25s;
             font-family: inherit;
+        }
+
+        .how-tab-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .how-tab-btn.active {
@@ -783,8 +793,8 @@
     <!-- CSS Marquee Announcement -->
     <div class="announcement-bar" id="front-marquee">
         <div class="announcement-inner">
-            <span>🎯 <span class="font-vup">V-Up!</span> 概念體驗版開放中！ ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦ 試玩後留下你的想法，一起打造更好的平台！ </span>
-            <span>🎯 <span class="font-vup">V-Up!</span> 概念體驗版開放中！ ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦ 試玩後留下你的想法，一起打造更好的平台！ </span>
+            <span>✦ <span class="font-vup">V-Up!</span> 概念體驗版開放中！ ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦ 試玩後留下你的想法，一起打造更好的平台！ </span>
+            <span>✦ <span class="font-vup">V-Up!</span> 概念體驗版開放中！ ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦ 試玩後留下你的想法，一起打造更好的平台！ </span>
         </div>
     </div>
 
@@ -799,7 +809,7 @@
                 ✨ 概念體驗版開放中 &mdash; 無需帳號，立刻試玩
             </div>
 
-            <h1 class="hero-title" id="front-h1">不只是打賞&mdash;&mdash;<br>讓她的每個夢想，<br><span class="font-vup">都因為你而成真</span></h1>
+            <h1 class="hero-title" id="front-h1">讓她的每個夢想，<br><span class="font-vup">都因為你而成真</span></h1>
 
             <!-- Dual-audience subtitle -->
             <div
@@ -824,21 +834,25 @@
 
             <p
                 style="margin-top:1.25rem;font-size:0.8rem;color:rgba(255,255,255,0.4);animation:fadeInUp 0.8s 0.5s ease both;">
-                無需信用卡 &middot; 無需帳號 &middot; 2 分鐘看懂應援流程
+                V-UP &middot; 全新里程碑式應援平台
             </p>
         </div>
     </header>
 
     <!-- ── [NEW] 痛點比較區：為什麼不用超級留言？ ── -->
-    <section id="comparison" style="background:var(--bg-surface);padding:5rem 20px;border-top:1px solid var(--border-color);transition:background 0.3s;">
+    <section id="comparison"
+        style="background:var(--bg-surface);padding:5rem 20px;border-top:1px solid var(--border-color);transition:background 0.3s;">
         <div class="container" style="max-width:960px;">
             <div class="text-center" style="margin-bottom:3rem;">
                 <span class="section-label">WHY NOT SUPERCHAT?</span>
                 <h2 style="font-size:2.2rem;font-weight:900;margin-bottom:0.6rem;color:var(--text-main);">
                     你知道嗎？<br>
-                    <span style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">你在 YouTube 丟的 1,000 元，她只拿到 700 元</span>
+                    <span
+                        style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">你在
+                        YouTube 丟的 1,000 元，她只拿到 700 元</span>
                 </h2>
-                <p style="color:var(--text-muted);font-size:1rem;max-width:540px;margin:0 auto;">這不是在罵 YouTube。但它不是為了讓你「一起完成她的夢想」而設計的——V-UP! 是。</p>
+                <p style="color:var(--text-muted);font-size:1rem;max-width:540px;margin:0 auto;">這不是在罵
+                    YouTube。但它不是為了讓你「一起完成她的夢想」而設計的——V-UP! 是。</p>
             </div>
 
             <!-- Comparison table -->
@@ -846,39 +860,118 @@
                 <table style="width:100%;border-collapse:separate;border-spacing:0;font-size:0.92rem;">
                     <thead>
                         <tr>
-                            <th style="padding:0.75rem 1rem;text-align:left;color:var(--text-muted);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:34%;"></th>
-                            <th style="padding:0.75rem 1rem;text-align:center;color:var(--text-muted);font-size:0.85rem;font-weight:700;width:33%;">YouTube 超級留言</th>
-                            <th style="padding:0.75rem 1rem;text-align:center;font-size:0.85rem;font-weight:800;width:33%;background:var(--primary-light);color:var(--primary);border-radius:12px 12px 0 0;">V-UP! 里程碑應援</th>
+                            <th
+                                style="padding:0.75rem 1rem;text-align:left;color:var(--text-muted);font-size:0.8rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;width:34%;">
+                            </th>
+                            <th
+                                style="padding:0.75rem 1rem;text-align:center;color:var(--text-muted);font-size:0.85rem;font-weight:700;width:33%;">
+                                超級留言</th>
+                            <th
+                                style="padding:0.75rem 1rem;text-align:center;font-size:0.85rem;font-weight:800;width:33%;background:var(--primary-light);color:var(--primary);border-radius:12px 12px 0 0;">
+                                V-UP! 里程碑應援</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr style="border-top:1px solid var(--border-color);">
                             <td style="padding:1rem;font-weight:700;color:var(--text-main);">粉絲看到什麼</td>
                             <td style="padding:1rem;text-align:center;color:var(--text-muted);">彈幕閃過，2 秒後消失</td>
-                            <td style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">進度條即時跳動，親眼看見貢獻</td>
+                            <td
+                                style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">
+                                進度條即時跳動，親眼看見貢獻</td>
                         </tr>
                         <tr style="border-top:1px solid var(--border-color);">
                             <td style="padding:1rem;font-weight:700;color:var(--text-main);">錢去哪裡</td>
                             <td style="padding:1rem;text-align:center;color:var(--text-muted);">30% 抽成給平台</td>
-                            <td style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">90% 以上直達 VTuber 手中</td>
+                            <td
+                                style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">
+                                90% 直達 VTuber 手中</td>
                         </tr>
                         <tr style="border-top:1px solid var(--border-color);">
-                            <td style="padding:1rem;font-weight:700;color:var(--text-main);">有明確目標嗎</td>
-                            <td style="padding:1rem;text-align:center;color:var(--text-muted);">沒有，就是打賞</td>
-                            <td style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">每筆錢都對應一個具體夢想</td>
+                            <td style="padding:1rem;font-weight:700;color:var(--text-main);">為了什麼?</td>
+                            <td style="padding:1rem;text-align:center;color:var(--text-muted);">單純的支持</td>
+                            <td
+                                style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">
+                                每筆錢都對應一個具體夢想</td>
                         </tr>
                         <tr style="border-top:1px solid var(--border-color);">
                             <td style="padding:1rem;font-weight:700;color:var(--text-main);">你的名字在哪</td>
                             <td style="padding:1rem;text-align:center;color:var(--text-muted);">也許被看到，也許沒</td>
-                            <td style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">永久記錄在應援榮耀牆</td>
-                        </tr>
-                        <tr style="border-top:1px solid var(--border-color);">
-                            <td style="padding:1rem;font-weight:700;color:var(--text-main);">VTuber 能規劃嗎</td>
-                            <td style="padding:1rem;text-align:center;color:var(--text-muted);">不能，被動等待</td>
-                            <td style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);border-radius:0 0 12px 0;">主動設定企劃，有節奏地推進</td>
+                            <td
+                                style="padding:1rem;text-align:center;color:var(--primary);font-weight:700;background:var(--primary-light);">
+                                永久記錄在應援榮耀牆</td>
                         </tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── How It Works (dual-tab) ── -->
+    <section class="how-section" id="how">
+        <div class="container">
+            <div class="text-center" style="margin-bottom:2rem;">
+                <span class="section-label" style="color:var(--primary)!important;-webkit-text-fill-color:initial;">HOW
+                    IT WORKS</span>
+                <h2 class="font-vup" style="font-size:2.2rem;margin-bottom:0.5rem;color:white;">三步搞定，輕鬆支持夢想</h2>
+                <p style="color:rgba(255,255,255,0.65);">選擇你的身份，看看專屬於你的流程</p>
+            </div>
+            <!-- Tab buttons -->
+            <div class="how-tabs">
+                <button class="how-tab-btn active" onclick="switchHowTab('creator', this)"><i class="fas fa-star"></i>
+                    我是 VTuber 創作者</button>
+                <button class="how-tab-btn" onclick="switchHowTab('fan', this)"><i class="fas fa-heart"></i>
+                    我是粉絲</button>
+            </div>
+            <!-- Creator steps -->
+            <div class="how-steps-panel active" id="how-creator">
+                <div class="how-grid">
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-bullseye"></i></div>
+                        <h3>① 設定你的里程碑企劃</h3>
+                        <p>登入後台，設定一個你真正想完成的目標：花費預算、預計日期、以及你要給粉絲的限定回禮。不知道要做什麼？AI 企劃助理幫你出點子。</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-share-nodes"></i></div>
+                        <h3>② 把連結分享給粉絲</h3>
+                        <p>你的專頁自動產生。分享到 Twitter/X、YouTube 或直播間，粉絲不需要下載 App 就能直接應援。</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-trophy"></i></div>
+                        <h3>③ 達成目標，兌現承諾</h3>
+                        <p>里程碑達成後，款項扣除 7% 平台費與 3% 金流費後自動撥入你的帳戶。<strong>比 YouTube 超級留言的 30% 抽成划算太多了。</strong></p>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:2.5rem;">
+                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+                        <i class="fas fa-rocket"></i> 試看看創作者後台
+                    </a>
+                </div>
+            </div>
+            <!-- Fan steps -->
+            <div class="how-steps-panel" id="how-fan">
+                <div class="how-grid">
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-search"></i></div>
+                        <h3>① 找到你支持的推</h3>
+                        <p>瀏覽平台，找到你喜歡的 VTuber，看她現在正在衝哪個里程碑——可能是新衣裝、Cover 曲，或者 3D 出道夢。</p>
+                    </div>
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-credit-card"></i></div>
+                        <h3>② 選金額，秒付完</h3>
+                        <p>選好金額，用最習慣的方式結帳就好。付款後，<strong>進度條就在你眼前動了起來</strong>。這種感覺，比丟超級留言真實 100 倍。</p>
+
+                    </div>
+                    <div class="how-step">
+                        <div class="how-icon"><i class="fas fa-medal"></i></div>
+                        <h3>③ 見證她成功，你的名字刻在那一刻</h3>
+                        <p>里程碑達成時，你獲得限定徽章與永久榮耀名單。5 年後她在大舞台上，你可以說「我是第一批支持她的人」。</p>
+                    </div>
+                </div>
+                <div style="text-align:center;margin-top:2.5rem;">
+                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
+                        <i class="fas fa-play-circle"></i> 立刻去試玩粉絲體驗
+                    </a>
+                </div>
             </div>
         </div>
     </section>
@@ -889,7 +982,7 @@
             <div class="text-center" style="margin-bottom:3rem;">
                 <span class="why-label">WHY V-UP?</span>
                 <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">V-UP! 讓你成為更好的那個人</h2>
-                <p style="color:rgba(255,255,255,0.5);font-size:1rem;">不只是工具——是讓每一份支持都成為你故事的一部分</p>
+                <p>不只是工具——是讓每一份支持都成為你故事的一部分</p>
             </div>
             <div class="why-split">
                 <!-- Creator column -->
@@ -934,109 +1027,6 @@
         </div>
     </section>
 
-    <!-- ── How It Works (dual-tab) ── -->
-    <section class="how-section" id="how">
-        <div class="container">
-            <div class="text-center" style="margin-bottom:2rem;">
-                <span class="section-label">HOW IT WORKS</span>
-                <h2 class="font-vup" style="font-size:2.2rem;margin-bottom:0.5rem;">三步搞定，比買杯飲料還簡單</h2>
-                <p class="text-muted">選擇你的身份，看看專屬於你的流程</p>
-            </div>
-            <!-- Tab buttons -->
-            <div class="how-tabs">
-                <button class="how-tab-btn active" onclick="switchHowTab('creator', this)"><i class="fas fa-star"></i>
-                    我是 VTuber 創作者</button>
-                <button class="how-tab-btn" onclick="switchHowTab('fan', this)"><i class="fas fa-heart"></i>
-                    我是粉絲</button>
-            </div>
-            <!-- Creator steps -->
-            <div class="how-steps-panel active" id="how-creator">
-                <div class="how-grid">
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-bullseye"></i></div>
-                        <h3>① 設定你的里程碑企劃</h3>
-                        <p>登入後台，設定一個你真正想完成的目標：花費預算、預計日期、以及你要給粉絲的限定回禮。不知道要做什麼？AI 企劃助理幫你出點子。</p>
-                    </div>
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-share-nodes"></i></div>
-                        <h3>② 把連結分享給粉絲</h3>
-                        <p>你的專頁自動產生。分享到 Twitter/X、YouTube 或直播間，粉絲不需要下載 App 就能直接應援。</p>
-                    </div>
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-trophy"></i></div>
-                        <h3>③ 達成目標，兌現承諾</h3>
-                        <p>里程碑達成後，款項扣除 8% 平台費與 3% 金流費後自動撥入你的帳戶。<strong>比 YouTube 超級留言的 30% 抽成划算太多了。</strong></p>
-                    </div>
-                </div>
-                <div style="text-align:center;margin-top:2.5rem;">
-                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
-                        <i class="fas fa-rocket"></i> 試看看創作者後台
-                    </a>
-                </div>
-            </div>
-            <!-- Fan steps -->
-            <div class="how-steps-panel" id="how-fan">
-                <div class="how-grid">
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-search"></i></div>
-                        <h3>① 找到你支持的推</h3>
-                        <p>瀏覽平台，找到你喜歡的 VTuber，看她現在正在衝哪個里程碑——可能是新衣裝、Cover 曲，或者 3D 出道夢。</p>
-                    </div>
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-credit-card"></i></div>
-                        <h3>② 選金額，秒付完</h3>
-                        <p>選好金額，用最習慣的方式結帳就好。付款後，<strong>進度條就在你眼前動了起來</strong>。這種感覺，比丟超級留言真實 100 倍。</p>
-                        <!-- Payment method icons -->
-                        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-top:0.75rem;flex-wrap:wrap;">
-                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:700;color:var(--text-muted);background:var(--bg-main);border:1px solid var(--border-color);padding:4px 10px;border-radius:8px;"><i class="fas fa-credit-card" style="color:var(--secondary);"></i> 信用卡</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:700;color:var(--text-muted);background:var(--bg-main);border:1px solid var(--border-color);padding:4px 10px;border-radius:8px;"><i class="fas fa-mobile-screen" style="color:#00b900;"></i> LINE Pay</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:700;color:var(--text-muted);background:var(--bg-main);border:1px solid var(--border-color);padding:4px 10px;border-radius:8px;"><i class="fas fa-store" style="color:var(--primary);"></i> 超商代碼</span>
-                            <span style="display:inline-flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:700;color:var(--text-muted);background:var(--bg-main);border:1px solid var(--border-color);padding:4px 10px;border-radius:8px;"><i class="fas fa-comments-dollar" style="color:#e87d2b;"></i> 街口支付</span>
-                        </div>
-                    </div>
-                    <div class="how-step">
-                        <div class="how-icon"><i class="fas fa-medal"></i></div>
-                        <h3>③ 見證她成功，你的名字刻在那一刻</h3>
-                        <p>里程碑達成時，你獲得限定徽章與永久榮耀名單。5 年後她在大舞台上，你可以說「我是第一批支持她的人」。</p>
-                    </div>
-                </div>
-                <div style="text-align:center;margin-top:2.5rem;">
-                    <a href="#demo-section" class="btn btn-primary" style="font-size:1rem;padding:0.85rem 2.5rem;">
-                        <i class="fas fa-play-circle"></i> 立刻去試玩粉絲體驗
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ── [NEW] 金流透明度 FAQ ── -->
-    <section id="faq" style="background:var(--bg-main);padding:5rem 20px;transition:background 0.3s;">
-        <div class="container" style="max-width:780px;">
-            <div class="text-center" style="margin-bottom:3rem;">
-                <span class="section-label">FAQ</span>
-                <h2 style="font-size:2rem;font-weight:900;color:var(--text-main);margin-bottom:0.5rem;">你可能想問的問題</h2>
-                <p style="color:var(--text-muted);font-size:0.95rem;">（我們想在你猶豫之前先告訴你答案）</p>
-            </div>
-            <div style="display:flex;flex-direction:column;gap:1.25rem;">
-                <details style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;" open>
-                    <summary style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">Q：我付款後，錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i></summary>
-                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">是的。我們使用台灣最大第三方支付綠界科技處理款項。付款後扣除 8% 平台費與 3% 金流費，其餘款項直接進入 VTuber 的帳戶。你可以在「應援紀錄」中確認每筆交易狀態。</p>
-                </details>
-                <details style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
-                    <summary style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">Q：我可以用哪些方式付款？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i></summary>
-                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">我們支援 <strong>信用卡 / 簽帳卡</strong>、<strong>LINE Pay</strong>、<strong>街口支付</strong> 以及<strong>超商代碼</strong>（7-11 / 全家）。如果你是學生，不需要信用卡也可以完成應援！</p>
-                </details>
-                <details style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
-                    <summary style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">Q：這和超級留言有什麼差別？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i></summary>
-                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。而且 VTuber 能多拿 20%+。</p>
-                </details>
-                <details style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
-                    <summary style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">Q：VTuber 怎麼加入？有什麼門檻嗎？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i></summary>
-                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">目前平台處於概念體驗階段，正在邀請第一批合作創作者。如果你是 VTuber，可以直接點下方按鈕試用創作者後台，或聯繫我們了解入駐方式。</p>
-                </details>
-            </div>
-        </div>
-    </section>
 
     <!-- ── Demo CTA ── -->
     <section class="demo-cta-section" id="demo-section">
@@ -1045,16 +1035,16 @@
             <h2>百聞不如一試<br><span style="font-size:1.6rem;opacity:0.85;">進去 2 分鐘，你就懂了</span></h2>
             <p>無需註冊、無需信用卡——花 2 分鐘試玩，感受應援的真實感覺</p>
             <div class="demo-cards">
-                <a href="dashboard.html" class="demo-card">
+                <a href="dashboard.html?mode=demo" class="demo-card">
                     <div class="demo-card-icon creator-icon"><i class="fas fa-star"></i></div>
                     <h3>VTuber 創作者後台體驗</h3>
                     <p>「我要怎麼設定里程碑？後台好不好用？」<br>點進去看看。AI 發想 + 進度管理 + 贊助紀錄，一次全看。</p>
                     <span class="demo-card-btn creator-btn"><i class="fas fa-rocket"></i> 試玩創作者後台</span>
                 </a>
-                <a href="vtuber_profile.html?id=ryusei" class="demo-card">
+                <a href="vtuber_profile.html?id=ryusei&mode=fan" class="demo-card">
                     <div class="demo-card-icon fan-icon"><i class="fas fa-heart"></i></div>
                     <h3>粉絲應援體驗</h3>
-                    <p>扮演拜風的粉絲，用 500 V點應援她的第一首原創曲。進度條會在你眼前動起來——這種感覺，解釋不清楚，只能親身體驗。</p>
+                    <p>扮演粉絲，模擬應援她的 3D 企劃。進度條會在你眼前動起來——這種感覺，解釋不清楚，只能親身體驗。</p>
                     <span class="demo-card-btn fan-btn"><i class="fas fa-play-circle"></i> 試玩粉絲應援</span>
                 </a>
             </div>
@@ -1072,7 +1062,7 @@
 
             <div class="vtuber-grid">
                 <!-- Card 1 — 川雲爪日 -->
-                <a href="#demo-section" class="v-card" data-cat="game hot">
+                <a href="vtuber_profile.html?id=ryusei&mode=fan" class="v-card" data-cat="game hot">
                     <div class="v-card-banner">
                         <div class="v-card-banner-bg" style="background-image: url('image/banner2.png');"></div>
                         <div class="v-card-banner-overlay"></div>
@@ -1085,7 +1075,7 @@
                                 <h3>川雲爪日</h3>
                             </div>
                         </div>
-                        <div class="v-card-followers">繪師型 VTuber · 出道 1 年半 · 應援者 184 人</div>
+                        <div class="v-card-followers">繪師型 VTuber · 出道 1 年半 </div>
                         <div class="v-card-tags">
                             <span class="tag"><i class="fas fa-pen-nib"></i> 繪圖</span>
                             <span class="tag t-blue-sub">原創動畫</span>
@@ -1094,7 +1084,8 @@
                         <div class="v-card-milestone"><i class="fas fa-film" style="color:var(--primary);"></i>
                             爪日帝國動畫第二集 製作費應援中 🎬</div>
                         <!-- Story quote -->
-                        <div style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--primary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
+                        <div
+                            style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--primary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
                             「那些擦肩而過的打賞，都是沒被聽見的夢想。V-UP! 讓我第一次覺得，粉絲真的在和我一起做同一件事。」
                         </div>
                         <div class="v-card-progress-wrap">
@@ -1111,21 +1102,25 @@
                 </a>
 
                 <!-- Card 2 — 拜風 -->
-                <a href="#demo-section" class="v-card" data-cat="music hot">
+                <a href="vtuber_profile.html?id=ryusei&mode=fan" class="v-card" data-cat="music hot">
                     <div class="v-card-banner">
-                        <div class="v-card-banner-bg" style="background:linear-gradient(135deg,#1a0533 0%,#2d1456 50%,#0f2744 100%);"></div>
+                        <div class="v-card-banner-bg"
+                            style="background:linear-gradient(135deg,#1a0533 0%,#2d1456 50%,#0f2744 100%);"></div>
                         <div class="v-card-banner-overlay"></div>
                         <div class="category-badge"><i class="fas fa-music"></i> 歌手</div>
-                        <div class="live-badge" style="background:linear-gradient(90deg,#a855f7,#ec4899);"><span class="dot"></span> NEW</div>
+                        <div class="live-badge" style="background:linear-gradient(90deg,#a855f7,#ec4899);"><span
+                                class="dot"></span> NEW</div>
                     </div>
                     <div class="v-card-body">
                         <div class="v-card-avatar-wrap">
-                            <div class="v-card-avatar" style="background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:white;">🎤</div>
+                            <div class="v-card-avatar"
+                                style="background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:white;">
+                                🎤</div>
                             <div class="v-card-name-row">
                                 <h3>拜風</h3>
                             </div>
                         </div>
-                        <div class="v-card-followers">歌手型 VTuber · 出道 2 個月 · 新人 · 第一個支持者在等你</div>
+                        <div class="v-card-followers">歌手型 VTuber · 出道 2 個月新人 </div>
                         <div class="v-card-tags">
                             <span class="tag"><i class="fas fa-microphone"></i> 歌手</span>
                             <span class="tag t-blue-sub">新人</span>
@@ -1134,7 +1129,8 @@
                         <div class="v-card-milestone"><i class="fas fa-music" style="color:var(--primary);"></i>
                             第一首 Original 曲錄製費 🎵 剛啟動</div>
                         <!-- Story quote -->
-                        <div style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--secondary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
+                        <div
+                            style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--secondary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
                             「如果你也在觀望一個剛出道的小 V——她值不值得，不是等她紅了才知道。是你決定的。」
                         </div>
                         <div class="v-card-progress-wrap">
@@ -1192,6 +1188,58 @@
                 style="background: white; color: var(--primary); font-size: 1.1rem; padding: 1rem 3rem; border-radius: 99px; font-weight: 800; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; z-index: 1; text-decoration: none;">
                 <i class="fas fa-paper-plane"></i> 填寫試玩回饋表單
             </a>
+        </div>
+    </section>
+
+    <!-- ── [NEW] 金流透明度 FAQ ── -->
+    <section id="faq" style="background:var(--bg-main);padding:5rem 20px;transition:background 0.3s;">
+        <div class="container" style="max-width:780px;">
+            <div class="text-center" style="margin-bottom:3rem;">
+                <span class="section-label">FAQ</span>
+                <h2 style="font-size:2rem;font-weight:900;color:var(--text-main);margin-bottom:0.5rem;">你可能想問的問題</h2>
+                <p style="color:var(--text-muted);font-size:0.95rem;">（我們想在你猶豫之前先告訴你答案）</p>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:1.25rem;">
+                <details
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;"
+                    open>
+                    <summary
+                        style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Q：我付款後，錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down"
+                            style="color:var(--primary);font-size:0.8rem;"></i></summary>
+                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
+                        是的。我們使用台灣最大第三方支付綠界科技處理款項。付款後扣除 7% 平台費與 3% 金流費，其餘款項直接進入 VTuber 的帳戶。你可以在「應援紀錄」中確認每筆交易狀態。</p>
+                </details>
+                <details
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary
+                        style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Q：我可以用哪些方式付款？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">我們支援
+                        <strong>信用卡 / 簽帳卡</strong>、<strong>LINE Pay</strong>、<strong>街口支付</strong>
+                        以及<strong>超商代碼</strong>（7-11 / 全家）。如果你是學生，不需要信用卡也可以完成應援！
+                    </p>
+                </details>
+                <details
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary
+                        style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Q：這和超級留言有什麼差別？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i>
+                    </summary>
+                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
+                        超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。而且 VTuber 能多拿 20%+。</p>
+                </details>
+                <details
+                    style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
+                    <summary
+                        style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
+                        Q：VTuber 怎麼加入？有什麼門檻嗎？<i class="fas fa-chevron-down"
+                            style="color:var(--primary);font-size:0.8rem;"></i></summary>
+                    <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
+                        目前平台處於概念體驗階段，正在邀請第一批合作創作者。如果你是 VTuber，可以直接點下方按鈕試用創作者後台，或聯繫我們了解入駐方式。</p>
+                </details>
+            </div>
         </div>
     </section>
 
