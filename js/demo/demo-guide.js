@@ -128,6 +128,11 @@ export function startDemoGuide(steps = []) {
       ? step.placements
       : ['bottom', 'right', 'top', 'left'];
 
+    // For mobile devices, prioritize vertical placements to avoid horizontal squishing
+    if (vw < 768 && (!step.placements || step.placements.length === 0)) {
+      placements = ['bottom', 'top'];
+    }
+
     var chosen = null;
     for (var i = 0; i < placements.length; i++) {
       var place = placements[i];
@@ -165,9 +170,11 @@ export function startDemoGuide(steps = []) {
       console.log('[DemoGuide] fallback placement → left:', chosen.left, 'top:', chosen.top);
     }
 
-    // Clamp so tooltip never leaves viewport
-    var finalLeft = Math.min(Math.max(chosen.left, pad), vw - tipW - pad);
-    var finalTop  = Math.min(Math.max(chosen.top,  pad), vh - tipH - pad);
+    // Clamp so tooltip never leaves viewport, handling cases where tip is larger than viewport gracefully
+    var maxLeft = Math.max(pad, vw - tipW - pad);
+    var maxTop  = Math.max(pad, vh - tipH - pad);
+    var finalLeft = Math.min(Math.max(chosen.left, pad), maxLeft);
+    var finalTop  = Math.min(Math.max(chosen.top,  pad), maxTop);
 
     console.log('[DemoGuide] final position → left:', finalLeft, 'top:', finalTop);
 

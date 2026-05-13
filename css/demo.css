@@ -134,6 +134,7 @@ body.demo-has-banner {
 .demo-guide-tip {
   position: fixed;
   z-index: 9998;
+  box-sizing: border-box; /* Crucial for RWD width limits */
   width: min(340px, calc(100vw - 24px));
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(24px);
@@ -199,5 +200,18 @@ body.demo-has-banner {
   .demo-modal-card {
     padding: 24px;
     border-radius: 24px;
+  }
+  .demo-guide-tip {
+    width: calc(100vw - 32px); /* Slightly more margin on tiny screens */
+    padding: 16px; /* Less padding so text fits better */
+    border-radius: 16px;
+  }
+  .demo-guide-tip p {
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+  }
+  .demo-guide-actions .demo-btn {
+    padding: 6px 14px;
+    font-size: 0.8rem;
   }
 }
