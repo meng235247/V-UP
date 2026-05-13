@@ -132,16 +132,16 @@ body.demo-has-banner {
 }
 
 .demo-guide-tip {
-  position: absolute;
+  position: fixed;
   z-index: 9998;
   width: min(340px, calc(100vw - 24px));
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   color: #1E293B;
   border-radius: 24px;
-  border: 2px solid white;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  border: 2px solid rgba(255, 133, 178, 0.3);
+  box-shadow: 0 20px 60px rgba(255, 107, 158, 0.12), 0 4px 20px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(255, 255, 255, 0.6);
   padding: 24px;
 }
 
@@ -166,23 +166,22 @@ body.demo-has-banner {
 
 .demo-highlight {
   position: relative;
-  z-index: 9999;
-  outline: 4px solid #FF85B2;
+  z-index: 9999 !important;
+  isolation: isolate;
+  outline: 3px solid #FF85B2;
+  outline-offset: 5px;
   border-radius: inherit;
-  outline-offset: 4px;
-  animation: demoPulse 1.5s ease-in-out infinite;
-  box-shadow: 0 0 0 4px rgba(255, 133, 178, 0.1);
-  background: white; /* Optional: ensures highlighted element isn't transparent */
+  animation: demoPulse 1.6s ease-in-out infinite;
 }
 
 @keyframes demoPulse {
   0%, 100% {
     outline-color: #FF85B2;
-    box-shadow: 0 0 0 4px rgba(255, 133, 178, 0.1);
+    box-shadow: 0 0 0 5px rgba(255, 133, 178, 0.15);
   }
   50% {
     outline-color: #70DDF1;
-    box-shadow: 0 0 0 8px rgba(112, 221, 241, 0.2);
+    box-shadow: 0 0 0 10px rgba(112, 221, 241, 0.18);
   }
 }
 
