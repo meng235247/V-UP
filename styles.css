@@ -828,13 +828,14 @@ img {
 
 /* ---- Why Us Section ---- */
 .why-section {
-    background: #0d1117;
+    background: var(--bg-surface);
     padding: 5.5rem 20px;
-    color: white;
+    color: var(--text-main);
+    transition: background 0.3s;
 }
 
 [data-theme="dark"] .why-section {
-    border-top: 1px solid #30363d;
+    border-top: 1px solid var(--border-color);
 }
 
 .why-label {
@@ -849,12 +850,12 @@ img {
 }
 
 .why-section h2 {
-    color: white;
+    color: var(--text-main);
     margin-bottom: 0.6rem;
 }
 
 .why-section>.container>p {
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-muted);
     font-size: 1rem;
     margin-bottom: 3rem;
 }
@@ -872,18 +873,20 @@ img {
 }
 
 .why-card {
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
     border-radius: 20px;
     padding: 2rem 1.75rem;
     transition: all 0.3s;
     animation: cardIn 0.5s ease both;
+    box-shadow: var(--shadow-sm);
 }
 
 .why-card:hover {
-    background: rgba(255, 255, 255, 0.07);
-    border-color: rgba(46, 220, 202, 0.25);
+    background: var(--bg-surface);
+    border-color: var(--primary);
     transform: translateY(-4px);
+    box-shadow: var(--shadow-md);
 }
 
 .why-icon {
@@ -898,13 +901,13 @@ img {
 }
 
 .why-icon.cyan {
-    background: rgba(46, 220, 202, 0.15);
-    color: #2edcca;
+    background: var(--primary-light);
+    color: var(--primary);
 }
 
 .why-icon.blue {
-    background: rgba(112, 221, 241, 0.15);
-    color: #70ddf1;
+    background: var(--secondary-light);
+    color: var(--secondary);
 }
 
 .nav-logo-vup {
@@ -931,13 +934,13 @@ img {
 .why-card h3 {
     font-size: 1.05rem;
     font-weight: 800;
-    color: white;
+    color: var(--text-main);
     margin-bottom: 0.65rem;
 }
 
 .why-card p {
     font-size: 0.88rem;
-    color: rgba(255, 255, 255, 0.55);
+    color: var(--text-muted);
     line-height: 1.7;
 }
 
