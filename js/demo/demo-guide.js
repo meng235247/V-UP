@@ -16,9 +16,25 @@ export function startDemoGuide(steps = []) {
   }
 
   function end() {
-    clearHighlight();
-    overlay.remove();
-    tip.remove();
+    if (typeof window.anime !== 'undefined') {
+      window.anime({
+        targets: tip,
+        opacity: [1, 0],
+        translateY: [0, -10],
+        scale: [1, 0.95],
+        duration: 300,
+        easing: 'easeInBack',
+        complete: () => {
+          clearHighlight();
+          overlay.remove();
+          tip.remove();
+        }
+      });
+    } else {
+      clearHighlight();
+      overlay.remove();
+      tip.remove();
+    }
   }
 
   function waitForEventOnce(eventName) {
@@ -130,6 +146,25 @@ export function startDemoGuide(steps = []) {
     tip.style.left = `${clampedLeft + window.scrollX}px`;
     tip.style.top = `${clampedTop + window.scrollY}px`;
     tip.style.visibility = 'visible';
+
+    if (typeof window.anime !== 'undefined') {
+      window.anime({
+        targets: tip,
+        opacity: [0, 1],
+        translateY: [20, 0],
+        scale: [0.9, 1],
+        duration: 800,
+        easing: 'easeOutElastic(1, .7)'
+      });
+
+      window.anime({
+        targets: target,
+        scale: [1.03, 1],
+        duration: 1000,
+        easing: 'easeOutElastic(1, .6)'
+      });
+    }
+
     tip.querySelector('#demo-guide-next')?.addEventListener('click', next);
     tip.querySelector('#demo-guide-skip')?.addEventListener('click', end);
   }
