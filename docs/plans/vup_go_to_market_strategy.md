@@ -117,15 +117,33 @@ Google Form 問題（建議 3 題以內）：
 
 ---
 
-## 五、實作清單（精簡，P0 優先）
+## 五、數據追蹤 (Google Tag Manager)
+
+> 為了了解使用者的真實行為與轉化漏斗，需要引入 GTM (GTM-P97H54KD) 來捕捉關鍵數據。
+
+**追蹤重點（Custom Events）**：
+1. **Landing Page 點擊**：
+   - `click_creator_cta`：首頁點擊「我是 VTuber 創作者」了解更多的次數。
+   - `click_fan_demo`：首頁點擊「粉絲試玩體驗」的次數。
+2. **Demo 漏斗**：
+   - `start_demo_payment`：在試玩頁點擊「立刻支持」開啟付款 modal 的次數。
+   - `finish_demo_payment`：完成模擬扣點並看到成功 Toast 的次數。
+3. **回饋轉換**：
+   - `click_feedback_form`：在 Toast 點擊前往 Google Form 的次數。
+
+---
+
+## 六、實作清單（精簡，P0 優先）
 
 | 優先 | 任務 | 改動量 | 說明 |
 |------|------|--------|------|
 | P0 | Hero 文案改版 | 小（只改文字） | 調整 H1、副標、CTA 順序 |
 | P0 | Hero 加 Demo 入口 CTA | 小（加一個按鈕） | 指向 `?id=demo` |
 | P0 | Demo 頁頂部工具列 | 小（加一列 HTML+CSS） | 顯示 V點餘額 |
+| P0 | 埋設 GTM 基礎代碼 | 小 | 在 `index.html` 與 `vtuber_profile.html` 加入 GTM 代碼 |
 | P1 | Payment Modal 沙盒模式 | 中（JS 判斷 + UI 修改） | isDemoMode 旗標控制 |
 | P1 | 試玩完成 Toast + 表單連結 | 小 | 觸發時機：進度條更新後 |
+| P1 | GTM 關鍵事件綁定 | 中 | 綁定上述規劃的 5 個 Custom Events 點擊事件 |
 | P2 | Dashboard Demo Banner | 小 | 提示「提案展示模式」 |
 | P2 | How It Works 文案修正 | 小 | 改為粉絲純視角 |
 
@@ -133,7 +151,7 @@ Google Form 問題（建議 3 題以內）：
 
 ---
 
-## 六、決策記錄
+## 七、決策記錄
 
 | 決策 | 選擇 | 理由 |
 |------|------|------|
@@ -141,10 +159,11 @@ Google Form 問題（建議 3 題以內）：
 | 首頁範圍 | 只改現有文案，不加新區塊 | 節省製作量 |
 | 受眾優先 | 創作者 CTA 排第一 | 提案階段創作者驗證更關鍵 |
 | 反饋蒐集 | Google Form（外部） | 不需要開發後台，最輕量 |
+| 數據追蹤 | GTM Event Tracking | 驗證漏斗流失率與兩邊受眾的點擊佔比 |
 
 ---
 
-## 七、開放問題（需確認才進入實作）
+## 八、開放問題（需確認才進入實作）
 
 1. **Demo 里程碑目標金額**：seed data 裡的里程碑目標是否設計一個「很容易達成」的（例如 100 V點），讓試玩者必定觸發達成動畫？
 2. **Google Form**：是否已有或需要我協助設計表單題目？

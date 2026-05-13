@@ -2,6 +2,13 @@
 <html lang="zh-TW">
 
 <head>
+    <!-- Google Tag Manager -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-P97H54KD');</script>
+    <!-- End Google Tag Manager -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="V-Up! | SAKURA NOVA 專頁">
@@ -12,10 +19,19 @@
 </head>
 
 <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P97H54KD"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- Demo Mode Toolbar -->
+    <div id="demo-toolbar" style="display: none; background: var(--gradient-primary, linear-gradient(135deg, #f472b6, #70ddf1)); color: white; text-align: center; padding: 12px; font-weight: 800; font-size: 0.95rem; z-index: 10001; position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+        🎮 試玩模式 | 500 V點可用 | <a href="#milestones" style="color: white; text-decoration: underline; margin: 0 10px;">試著贊助看看</a> <a href="#" style="color: rgba(255,255,255,0.8); text-decoration: underline; font-size: 0.85rem;" onclick="alert('這是 V-UP 的概念試玩版，不需註冊與綁定信用卡即可體驗應援流程！所有資料都不會被真實寫入。')">這是什麼？</a>
+    </div>
 
     <!-- Floating Navbar is positioned sticky within page, doesn't need to be in wrapper -->
     <div class="hero-wrapper" id="top">
-        <div class="vt-nav-wrapper">
+        <div class="vt-nav-wrapper" id="nav-wrapper">
             <nav class="vt-nav">
                 <div class="nav-left-section">
                     <a href="index.html" class="nav-logo-vup">V-UP!</a>
@@ -924,6 +940,12 @@
 
             // (#3) Signature updated: openPaymentModal(itemName, milestoneId, btnElement)
             function openPaymentModal(itemName, milestoneId, btnElement) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('id') === 'demo') {
+                    window.dataLayer = window.dataLayer || [];
+                    window.dataLayer.push({'event': 'start_demo_payment'});
+                }
+
                 currentItem = itemName;
                 currentMilestoneId = milestoneId; // (#3) Store for simulatePaymentAPI
                 document.getElementById('pm-item-name').textContent = itemName;
@@ -1264,6 +1286,14 @@
             }
 
             function initializePage() {
+                // Check Demo mode
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('id') === 'demo') {
+                    document.getElementById('demo-toolbar').style.display = 'block';
+                    const nav = document.getElementById('nav-wrapper');
+                    if (nav) nav.style.top = '44px'; // align with sticky toolbar space
+                }
+
                 // Import the VTuber profile page controller
                 import('./js/pages/vtuber-profile.page.js').then(() => {
                     // The script will auto-initialize via VtuberProfilePage.init()
