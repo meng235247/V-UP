@@ -1533,22 +1533,22 @@
                             startDemoGuide([
                                 {
                                     target: '.ms-card[data-generated] .ms-progress-bar, .ms-card .ms-progress-bar',
-                                    text: '這裡是里程碑進度。先看看目標完成比例。',
-                                    buttonText: '了解',
+                                    text: '✨ 快來看看目前的應援進度！每一份力量都在幫助推子更接近夢想喔。',
+                                    buttonText: '收到！',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 },
                                 {
                                     target: '.ms-card[data-generated] .btn-support-now, .ms-card .btn-support-now',
-                                    text: '點這裡開始模擬贊助。贊助完成後，會看到達標動畫與解鎖。',
-                                    buttonText: '我來試試',
+                                    text: '🔥 點擊這裡發送你的「模擬應援」！準備好迎接超華麗的達標動畫了嗎？',
+                                    buttonText: '馬上應援！',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 },
                                 {
                                     target: '.ms-card[data-generated] .ms-exclusive-content, .ms-card .ms-exclusive-content',
-                                    text: '贊助完成後，這裡會顯示已解鎖的限定內容。',
-                                    buttonText: '下一步',
+                                    text: '🎉 恭喜解鎖專屬限定內容！推子準備的秘密驚喜已經為你開放囉。',
+                                    buttonText: '太棒了！',
                                     waitForEvent: 'vup:demo-payment-completed',
                                     waitAfterEventMs: 2800,
                                     scrollBlock: 'center',
@@ -1556,8 +1556,8 @@
                                 },
                                 {
                                     target: '.ms-card[data-generated] .ms-ranking, .ms-card .ms-ranking',
-                                    text: '你的名字也會出現在榜單上，方便你確認體驗結果。',
-                                    buttonText: '完成',
+                                    text: '💖 你的名字已經刻在榜單上了！這就是你與推子共同創造的證明。',
+                                    buttonText: '完成體驗！',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 }
@@ -1566,8 +1566,8 @@
                     } else if (demoCtx && demoCtx.mode === 'creator-preview') {
                         setTimeout(() => {
                             startDemoGuide([
-                                { target: '.vt-hero', text: '這是你的公開頁預覽，資料來自本機試玩內容。', buttonText: '下一步' },
-                                { target: '#milestones', text: '你在創作者 Demo 發布的里程碑會出現在這裡。', buttonText: '知道了' }
+                                { target: '.vt-hero', text: '👀 這裡是專屬於你的舞台預覽！粉絲們看到的就是這幅充滿魅力的畫面喔。', buttonText: '太好看了！' },
+                                { target: '#milestones', text: '🚀 你精心策劃的「里程碑」都會在這裡閃閃發光，等著粉絲一起來達成！', buttonText: '了解！' }
                             ]);
                         }, 1200);
                     }
