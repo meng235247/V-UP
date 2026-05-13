@@ -6,13 +6,16 @@ export function startDemoGuide(steps = []) {
   overlay.className = 'demo-guide-overlay';
   overlay.id = 'demo-guide-overlay';
   overlay.style.display = 'none';
+
   const tip = document.createElement('div');
   tip.className = 'demo-guide-tip';
   tip.id = 'demo-guide-tip';
   tip.style.display = 'none';
 
   function clearHighlight() {
-    document.querySelectorAll('.demo-highlight').forEach((el) => el.classList.remove('demo-highlight'));
+    document.querySelectorAll('.demo-highlight').forEach(function(el) {
+      el.classList.remove('demo-highlight');
+    });
   }
 
   function end() {
@@ -21,10 +24,10 @@ export function startDemoGuide(steps = []) {
         targets: tip,
         opacity: [1, 0],
         translateY: [0, -10],
-        scale: [1, 0.95],
-        duration: 300,
+        scale: [1, 0.92],
+        duration: 280,
         easing: 'easeInBack',
-        complete: () => {
+        complete: function() {
           clearHighlight();
           overlay.remove();
           tip.remove();
@@ -38,20 +41,19 @@ export function startDemoGuide(steps = []) {
   }
 
   function waitForEventOnce(eventName) {
-    return new Promise((resolve) => {
-      const handler = () => {
+    return new Promise(function(resolve) {
+      window.addEventListener(eventName, function handler() {
         window.removeEventListener(eventName, handler);
         resolve();
-      };
-      window.addEventListener(eventName, handler, { once: true });
+      }, { once: true });
     });
   }
 
   function isCelebrationOpen() {
-    const overlay = document.getElementById('milestone-celebrate-overlay');
-    if (!overlay) return false;
-    const style = window.getComputedStyle(overlay);
-    return style.display !== 'none' && style.pointerEvents !== 'none';
+    var cel = document.getElementById('milestone-celebrate-overlay');
+    if (!cel) return false;
+    var s = window.getComputedStyle(cel);
+    return s.display !== 'none' && s.pointerEvents !== 'none';
   }
 
   function waitForCelebrationClose() {
@@ -59,114 +61,194 @@ export function startDemoGuide(steps = []) {
     return waitForEventOnce('vup:celebration-closed');
   }
 
-  function wait(ms = 0) {
+  function wait(ms) {
     if (!ms || ms <= 0) return Promise.resolve();
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(function(resolve) { setTimeout(resolve, ms); });
+  }
+
+  function waitFrames(n) {
+    n = n || 2;
+    return new Promise(function(resolve) {
+      var c = 0;
+      function tick() { if (++c >= n) resolve(); else requestAnimationFrame(tick); }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /**
+   * KEY FIX: Find the first element matching the selector that is
+   * actually rendered with non-zero dimensions (i.e. visible/in-DOM).
+   * Skips elements inside hidden containers (getBoundingClientRect returns zeros).
+   */
+  function findVisibleTarget(selector) {
+    var elements = document.querySelectorAll(selector);
+    for (var i = 0; i < elements.length; i++) {
+      var el = elements[i];
+      var r = el.getBoundingClientRect();
+      // An element with actual dimensions is renderable
+      if (r.width > 0 && r.height > 0) {
+        console.log('[DemoGuide] findVisibleTarget found visible element:', el, 'rect:', JSON.stringify(r));
+        return el;
+      }
+    }
+    // Fallback: return first element even if zero-size
+    if (elements.length > 0) {
+      console.warn('[DemoGuide] No visible target found for selector:', selector, '— using first match (zero-size)');
+      return elements[0];
+    }
+    console.warn('[DemoGuide] No element found for selector:', selector);
+    return null;
+  }
+
+  /**
+   * Position the tooltip (position:fixed) adjacent to the target element.
+   * All coordinates are in CSS viewport pixels — no scrollX/Y adjustment needed.
+   */
+  function placeTip(target, step) {
+    var gap = Number(step.tipGap) || 16;
+    var pad = Number(step.viewportPadding) || 12;
+
+    // Move tip off-screen temporarily so offsetWidth/Height reflects true intrinsic size
+    tip.style.visibility = 'hidden';
+    tip.style.left = '-9999px';
+    tip.style.top = '0px';
+    tip.style.display = 'block';
+
+    var tipW = tip.offsetWidth;
+    var tipH = tip.offsetHeight;
+
+    // Read target position AFTER scroll has settled
+    var r = target.getBoundingClientRect();
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    console.log('[DemoGuide] placeTip — target rect:', JSON.stringify(r), 'tipW:', tipW, 'tipH:', tipH, 'vw:', vw, 'vh:', vh);
+
+    var placements = (Array.isArray(step.placements) && step.placements.length)
+      ? step.placements
+      : ['bottom', 'right', 'top', 'left'];
+
+    var chosen = null;
+    for (var i = 0; i < placements.length; i++) {
+      var place = placements[i];
+      var left, top;
+      if (place === 'right') {
+        left = r.right + gap;
+        top  = r.top + r.height / 2 - tipH / 2;
+      } else if (place === 'left') {
+        left = r.left - tipW - gap;
+        top  = r.top + r.height / 2 - tipH / 2;
+      } else if (place === 'top') {
+        left = r.left + r.width / 2 - tipW / 2;
+        top  = r.top - tipH - gap;
+      } else { // bottom
+        left = r.left + r.width / 2 - tipW / 2;
+        top  = r.bottom + gap;
+      }
+      var fits = (left >= pad)
+        && (top >= pad)
+        && (left + tipW <= vw - pad)
+        && (top + tipH <= vh - pad);
+      if (fits) {
+        chosen = { left: left, top: top };
+        console.log('[DemoGuide] placement:', place, '→ left:', left, 'top:', top);
+        break;
+      }
+    }
+
+    if (!chosen) {
+      // Fallback: below target
+      chosen = {
+        left: r.left + r.width / 2 - tipW / 2,
+        top:  r.bottom + gap
+      };
+      console.log('[DemoGuide] fallback placement → left:', chosen.left, 'top:', chosen.top);
+    }
+
+    // Clamp so tooltip never leaves viewport
+    var finalLeft = Math.min(Math.max(chosen.left, pad), vw - tipW - pad);
+    var finalTop  = Math.min(Math.max(chosen.top,  pad), vh - tipH - pad);
+
+    console.log('[DemoGuide] final position → left:', finalLeft, 'top:', finalTop);
+
+    tip.style.left = finalLeft + 'px';
+    tip.style.top  = finalTop  + 'px';
+    tip.style.visibility = 'visible';
   }
 
   async function next() {
     idx += 1;
-    if (idx >= steps.length) {
-      end();
-      return;
-    }
+    if (idx >= steps.length) { end(); return; }
+
     clearHighlight();
     overlay.style.display = 'none';
     tip.style.display = 'none';
-    const step = steps[idx];
-    if (step.waitForEvent) {
-      await waitForEventOnce(step.waitForEvent);
-    }
-    if (step.waitAfterEventMs) {
-      await wait(step.waitAfterEventMs);
-    }
+
+    var step = steps[idx];
+
+    if (step.waitForEvent) await waitForEventOnce(step.waitForEvent);
+    if (step.waitAfterEventMs) await wait(step.waitAfterEventMs);
     await waitForCelebrationClose();
-    const target = document.querySelector(step.target);
-    if (!target) {
-      next();
-      return;
-    }
-    if (step.autoScroll !== false) {
-      target.scrollIntoView({
-        behavior: 'smooth',
-        block: step.scrollBlock || 'center',
-        inline: 'nearest'
-      });
-      await wait(step.scrollSettleMs || 380);
-    }
+
+    // Find the first VISIBLE (non-zero-size) element matching the selector
+    var target = findVisibleTarget(step.target);
+    if (!target) { next(); return; }
+
+    // Scroll target to center of viewport and wait for scroll to finish
+    target.scrollIntoView({
+      behavior: 'smooth',
+      block: step.scrollBlock || 'center',
+      inline: 'nearest'
+    });
+    await wait(step.scrollSettleMs || 800);
+
+    // Re-acquire rect AFTER scroll — re-query to be safe
+    // (target reference itself stays the same DOM node)
+    var postScrollRect = target.getBoundingClientRect();
+    console.log('[DemoGuide] post-scroll rect for step', idx, ':', JSON.stringify(postScrollRect));
+
+    // Show overlay + highlight the target
     overlay.style.display = 'block';
     target.classList.add('demo-highlight');
-    tip.innerHTML = `
-      <p>${step.text || ''}</p>
-      <div class="demo-guide-actions">
-        <button id="demo-guide-next" class="demo-btn demo-btn-primary">${step.buttonText || '下一步'}</button>
-        <button id="demo-guide-skip" class="demo-btn demo-btn-secondary">跳過</button>
-      </div>
-    `;
-    tip.style.visibility = 'hidden';
-    tip.style.display = 'block';
 
-    await new Promise((resolve) => requestAnimationFrame(resolve));
+    // Render tooltip content
+    tip.innerHTML =
+      '<p>' + (step.text || '') + '</p>' +
+      '<div class="demo-guide-actions">' +
+        '<button id="demo-guide-next" class="demo-btn demo-btn-primary">' + (step.buttonText || '下一步') + '</button>' +
+        '<button id="demo-guide-skip" class="demo-btn demo-btn-secondary">跳過</button>' +
+      '</div>';
 
-    const rect = target.getBoundingClientRect();
-    const tipRect = tip.getBoundingClientRect();
-    const gap = Number(step.tipGap || 12);
-    const pad = Number(step.viewportPadding || 12);
-    const placements = Array.isArray(step.placements) && step.placements.length
-      ? step.placements
-      : ['right', 'bottom', 'left', 'top'];
+    // Wait for browser to paint the tooltip content so measurements are accurate
+    await waitFrames(3);
 
-    const candidates = placements.map((place) => {
-      let left = rect.left;
-      let top = rect.top;
-      if (place === 'right') {
-        left = rect.right + gap;
-        top = rect.top + (rect.height - tipRect.height) / 2;
-      } else if (place === 'left') {
-        left = rect.left - tipRect.width - gap;
-        top = rect.top + (rect.height - tipRect.height) / 2;
-      } else if (place === 'top') {
-        left = rect.left + (rect.width - tipRect.width) / 2;
-        top = rect.top - tipRect.height - gap;
-      } else {
-        left = rect.left + (rect.width - tipRect.width) / 2;
-        top = rect.bottom + gap;
-      }
-      const fits = left >= pad
-        && top >= pad
-        && (left + tipRect.width) <= (window.innerWidth - pad)
-        && (top + tipRect.height) <= (window.innerHeight - pad);
-      return { place, left, top, fits };
-    });
+    // Compute and apply position (all viewport / position:fixed coordinates)
+    placeTip(target, step);
 
-    const chosen = candidates.find((c) => c.fits) || candidates[0];
-    const clampedLeft = Math.min(Math.max(chosen.left, pad), window.innerWidth - tipRect.width - pad);
-    const clampedTop = Math.min(Math.max(chosen.top, pad), window.innerHeight - tipRect.height - pad);
-
-    tip.style.left = `${clampedLeft + window.scrollX}px`;
-    tip.style.top = `${clampedTop + window.scrollY}px`;
-    tip.style.visibility = 'visible';
-
+    // Entrance animation
     if (typeof window.anime !== 'undefined') {
       window.anime({
         targets: tip,
         opacity: [0, 1],
-        translateY: [20, 0],
+        translateY: [14, 0],
         scale: [0.9, 1],
-        duration: 800,
-        easing: 'easeOutElastic(1, .7)'
+        duration: 550,
+        easing: 'easeOutBack'
       });
-
-      window.anime({
-        targets: target,
-        scale: [1.03, 1],
-        duration: 1000,
-        easing: 'easeOutElastic(1, .6)'
-      });
+      try {
+        window.anime({
+          targets: target,
+          scale: [1, 1.04, 1],
+          duration: 650,
+          easing: 'easeInOutSine'
+        });
+      } catch (_) { /* ignore if element cannot be transformed */ }
     }
 
-    tip.querySelector('#demo-guide-next')?.addEventListener('click', next);
-    tip.querySelector('#demo-guide-skip')?.addEventListener('click', end);
+    var nextBtn = tip.querySelector('#demo-guide-next');
+    var skipBtn = tip.querySelector('#demo-guide-skip');
+    if (nextBtn) nextBtn.addEventListener('click', next);
+    if (skipBtn) skipBtn.addEventListener('click', end);
   }
 
   document.body.appendChild(overlay);
