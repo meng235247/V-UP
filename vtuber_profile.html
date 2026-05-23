@@ -34,7 +34,7 @@
 
                 <div class="vt-nav-actions">
                     <button class="btn-share">分享</button>
-                    <a href="fan_profile.html" class="btn-fan">粉絲個人頁</a>
+                    <a href="fan_profile.html" class="btn-fan" id="btn-fan-profile">粉絲個人頁</a>
                 </div>
             </nav>
         </div>
@@ -1030,13 +1030,10 @@
                         return; // 跳過下方的普通 alert
                     }
 
-                    if (window.DemoSandbox && typeof window.DemoSandbox.isFanDemoMode === 'function' && window.DemoSandbox.isFanDemoMode()) {
-                        if (typeof window.DemoSandbox.showCompletionModal === 'function') {
-                            window.DemoSandbox.showCompletionModal('fan');
-                        }
-                    } else {
+                    if (!window.DemoSandbox || !window.DemoSandbox.isFanDemoMode || !window.DemoSandbox.isFanDemoMode()) {
                         alert(`感謝您的贊助！金額: ${amount} NTD`);
                     }
+                    // Fan demo: completion modal will appear after guide step 5 (fan profile guidance)
                     closePaymentModal();
 
                     btn.innerHTML = originalText;
@@ -1571,9 +1568,25 @@
                                 {
                                     target: '.ms-card[data-generated] .ms-ranking, .ms-card .ms-ranking',
                                     text: '💖 你的名字已經刻在榜單上了！這就是你與推子共同創造的證明。',
-                                    buttonText: '完成體驗！',
+                                    buttonText: '前往粉絲個人頁 →',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
+                                },
+                                {
+                                    target: '#btn-fan-profile',
+                                    text: '🌟 體驗完成！點擊「粉絲個人頁」，查看你的應援紀錄、獲得的徽章和稱號！',
+                                    buttonText: '前往粉絲個人頁',
+                                    placements: ['bottom', 'left', 'right', 'top'],
+                                    scrollBlock: 'center',
+                                    scrollSettleMs: 600
+                                },
+                                {
+                                    target: '__demo_sentinel_nonexistent__',
+                                    beforeShow: function() {
+                                        if (window.DemoSandbox && typeof window.DemoSandbox.showCompletionModal === 'function') {
+                                            window.DemoSandbox.showCompletionModal('fan');
+                                        }
+                                    }
                                 }
                             ]);
                         }, 2000);
