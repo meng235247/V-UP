@@ -192,6 +192,9 @@ export function startDemoGuide(steps = []) {
     tip.style.display = 'none';
 
     var step = steps[idx];
+    if (typeof step.beforeShow === 'function') {
+      await Promise.resolve(step.beforeShow());
+    }
 
     if (step.waitForEvent) await waitForEventOnce(step.waitForEvent);
     if (step.waitAfterEventMs) await wait(step.waitAfterEventMs);
@@ -223,7 +226,6 @@ export function startDemoGuide(steps = []) {
       '<p>' + (step.text || '') + '</p>' +
       '<div class="demo-guide-actions">' +
         '<button id="demo-guide-next" class="demo-btn demo-btn-primary">' + (step.buttonText || '下一步') + '</button>' +
-        '<button id="demo-guide-skip" class="demo-btn demo-btn-secondary">跳過</button>' +
       '</div>';
 
     // Wait for browser to paint the tooltip content so measurements are accurate
@@ -253,9 +255,7 @@ export function startDemoGuide(steps = []) {
     }
 
     var nextBtn = tip.querySelector('#demo-guide-next');
-    var skipBtn = tip.querySelector('#demo-guide-skip');
     if (nextBtn) nextBtn.addEventListener('click', next);
-    if (skipBtn) skipBtn.addEventListener('click', end);
   }
 
   document.body.appendChild(overlay);

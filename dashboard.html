@@ -830,6 +830,7 @@
         });
 
         if (demoCreatorMode) {
+            document.body.classList.add('demo-dashboard-mode');
             const demoCtx = await initCreatorDemoSandbox({
                 vtuberService,
                 MilestonesService,
