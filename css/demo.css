@@ -249,3 +249,11 @@ body.demo-dashboard-mode #btn-view-public {
     font-size: 0.8rem;
   }
 }
+
+/* Fan profile nav button ¡X elevated above demo guide overlay during guide step 5 */
+#btn-fan-profile.demo-highlight {
+  position: relative;
+  z-index: 10000 !important;
+  transform: scale(1.06);
+  transition: transform 0.2s ease;
+}
