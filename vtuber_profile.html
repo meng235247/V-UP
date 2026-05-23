@@ -1479,8 +1479,22 @@
                 vtuberService
             });
 
+            function refreshCreatorDashboardButton(user = null) {
+                const btn = document.getElementById('btn-creator-dashboard');
+                if (!btn) return;
+                const isCreatorDemo = !!(demoCtx && demoCtx.mode === 'creator-preview');
+                const userData = window._pmCurrentUserData || {};
+                const role = String(userData.role || userData.userType || '').toLowerCase();
+                const isCreatorRole = role === 'vtuber' || role === 'creator';
+                const hasAuthUser = !!user;
+                btn.style.display = (isCreatorDemo || (hasAuthUser && isCreatorRole)) ? '' : 'none';
+            }
+
+            refreshCreatorDashboardButton(null);
+
             if (isDemoFanMode()) {
                 document.querySelectorAll('.btn-fan').forEach((link) => {
+                    if (link.id === 'btn-creator-dashboard') return;
                     link.href = 'fan_profile.html?mode=demo';
                 });
             }

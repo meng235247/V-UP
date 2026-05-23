@@ -1,4 +1,8 @@
 /* V-UP Demo Styles (Themed) */
+:root {
+  --demo-banner-height: 48px;
+}
+
 #demo-banner {
   position: fixed;
   top: 0;
@@ -19,7 +23,30 @@
 }
 
 body.demo-has-banner {
-  padding-top: 48px;
+  padding-top: var(--demo-banner-height, 48px);
+}
+
+/* Dashboard-only demo layout fixes (avoid banner pushing footer CTA out of viewport) */
+body.demo-dashboard-mode {
+  padding-top: 0;
+}
+
+body.demo-dashboard-mode .dashboard-layout {
+  margin-top: var(--demo-banner-height, 48px);
+}
+
+body.demo-dashboard-mode .sidebar {
+  top: var(--demo-banner-height, 48px);
+  height: calc(100vh - var(--demo-banner-height, 48px));
+}
+
+body.demo-dashboard-mode .main-content {
+  padding-top: 0;
+}
+
+body.demo-dashboard-mode #btn-view-public {
+  position: relative;
+  z-index: 2;
 }
 
 .demo-modal-overlay {
@@ -195,7 +222,14 @@ body.demo-has-banner {
     gap: 8px;
   }
   body.demo-has-banner {
-    padding-top: 80px;
+    padding-top: var(--demo-banner-height, 80px);
+  }
+  body.demo-dashboard-mode .dashboard-layout {
+    margin-top: var(--demo-banner-height, 80px);
+  }
+  body.demo-dashboard-mode .sidebar {
+    top: var(--demo-banner-height, 80px);
+    height: calc(100vh - var(--demo-banner-height, 80px));
   }
   .demo-modal-card {
     padding: 24px;

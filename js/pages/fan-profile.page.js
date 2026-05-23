@@ -31,7 +31,7 @@ const DEMO_KEYS = {
 };
 const DEMO_VTUBER_PROFILE_URL = 'vtuber_profile.html?id=ryusei&mode=fan';
 const DEMO_VTUBER_MAP = {
-  demo: { handle: 'demo', displayName: 'SAKURA NOVA', avatarUrl: 'image/miku_test.png' },
+  demo: { handle: 'demo', displayName: 'SAKURA NOVA', avatarUrl: 'image/head.jpg' },
   ryusei: { handle: 'ryusei', displayName: '流星 Ryusei', avatarUrl: 'image/v_head_ryusei.jpg' },
   baifu: { handle: 'baifu', displayName: '拜風', avatarUrl: 'image/v_head_ryusei.jpg' }
 };
@@ -94,7 +94,7 @@ function ensureDemoProfile() {
     badges: [
       {
         id: 'demo_badge_1',
-        badgeUrl: 'image/miku_test.png',
+        badgeUrl: 'image/badge.webp',
         name: '首位應援',
         milestoneTitle: '邁向全新 3D 舞台',
         vtuberId: 'demo',
@@ -106,7 +106,7 @@ function ensureDemoProfile() {
       },
       {
         id: 'demo_badge_2',
-        badgeUrl: 'image/v_head_ryusei.jpg',
+        badgeUrl: 'image/badge.webp',
         name: '共演夥伴',
         milestoneTitle: '線上演唱會準備',
         vtuberId: 'ryusei',
@@ -202,6 +202,98 @@ function applyDemoVtuberLinks() {
     const hash = link.hash || '';
     link.href = `${DEMO_VTUBER_PROFILE_URL}${hash}`;
   });
+}
+
+function shouldRunDemoBadgesTour() {
+  if (!isFanProfileDemoMode()) return false;
+  const params = new URLSearchParams(window.location.search);
+  return params.get('tour') === 'badges';
+}
+
+function runDemoBadgesTour() {
+  if (!shouldRunDemoBadgesTour()) return;
+  const target = document.getElementById('outer-badges-grid');
+  if (!target) return;
+
+  if (!document.getElementById('demo-badges-tour-style')) {
+    const style = document.createElement('style');
+    style.id = 'demo-badges-tour-style';
+    style.textContent = `
+      .demo-badges-tour-highlight {
+        position: relative;
+        z-index: 9991;
+        outline: 3px solid #ff85b2;
+        outline-offset: 6px;
+        border-radius: 16px;
+        box-shadow: 0 0 0 10px rgba(255, 133, 178, 0.18);
+      }
+      .demo-badges-tour-tip {
+        position: fixed;
+        z-index: 9992;
+        width: min(320px, calc(100vw - 24px));
+        background: rgba(255, 255, 255, 0.98);
+        border: 2px solid rgba(255, 133, 178, 0.35);
+        border-radius: 16px;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        padding: 14px 14px 12px;
+        color: #334155;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      .demo-badges-tour-tip button {
+        margin-top: 10px;
+        border: none;
+        background: linear-gradient(135deg, #ff6b9e, #70ddf1);
+        color: #fff;
+        border-radius: 999px;
+        padding: 7px 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  target.classList.add('demo-badges-tour-highlight');
+  const tip = document.createElement('div');
+  tip.className = 'demo-badges-tour-tip';
+  tip.innerHTML = `
+    <div>這裡是粉絲頁 Demo 的限定徽章區，可以查看你在 Demo 中解鎖的徽章展示。</div>
+    <button type="button">知道了</button>
+  `;
+  document.body.appendChild(tip);
+
+  const placeTip = () => {
+    const rect = target.getBoundingClientRect();
+    const pad = 12;
+    const tipW = tip.offsetWidth;
+    const tipH = tip.offsetHeight;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const desiredLeft = rect.left + rect.width / 2 - tipW / 2;
+    const desiredTop = rect.bottom + 14;
+    const maxLeft = Math.max(pad, vw - tipW - pad);
+    const maxTop = Math.max(pad, vh - tipH - pad);
+    tip.style.left = `${Math.min(Math.max(desiredLeft, pad), maxLeft)}px`;
+    tip.style.top = `${Math.min(Math.max(desiredTop, pad), maxTop)}px`;
+  };
+
+  const close = () => {
+    tip.remove();
+    target.classList.remove('demo-badges-tour-highlight');
+    window.removeEventListener('resize', placeTip);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tour') === 'badges') {
+      params.delete('tour');
+      const q = params.toString();
+      const nextUrl = `${window.location.pathname}${q ? `?${q}` : ''}${window.location.hash || ''}`;
+      window.history.replaceState({}, '', nextUrl);
+    }
+  };
+
+  tip.querySelector('button')?.addEventListener('click', close);
+  window.addEventListener('resize', placeTip);
+  placeTip();
 }
 
 /**
@@ -577,6 +669,7 @@ async function initFanProfileDemo() {
     if (meta && meta.displayName) vtuberNameCache[tx.vtuberId] = meta.displayName;
   });
   renderTransactions(txList);
+  setTimeout(runDemoBadgesTour, 280);
 }
 
 // ─── 主初始化 ────────────────────────────────────────────────────────────────
