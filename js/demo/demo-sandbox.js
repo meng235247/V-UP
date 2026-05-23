@@ -97,9 +97,24 @@ function showDemoBanner(text, withPoints = false) {
     document.body.prepend(banner);
   }
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
-  banner.innerHTML = withPoints
-    ? `<span>${text}</span><span id="demo-points-display">V點：<strong>${points}</strong></span><span>僅本機模擬，不會產生真實金流</span>`
-    : `<span>${text}</span>`;
+  const pointsHtml = withPoints 
+    ? `<div class="demo-banner-center">
+         <div class="demo-points-pill" id="demo-points-display">V點：<strong>${points}</strong></div>
+       </div>
+       <div class="demo-banner-right">
+         <span class="demo-note"><i class="fa-solid fa-circle-info"></i> 僅本機模擬，無真實金流</span>
+       </div>`
+    : `<div class="demo-banner-right"></div>`;
+
+  banner.innerHTML = `
+    <div class="demo-banner-inner">
+      <div class="demo-banner-left">
+        <span class="demo-badge">Demo Mode</span>
+        <span class="demo-title">${text}</span>
+      </div>
+      ${pointsHtml}
+    </div>
+  `;
   document.body.classList.add('demo-has-banner');
   syncDemoBannerMetrics();
   if (!window.__VUP_DEMO_BANNER_RESIZE_BOUND) {
