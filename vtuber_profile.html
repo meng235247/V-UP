@@ -1532,34 +1532,34 @@
                         setTimeout(() => {
                             startDemoGuide([
                                 {
-                                    target: '.ms-card[data-generated] .ms-progress-bar',
+                                    target: '.ms-card[data-generated] .ms-progress-bar, .ms-card .ms-progress-bar',
                                     text: '✨ 快來看看目前的應援進度！每一份力量都在幫助推子更接近夢想喔。',
                                     buttonText: '收到！',
                                     scrollBlock: 'center',
-                                    scrollSettleMs: 800
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.ms-card[data-generated] .btn-support-now',
+                                    target: '.ms-card[data-generated] .btn-support-now, .ms-card .btn-support-now',
                                     text: '🔥 點擊這裡發送你的「模擬應援」！準備好迎接超華麗的達標動畫了嗎？',
                                     buttonText: '馬上應援！',
                                     scrollBlock: 'center',
-                                    scrollSettleMs: 800
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.ms-card[data-generated] .ms-exclusive-content',
+                                    target: '.ms-card[data-generated] .ms-exclusive-content, .ms-card .ms-exclusive-content',
                                     text: '🎉 恭喜解鎖專屬限定內容！推子準備的秘密驚喜已經為你開放囉。',
                                     buttonText: '太棒了！',
                                     waitForEvent: 'vup:demo-payment-completed',
                                     waitAfterEventMs: 2800,
                                     scrollBlock: 'center',
-                                    scrollSettleMs: 800
+                                    scrollSettleMs: 520
                                 },
                                 {
-                                    target: '.ms-card[data-generated] .ms-ranking',
+                                    target: '.ms-card[data-generated] .ms-ranking, .ms-card .ms-ranking',
                                     text: '💖 你的名字已經刻在榜單上了！這就是你與推子共同創造的證明。',
                                     buttonText: '完成體驗！',
                                     scrollBlock: 'center',
-                                    scrollSettleMs: 800
+                                    scrollSettleMs: 520
                                 }
                             ]);
                         }, 2000);
