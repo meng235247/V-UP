@@ -1,4 +1,4 @@
-/* V-UP Demo Styles (Themed) */
+ï»¿/* V-UP Demo Styles (Themed) */
 :root {
   --demo-banner-height: 48px;
 }
@@ -9,17 +9,85 @@
   left: 0;
   right: 0;
   width: 100%;
-  z-index: 9999;
+  z-in background: rgba(30, 41, 59, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #F8FAFC;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: "Inter", sans-serif;
+}
+
+.demo-banner-inner {
+  max-width: 1280px;
+  margin: 0 auto;
   display: flex;
   justify-content: space-between;
-  gap: 12px;
   align-items: center;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #FF85B2, #70DDF1);
-  color: #ffffff;
-  font-size: 0.95rem;
+  padding: 8px 24px;
+  gap: 16px;
+}
+
+.demo-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.demo-badge {
+  background: linear-gradient(135deg, #FF6B9E, #FF85B2);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
   font-weight: 800;
-  box-shadow: 0 4px 15px rgba(255, 133, 178, 0.2);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(255, 107, 158, 0.3);
+}
+
+.demo-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #F8FAFC;
+}
+
+.demo-banner-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.demo-points-pill {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #70DDF1;
+}
+
+.demo-points-pill strong {
+  color: #FFF;
+  font-weight: 800;
+  font-size: 1.05rem;
+}
+
+.demo-banner-right {
+  display: flex;
+  align-items: center;
+}
+
+.demo-note {
+  font-size: 0.85rem;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 body.demo-has-banner {
@@ -161,7 +229,8 @@ body.demo-dashboard-mode #btn-view-public {
 .demo-guide-tip {
   position: fixed;
   z-index: 9998;
-  box-sizing: border-box; /* Crucial for RWD width limits */
+  box-sizing: border-box;
+  /* Crucial for RWD width limits */
   width: min(340px, calc(100vw - 24px));
   background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(24px);
@@ -203,14 +272,110 @@ body.demo-dashboard-mode #btn-view-public {
 }
 
 @keyframes demoPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     outline-color: #FF85B2;
     box-shadow: 0 0 0 5px rgba(255, 133, 178, 0.15);
   }
+
   50% {
     outline-color: #70DDF1;
     box-shadow: 0 0 0 10px rgba(112, 221, 241, 0.18);
   }
+}
+
+@media (max-width: 768px) {
+  #demo-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 9999;
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #F8FAFC;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-family: "Inter", sans-serif;
+  }
+
+  .demo-banner-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 24px;
+    gap: 16px;
+  }
+
+  .demo-banner-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .demo-badge {
+    background: linear-gradient(135deg, #FF6B9E, #FF85B2);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 2px 8px rgba(255, 107, 158, 0.3);
+  }
+
+  .demo-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #F8FAFC;
+  }
+
+  .demo-banner-center {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+  }
+
+  .demo-points-pill {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 4px 16px;
+    border-radius: 99px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #70DDF1;
+  }
+
+  .demo-points-pill strong {
+    color: #FFF;
+    font-weight: 800;
+    font-size: 1.05rem;
+  }
+
+  .demo-banner-right {
+    display: flex;
+    align-items: center;
+  }
+
+  .demo-note {
+    font-size: 0.85rem;
+    color: #94A3B8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  : 0 0 0 10px rgba(112, 221, 241, 0.18);
+}
 }
 
 @media (max-width: 768px) {
@@ -221,36 +386,59 @@ body.demo-dashboard-mode #btn-view-public {
     text-align: center;
     gap: 8px;
   }
+
+  px rgba(112, 221, 241, 0.18);
+}
+}
+
+@media (max-width: 768px) {
+  #demo-banner {
+    font-size: 0.85rem;
+    padding: 12px 16px;
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+
   body.demo-has-banner {
     padding-top: var(--demo-banner-height, 80px);
   }
+
   body.demo-dashboard-mode .dashboard-layout {
     margin-top: var(--demo-banner-height, 80px);
   }
+
   body.demo-dashboard-mode .sidebar {
     top: var(--demo-banner-height, 80px);
     height: calc(100vh - var(--demo-banner-height, 80px));
   }
+
   .demo-modal-card {
     padding: 24px;
     border-radius: 24px;
   }
+
   .demo-guide-tip {
-    width: calc(100vw - 32px); /* Slightly more margin on tiny screens */
-    padding: 16px; /* Less padding so text fits better */
+    width: calc(100vw - 32px);
+    /* Slightly more margin on tiny screens */
+    padding: 16px;
+    /* Less padding so text fits better */
     border-radius: 16px;
   }
+
   .demo-guide-tip p {
     font-size: 0.9rem;
     margin: 0 0 12px;
   }
+
   .demo-guide-actions .demo-btn {
     padding: 6px 14px;
     font-size: 0.8rem;
   }
 }
 
-/* Fan profile nav button ¡X elevated above demo guide overlay during guide step 5 */
+/* Fan profile nav button ï¿½X elev
+ted above demo guide overlay during guide step 5 */
 #btn-fan-profile.demo-highlight {
   position: relative;
   z-index: 10000 !important;
