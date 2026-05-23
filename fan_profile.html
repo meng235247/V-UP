@@ -43,11 +43,13 @@
                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Fan Avatar" class="nav-avatar">
                 <div class="user-dropdown"
                     style="display: none; position: absolute; top: 100%; right: 0; padding-top: 5px; width: 140px; z-index: 100;">
-                    <div style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 5px 0; overflow: hidden;">
+                    <div
+                        style="background: white; border: 1px solid #e5e7eb; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); padding: 5px 0; overflow: hidden;">
                         <button onclick="openSettingsModal()"
                             style="width:100%; text-align:left; background:transparent; border:none; padding:12px 15px; font-size:0.9rem; font-weight:600; color:var(--text-main); cursor:pointer; display:flex; align-items:center; gap:8px; transition: background 0.2s;"
                             onmouseover="this.style.background='#F8FAFC'"
-                            onmouseout="this.style.background='transparent'"><i class="fa-solid fa-gear"></i> 個人設定</button>
+                            onmouseout="this.style.background='transparent'"><i class="fa-solid fa-gear"></i>
+                            個人設定</button>
                         <button onclick="handleLogout()"
                             style="width:100%; text-align:left; background:transparent; border:none; padding:12px 15px; font-size:0.9rem; font-weight:600; color:#EF4444; cursor:pointer; display:flex; align-items:center; gap:8px; transition: background 0.2s;"
                             onmouseover="this.style.background='#FEE2E2'"
@@ -192,7 +194,7 @@
                 <!-- Hidden VTubers -->
                 <div class="vtuber-circle-card hidden-item extra-vtuber">
                     <img src="image/v_head_ryusei.jpg" alt="圖片描述" class="w-full h-auto">
-                    <span class="v-name">Sakura<br>Miko</span>
+                    <span class="v-name">vtuber<br>Miko</span>
                     <a href="vtuber_profile.html" class="v-link">前往專頁</a>
                 </div>
                 <div class="vtuber-circle-card hidden-item extra-vtuber">
@@ -232,7 +234,7 @@
                         </tr>
                         <tr>
                             <td class="col-date" data-label="日期時間">2026-03-22 09:15</td>
-                            <td class="col-bold" data-label="對象">sakura</td>
+                            <td class="col-bold" data-label="對象">vtuber</td>
                             <td data-label="項目">原創曲製作</td>
                             <td class="col-red" data-label="花費(NTD)">- 3,000</td>
                             <td data-label="狀態"><span class="status-success"><i class="fa-solid fa-check"></i>
@@ -462,11 +464,11 @@
             <h2 class="rmc-title" id="brm-title" style="margin-bottom: 5px;">首位應援</h2>
             <div id="brm-vtuber-name"
                 style="font-size: 0.9rem; font-weight: 700; color:var(--text-purple); letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;">
-                SAKURA NOVA 專屬成就</div>
+                vtuber 專屬成就</div>
 
             <p class="rmc-desc" id="brm-desc"
                 style="background:#F8FAFC; padding: 15px; border-radius: 12px; text-align: left; border-left: 4px solid var(--text-pink);">
-                初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！</p>
+                初次踏出這一步，對 vtuber 的初次贊助，意義非凡！</p>
 
             <!-- Additional Details Grid -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; text-align: left;">
@@ -501,8 +503,8 @@
                     style="grid-column: 1 / -1; background: linear-gradient(90deg, var(--bg-pink-light), var(--bg-blue-light)); padding:15px; border-radius:12px; display:flex; justify-content: space-between; align-items:center;">
                     <div>
                         <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">成就解鎖來源</div>
-                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">SAKURA
-                            NOVA 3D化募資</div>
+                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">vtuber
+                            3D化募資</div>
                     </div>
                     <a id="brm-vtuber-link" href="vtuber_profile.html#achieved"
                         style="background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:6px;">前往
@@ -682,20 +684,20 @@
         // --- BADGE & TITLES LOGIC ---
         let ALL_BADGES = [
             // id will be replaced by real DB id from GET /api/user/badges
-            { id: 'badge_first_support', imgSrc: 'image/資產 1.png', style: 'bg-pink-light', title: '首位應援', origin: 'SAKURA NOVA 3D化募資', date: '2023.12.15', desc: '初次踏出這一步，對 SakuraNova 的初次贊助，意義非凡！', contribution: '1,500', selected: true },
-            { id: 'badge_sprout', imgSrc: 'image/資產 3.png', style: 'bg-blue-light', title: '新芽滋長', origin: '初次贊助成就', date: '2024.01.20', desc: '你的支持讓小樹苗開始成長。', contribution: '1,000', selected: true },
-            { id: 'badge_starlight', imgSrc: 'image/資產 15.png', style: 'bg-purple-light', title: '繁星點點', origin: '2月情人節活動', date: '2024.02.14', desc: '點亮了更多星星！', contribution: '2,000', selected: true },
+            { id: 'badge_first_support', imgSrc: 'image/badge.webp', style: 'bg-pink-light', title: '首位應援', origin: 'vtuber 3D化募資', date: '2023.12.15', desc: '初次踏出這一步，對 vtuber 的初次贊助，意義非凡！', contribution: '1,500', selected: true },
+            { id: 'badge_sprout', imgSrc: 'image/badge2.png', style: 'bg-blue-light', title: '新芽滋長', origin: '初次贊助成就', date: '2024.01.20', desc: '你的支持讓小樹苗開始成長。', contribution: '1,000', selected: true },
+            { id: 'badge_starlight', imgSrc: 'image/badge3.png', style: 'bg-purple-light', title: '繁星點點', origin: '2月情人節活動', date: '2024.02.14', desc: '點亮了更多星星！', contribution: '2,000', selected: true },
             { id: 'badge_mystery', imgSrc: 'image/資產 1.png', style: 'bg-gray-light', title: '尚未解鎖', origin: '神秘里程碑', date: '???', desc: '等待緣分解鎖的秘密。', contribution: '0', selected: false, locked: true },
-            { id: 'badge_magic', imgSrc: 'image/blaori.png', style: 'bg-pink-light', title: '魔法時刻', origin: '春季特別活動', date: '2024.04.01', desc: '魔法般的應援力！', contribution: '5,500', selected: true },
-            { id: 'badge_love', imgSrc: 'image/endless.png', style: 'bg-blue-light', title: '滿滿愛心', origin: '520 告白日', date: '2024.05.20', desc: '感受到滿滿的愛。', contribution: '300', selected: true },
+            { id: 'badge_magic', imgSrc: 'image/資產 2.png', style: 'bg-pink-light', title: '魔法時刻', origin: '春季特別活動', date: '2024.04.01', desc: '魔法般的應援力！', contribution: '5,500', selected: true },
+            { id: 'badge_love', imgSrc: 'image/資產 15.png', style: 'bg-blue-light', title: '滿滿愛心', origin: '520 告白日', date: '2024.05.20', desc: '感受到滿滿的愛。', contribution: '300', selected: true },
             { id: 'badge_cheers', imgSrc: 'image/padoru2.png', style: 'bg-pink-light', title: '乾杯紀念', origin: '半年慶祝直播', date: '2024.06.18', desc: '一起舉杯慶祝吧！', contribution: '10,000', selected: true },
             { id: 'badge_applause', imgSrc: 'image/v_head_ryusei.jpg', style: 'bg-purple-light', title: '熱烈掌聲', origin: '七夕應援', date: '2024.07.07', desc: '為你的貢獻歡呼！', contribution: '1,200', selected: true },
             { id: 'badge_more', iconClass: 'fa-solid fa-ellipsis', style: 'bg-gray-light', title: '更多驚喜', origin: '未來成就', date: '2024.08', desc: '還有更多未知等著你。', contribution: '0', selected: true, unclickable: true }
         ];
 
         let ALL_TITLES = [
-            { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: 'SAKURA NOVA 3D化募資', selected: true },
-            { id: 't2', iconClass: 'fa-solid fa-trophy text-purple', title: 'sakura的全面應援', origin: '陪伴 sakura 走過所有重要時刻', selected: true },
+            { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: 'vtuber 3D化募資', selected: true },
+            { id: 't2', iconClass: 'fa-solid fa-trophy text-purple', title: 'vtuber的全面應援', origin: '陪伴 vtuber 走過所有重要時刻', selected: true },
             { id: 't3', iconClass: 'fa-solid fa-flag text-blue', title: '全部都是盤幣', origin: '累積消費超過 100,000 NTD', selected: true },
             { id: 't4', iconClass: 'fa-solid fa-crown text-pink', title: '頂尖粉絲', origin: '年度貢獻前 1% 專屬', selected: false }
         ];
@@ -958,17 +960,17 @@
 
             // STUB: Mock top supported — replace with stats API response
             const MOCK_TOP_SUPPORTED = [
-                { name: 'sakura', avatarUrl: 'image/miku_test.png' },
-                { name: '繁', avatarUrl: 'image/v_head_ryusei.jpg' },
-                { name: 'あいうえお', avatarUrl: 'image/blaori.png' },
-                { name: 'さしすせそ', avatarUrl: 'image/endless.png' }
+                { name: 'vtuber', avatarUrl: 'image/miku_test.png' },
+                { name: 'vtuber1', avatarUrl: 'image/v_head_ryusei.jpg' },
+                { name: 'vtuber2', avatarUrl: 'image/blaori.png' },
+                { name: 'vtuber3', avatarUrl: 'image/endless.png' }
             ];
             renderSupportList(MOCK_TOP_SUPPORTED);
 
             // STUB: Mock notifications — replace with fetch('/api/user/notifications')
             const MOCK_NOTIFICATIONS = [
-                { id: 'n1', avatarUrl: 'image/v_head_ryusei.jpg', profileUrl: 'vtuber_profile.html', title: 'Sakura Nova 發布了新企劃！', body: '趕快來看看 Sakura Nova 的超大型 3D 演唱會募資企劃吧！', time: '10 分鐘前' },
-                { id: 'n2', avatarUrl: 'image/blaori.png', profileUrl: 'vtuber_profile.html', title: 'Mori Calliope 達成企劃里程碑 🎉', body: '全球粉絲努力達成解鎖，來看看她想說什麼。', time: '2 小時前' }
+                { id: 'n1', avatarUrl: 'image/v_head_ryusei.jpg', profileUrl: 'vtuber_profile.html', title: 'vtuber 發布了新企劃！', body: '趕快來看看 vtuber 的超大型 3D 演唱會募資企劃吧！', time: '10 分鐘前' },
+                { id: 'n2', avatarUrl: 'image/blaori.png', profileUrl: 'vtuber_profile.html', title: 'vtuber 達成企劃里程碑 🎉', body: '全球粉絲努力達成解鎖，來看看她想說什麼。', time: '2 小時前' }
             ];
             renderNotifications(MOCK_NOTIFICATIONS);
 
@@ -1014,7 +1016,7 @@
             }
 
             const vtNameEl = document.getElementById('brm-vtuber-name');
-            if (vtNameEl) vtNameEl.textContent = `${vtuberName || 'SAKURA NOVA'} 專屬成就`;
+            if (vtNameEl) vtNameEl.textContent = `${vtuberName || 'vtuber'} 專屬成就`;
 
             const vtLinkEl = document.getElementById('brm-vtuber-link');
             if (vtLinkEl) {
