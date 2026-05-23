@@ -232,12 +232,15 @@ const VtuberProfilePage = {
         const media = getPostPrimaryMedia(post);
         const vt = VtuberProfilePage._currentVtuber || {};
         const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
+        const creatorPreviewDemo = !!(window.DemoSandbox
+          && typeof window.DemoSandbox.isCreatorPreviewMode === 'function'
+          && window.DemoSandbox.isCreatorPreviewMode());
         const isSupporterOnly = post.visibility === 'supporters' || post.isExclusive === true;
         const canViewSupporterPost = !isSupporterOnly || (!!viewerUid && (
           (vtuberUid && viewerUid === vtuberUid)
           || allowList.includes(viewerUid)
           || viewerHasPaid
-        ));
+        )) || creatorPreviewDemo;
         const shouldLock = isSupporterOnly && !canViewSupporterPost;
 
         postModalCache.set(cacheKey, {
@@ -852,6 +855,9 @@ const VtuberProfilePage = {
         : null;
       const allowList = Array.isArray(post.allowedUids) ? post.allowedUids : [];
       const unlockedMilestones = VtuberProfilePage._viewerUnlockedMilestones || [];
+      const creatorPreviewDemo = !!(window.DemoSandbox
+        && typeof window.DemoSandbox.isCreatorPreviewMode === 'function'
+        && window.DemoSandbox.isCreatorPreviewMode());
       const demoFanMode = window.DemoSandbox
         && typeof window.DemoSandbox.isFanDemoMode === 'function'
         && window.DemoSandbox.isFanDemoMode();
@@ -864,7 +870,7 @@ const VtuberProfilePage = {
         || allowList.includes(viewerUid)
         || post.viewerUnlocked === true
         || unlockedMilestones.includes(milestoneId)
-      ) || demoUnlocked;
+      ) || demoUnlocked || creatorPreviewDemo;
       const shouldLock = isSupporterOnly && !canReadSupporterPost;
       const visibilityLabel = isSupporterOnly ? '限定' : '公開';
       const visibilityClass = isSupporterOnly ? 'is-supporters' : 'is-public';

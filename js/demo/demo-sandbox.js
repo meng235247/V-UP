@@ -2,17 +2,22 @@ const DEMO_KEYS = {
   points: 'vup_demo_points',
   role: 'vup_demo_role',
   transactions: 'vup_demo_transactions',
+  creatorTransactions: 'vup_demo_creator_transactions',
   fanMilestones: 'vup_demo_fan_milestones',
   creatorMilestones: 'vup_demo_creator_milestones',
   creatorPosts: 'vup_demo_creator_posts',
   creatorProfile: 'vup_demo_creator_profile',
   creatorEmail: 'vup_demo_creator_email',
-  creatorSkippedEmail: 'vup_demo_creator_skipped_email'
+  creatorSkippedEmail: 'vup_demo_creator_skipped_email',
+  creatorSeedVersion: 'vup_demo_creator_seed_version'
 };
 
 const DEMO_CREATOR_UID = 'demo_creator_local';
 const DEMO_CREATOR_PREVIEW_ID = 'demo_creator_local';
 const DEMO_INITIAL_POINTS = 120000;
+const DEMO_CREATOR_SEED_VERSION = 'v1';
+const DEMO_DEFAULT_AVATAR = 'image/head.jpg';
+const DEMO_DEFAULT_BADGE = 'image/badge.webp';
 const DEMO_FAN_PROFILE = {
   uid: 'demo_fan_local',
   displayName: 'Demo Supporter',
@@ -92,10 +97,30 @@ function showDemoBanner(text, withPoints = false) {
     document.body.prepend(banner);
   }
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
-  banner.innerHTML = withPoints
-    ? `<span>${text}</span><span id="demo-points-display">V點：<strong>${points}</strong></span><span>僅本機模擬，不會產生真實金流</span>`
-    : `<span>${text}</span>`;
+  const pointsHtml = withPoints 
+    ? `<div class="demo-banner-center">
+         <div class="demo-points-pill" id="demo-points-display">V點：<strong>${points}</strong></div>
+       </div>
+       <div class="demo-banner-right">
+         <span class="demo-note"><i class="fa-solid fa-circle-info"></i> 僅本機模擬，無真實金流</span>
+       </div>`
+    : `<div class="demo-banner-right"></div>`;
+
+  banner.innerHTML = `
+    <div class="demo-banner-inner">
+      <div class="demo-banner-left">
+        <span class="demo-badge">Demo Mode</span>
+        <span class="demo-title">${text}</span>
+      </div>
+      ${pointsHtml}
+    </div>
+  `;
   document.body.classList.add('demo-has-banner');
+  syncDemoBannerMetrics();
+  if (!window.__VUP_DEMO_BANNER_RESIZE_BOUND) {
+    window.__VUP_DEMO_BANNER_RESIZE_BOUND = true;
+    window.addEventListener('resize', syncDemoBannerMetrics);
+  }
 }
 
 function updateDemoPointsDisplay() {
@@ -103,6 +128,13 @@ function updateDemoPointsDisplay() {
   if (!el) return;
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
   el.innerHTML = `V點：<strong>${points}</strong>`;
+}
+
+function syncDemoBannerMetrics() {
+  const banner = document.getElementById('demo-banner');
+  if (!banner) return;
+  const height = Math.max(40, Math.ceil(banner.getBoundingClientRect().height || 0));
+  document.body.style.setProperty('--demo-banner-height', `${height}px`);
 }
 
 function openFormInNewTab(role) {
@@ -209,6 +241,14 @@ function readTransactions() {
 
 function saveTransactions(list) {
   writeJSON(DEMO_KEYS.transactions, list);
+}
+
+function readCreatorTransactions() {
+  return readJSON(DEMO_KEYS.creatorTransactions, []);
+}
+
+function saveCreatorTransactions(list) {
+  writeJSON(DEMO_KEYS.creatorTransactions, list);
 }
 
 export function getDemoFanSupportAmount(milestoneId) {
@@ -414,6 +454,7 @@ export function initFanDemoSandbox({ seedData, PaymentService, MilestonesService
 function patchCreatorPreviewServices({ vtuberService, MilestonesService, PostsService }) {
   const isPreview = isCreatorPreviewMode();
   if (!isPreview) return;
+  ensureCreatorDemoSeedData();
 
   const localProfile = readCreatorProfile();
   const localMilestones = () => readCreatorMilestones();
@@ -456,6 +497,27 @@ function patchCreatorPreviewServices({ vtuberService, MilestonesService, PostsSe
           updatedAt: fakeTs(m.updatedAtMs || m.createdAtMs),
           publishedAt: m.publishedAtMs ? fakeTs(m.publishedAtMs) : null
         }));
+
+    MilestonesService.listenRankings = (milestoneId, lim = 10, callback) => {
+      const map = {};
+      readCreatorTransactions()
+        .filter((tx) => tx && tx.status === 'success' && tx.milestoneId === milestoneId)
+        .forEach((tx) => {
+          const key = tx.fanUid || tx.fanName || `guest_${tx.id}`;
+          if (!map[key]) {
+            map[key] = {
+              fanUid: key,
+              displayName: tx.fanName || 'Demo Fan',
+              totalAmount: 0,
+              avatarUrl: null
+            };
+          }
+          map[key].totalAmount += Number(tx.amount || 0);
+        });
+      const ranks = Object.values(map).sort((a, b) => b.totalAmount - a.totalAmount).slice(0, lim);
+      callback(ranks, 0);
+      return () => {};
+    };
 
     MilestonesService.__demoCreatorPreviewPatched = true;
   }
@@ -506,7 +568,7 @@ function readCreatorProfile() {
     uid: DEMO_CREATOR_UID,
     displayName: 'Demo Creator',
     role: 'vtuber',
-    avatarUrl: '',
+    avatarUrl: DEMO_DEFAULT_AVATAR,
     handle: 'demo',
     catchphrase: 'Demo creator mode',
     bio: '這是本機試玩資料，不會寫入雲端。'
@@ -529,6 +591,116 @@ function readCreatorPosts() {
 
 function saveCreatorPosts(items) {
   writeJSON(DEMO_KEYS.creatorPosts, items);
+}
+
+function ensureCreatorDemoSeedData() {
+  const seededVersion = localStorage.getItem(DEMO_KEYS.creatorSeedVersion);
+  if (seededVersion === DEMO_CREATOR_SEED_VERSION) return;
+
+  const existingMilestones = readCreatorMilestones();
+  const existingPosts = readCreatorPosts();
+  const existingTx = readCreatorTransactions();
+  if (existingMilestones.length || existingPosts.length || existingTx.length) {
+    localStorage.setItem(DEMO_KEYS.creatorSeedVersion, DEMO_CREATOR_SEED_VERSION);
+    return;
+  }
+
+  const now = Date.now();
+  const day = 24 * 60 * 60 * 1000;
+  const milestoneId = 'demo_seed_milestone_3d_live';
+  const txs = [
+    {
+      id: `demo_creator_tx_${now - day * 5}`,
+      fanUid: 'demo_fan_aurora',
+      fanName: 'Aurora',
+      vtuberId: DEMO_CREATOR_UID,
+      milestoneId,
+      amount: 1800,
+      method: 'credit_card',
+      message: '期待 3D 首演，先衝第一波！',
+      status: 'success',
+      createdAtMs: now - day * 5
+    },
+    {
+      id: `demo_creator_tx_${now - day * 3}`,
+      fanUid: 'demo_fan_nova',
+      fanName: 'NovaCat',
+      vtuberId: DEMO_CREATOR_UID,
+      milestoneId,
+      amount: 2600,
+      method: 'line_pay',
+      message: '應援推進，衝一波舞台進度！',
+      status: 'success',
+      createdAtMs: now - day * 3
+    },
+    {
+      id: `demo_creator_tx_${now - day * 1}`,
+      fanUid: 'demo_fan_starlight',
+      fanName: 'Starlight',
+      vtuberId: DEMO_CREATOR_UID,
+      milestoneId,
+      amount: 1200,
+      method: 'bank_transfer',
+      message: '等不及看 3D LIVE！',
+      status: 'success',
+      createdAtMs: now - day * 1
+    }
+  ];
+  const currentAmount = txs.reduce((sum, tx) => sum + Number(tx.amount || 0), 0);
+  const supporters = new Set(txs.map((tx) => tx.fanUid || tx.fanName || tx.id)).size;
+  const milestone = {
+    id: milestoneId,
+    vtuberId: DEMO_CREATOR_UID,
+    title: '3D LIVE 首演舞台計畫（Demo）',
+    desc: '達成後將啟動 3D 模型細修、舞台燈光與首演節目製作，贊助者可獲得限定徽章與幕後花絮。',
+    targetAmount: 20000,
+    currentAmount,
+    totalSupporters: supporters,
+    badgeUrl: DEMO_DEFAULT_BADGE,
+    badgeDataUrl: null,
+    status: 'published',
+    createdAtMs: now - day * 9,
+    updatedAtMs: now - day * 1,
+    publishedAtMs: now - day * 8
+  };
+  const posts = [
+    {
+      id: `demo_seed_post_supporters_${now - day * 2}`,
+      milestoneId,
+      vtuberId: DEMO_CREATOR_UID,
+      title: '限定進度：3D 舞台鏡頭腳本草案',
+      content: '限定搶先看：本週完成第一版鏡頭腳本，下一步進入舞台走位測試。',
+      visibility: 'supporters',
+      status: 'published',
+      attachments: [],
+      createdAtMs: now - day * 2,
+      updatedAtMs: now - day * 2,
+      publishedAtMs: now - day * 2
+    },
+    {
+      id: `demo_seed_post_public_${now - day * 4}`,
+      milestoneId,
+      vtuberId: DEMO_CREATOR_UID,
+      title: '公開公告：3D LIVE 準備中',
+      content: '感謝大家支持，3D LIVE 專案已正式啟動，後續將持續公開里程碑進度。',
+      visibility: 'public',
+      status: 'published',
+      attachments: [],
+      createdAtMs: now - day * 4,
+      updatedAtMs: now - day * 4,
+      publishedAtMs: now - day * 4
+    }
+  ];
+
+  const profile = readCreatorProfile();
+  if (!profile.avatarUrl) {
+    writeJSON(DEMO_KEYS.creatorProfile, { ...profile, avatarUrl: DEMO_DEFAULT_AVATAR });
+  }
+
+  saveCreatorMilestones([milestone]);
+  saveCreatorPosts(posts);
+  saveCreatorTransactions(txs);
+  localStorage.setItem(DEMO_KEYS.creatorSeedVersion, DEMO_CREATOR_SEED_VERSION);
 }
 
 function patchCreatorServices({ vtuberService, MilestonesService, PostsService, PaymentService }) {
@@ -701,7 +873,7 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
 
   if (PaymentService && !PaymentService.__demoCreatorPatched) {
     PaymentService.getTransactions = async (vtuberId) =>
-      readTransactions()
+      readCreatorTransactions()
         .filter((t) => !vtuberId || t.vtuberId === vtuberId)
         .map((t) => ({ ...t, createdAt: fakeTs(t.createdAtMs) }));
     PaymentService.__demoCreatorPatched = true;
@@ -759,6 +931,7 @@ export async function initCreatorDemoSandbox({ vtuberService, MilestonesService,
   if (!isDemoCreatorMode()) return { enabled: false };
 
   localStorage.setItem(DEMO_KEYS.role, 'creator');
+  ensureCreatorDemoSeedData();
   showDemoBanner('創作者試玩模式：資料僅存本機，不會影響正式環境');
   patchCreatorServices({ vtuberService, MilestonesService, PostsService, PaymentService });
 
