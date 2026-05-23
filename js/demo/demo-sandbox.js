@@ -48,11 +48,7 @@ function fakeTs(ms) {
 }
 
 function isCurrentPage(name) {
-  const path = window.location.pathname.toLowerCase();
-  const nameLow = name.toLowerCase();
-  const baseName = nameLow.replace(/\.html$/, '');
-  // 支援原本有 .html 的路徑，也支援 Netlify 去除 .html 後的路徑 (例如 /dashboard)
-  return path.endsWith(nameLow) || path.endsWith('/' + baseName) || path === '/' + baseName;
+  return window.location.pathname.toLowerCase().endsWith(name.toLowerCase());
 }
 
 function getMode() {
