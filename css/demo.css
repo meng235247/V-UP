@@ -1,4 +1,4 @@
-﻿/* V-UP Demo Styles (Themed) */
+/* V-UP Demo Styles (Themed) */
 :root {
   --demo-banner-height: 48px;
 }
@@ -9,22 +9,22 @@
   left: 0;
   right: 0;
   width: 100%;
-  z-in background: rgba(30, 41, 59, 0.8);
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  color: #F8FAFC;
+  color: #475569;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-family: "Inter", sans-serif;
 }
 
 .demo-banner-inner {
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 24px;
+  padding: 8px 30px;
   gap: 16px;
 }
 
@@ -47,9 +47,9 @@
 }
 
 .demo-title {
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: #F8FAFC;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: #475569;
 }
 
 .demo-banner-center {
@@ -68,18 +68,19 @@
   gap: 8px;
   font-weight: 600;
   font-size: 0.9rem;
-  color: #70DDF1;
+  color: #458995;
 }
 
 .demo-points-pill strong {
-  color: #FFF;
-  font-weight: 800;
-  font-size: 1.05rem;
+  color: #458995;
+  font-weight: 600;
+  font-size: 0.9rem;
 }
 
 .demo-banner-right {
   display: flex;
   align-items: center;
+  margin-right: 60px;
 }
 
 .demo-note {
