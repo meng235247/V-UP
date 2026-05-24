@@ -461,14 +461,14 @@
                 </div>
             </div>
 
-            <h2 class="rmc-title" id="brm-title" style="margin-bottom: 5px;">首位應援</h2>
+            <h2 class="rmc-title" id="brm-title" style="margin-bottom: 5px;">帝國子民</h2>
             <div id="brm-vtuber-name"
                 style="font-size: 0.9rem; font-weight: 700; color:var(--text-purple); letter-spacing: 1px; margin-bottom: 15px; text-transform: uppercase;">
-                vtuber 專屬成就</div>
+                川雲爪日 專屬成就</div>
 
             <p class="rmc-desc" id="brm-desc"
                 style="background:#F8FAFC; padding: 15px; border-radius: 12px; text-align: left; border-left: 4px solid var(--text-pink);">
-                初次踏出這一步，對 vtuber 的初次贊助，意義非凡！</p>
+                踏出這一步，對爪日的雲吞之旅，意義非凡！</p>
 
             <!-- Additional Details Grid -->
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 25px; text-align: left;">
@@ -503,10 +503,9 @@
                     style="grid-column: 1 / -1; background: linear-gradient(90deg, var(--bg-pink-light), var(--bg-blue-light)); padding:15px; border-radius:12px; display:flex; justify-content: space-between; align-items:center;">
                     <div>
                         <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">成就解鎖來源</div>
-                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">vtuber
-                            3D化募資</div>
+                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">帝國起源vol2</div>
                     </div>
-                    <a id="brm-vtuber-link" href="vtuber_profile.html#achieved"
+                    <a id="brm-vtuber-link" href="vtuber_profile.html"
                         style="background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:6px;">前往
                         VTuber 專頁查看詳細 <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
                 </div>
@@ -684,7 +683,7 @@
         // --- BADGE & TITLES LOGIC ---
         let ALL_BADGES = [
             // id will be replaced by real DB id from GET /api/user/badges
-            { id: 'badge_first_support', imgSrc: 'image/badge.webp', style: 'bg-pink-light', title: '首位應援', origin: 'vtuber 3D化募資', date: '2023.12.15', desc: '初次踏出這一步，對 vtuber 的初次贊助，意義非凡！', contribution: '1,500', selected: true },
+            { id: 'badge_first_support', imgSrc: 'image/badge.webp', style: 'bg-pink-light', title: '帝國子民', origin: '帝國起源vol2', date: '2023.12.15', desc: '初次踏出這一步，對爪日的雲吞之旅，意義非凡！', contribution: '1,500', selected: true },
             { id: 'badge_sprout', imgSrc: 'image/badge2.png', style: 'bg-blue-light', title: '新芽滋長', origin: '初次贊助成就', date: '2024.01.20', desc: '你的支持讓小樹苗開始成長。', contribution: '1,000', selected: true },
             { id: 'badge_starlight', imgSrc: 'image/badge3.png', style: 'bg-purple-light', title: '繁星點點', origin: '2月情人節活動', date: '2024.02.14', desc: '點亮了更多星星！', contribution: '2,000', selected: true },
             { id: 'badge_mystery', imgSrc: 'image/資產 1.png', style: 'bg-gray-light', title: '尚未解鎖', origin: '神秘里程碑', date: '???', desc: '等待緣分解鎖的秘密。', contribution: '0', selected: false, locked: true },
@@ -696,7 +695,7 @@
         ];
 
         let ALL_TITLES = [
-            { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: 'vtuber 3D化募資', selected: true },
+            { id: 't1', iconClass: 'fa-solid fa-flag text-blue', title: '為您的首位里程碑助力', origin: '帝國起源vol2', selected: true },
             { id: 't2', iconClass: 'fa-solid fa-trophy text-purple', title: 'vtuber的全面應援', origin: '陪伴 vtuber 走過所有重要時刻', selected: true },
             { id: 't3', iconClass: 'fa-solid fa-flag text-blue', title: '全部都是盤幣', origin: '累積消費超過 100,000 NTD', selected: true },
             { id: 't4', iconClass: 'fa-solid fa-crown text-pink', title: '頂尖粉絲', origin: '年度貢獻前 1% 專屬', selected: false }
