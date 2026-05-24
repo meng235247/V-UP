@@ -1544,21 +1544,21 @@
                             startDemoGuide([
                                 {
                                     target: '.ms-card[data-generated] .ms-progress-bar, .ms-card .ms-progress-bar',
-                                    text: '✨ 快來看看目前的應援進度！每一份力量都在幫助推子更接近夢想喔。',
+                                    text: '✨ 快來看看目前的應援進度！每一份力量都在幫助推更接近夢想喔。',
                                     buttonText: '收到！',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 },
                                 {
                                     target: '.ms-card[data-generated] .btn-support-now, .ms-card .btn-support-now',
-                                    text: '🔥 點擊這裡發送你的「模擬應援」！準備好迎接超華麗的達標動畫了嗎？',
+                                    text: '← 在左側輸入金額，並點擊這裡發送你的「應援」！',
                                     buttonText: '馬上應援！',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 },
                                 {
                                     target: '.ms-card[data-generated] .ms-exclusive-content, .ms-card .ms-exclusive-content',
-                                    text: '🎉 恭喜解鎖專屬限定內容！推子準備的秘密驚喜已經為你開放囉。',
+                                    text: '🎉 恭喜解鎖專屬限定內容！準備的感謝驚喜已經為你開放囉。',
                                     buttonText: '太棒了！',
                                     waitForEvent: 'vup:demo-payment-completed',
                                     waitAfterEventMs: 2800,
@@ -1567,14 +1567,14 @@
                                 },
                                 {
                                     target: '.ms-card[data-generated] .ms-ranking, .ms-card .ms-ranking',
-                                    text: '💖 你的名字已經刻在榜單上了！這就是你與推子共同創造的證明。',
+                                    text: '💖 你的名字已經刻在榜單上了！這就是你們共同創造的證明。',
                                     buttonText: '前往粉絲個人頁 →',
                                     scrollBlock: 'center',
                                     scrollSettleMs: 520
                                 },
                                 {
                                     target: '#btn-fan-profile',
-                                    text: '🌟 體驗完成！點擊「粉絲個人頁」，查看你的應援紀錄、獲得的徽章和稱號！',
+                                    text: '🌟 體驗完成！點擊「粉絲個人頁」，查看你的應援獲得的徽章吧！',
                                     buttonText: '前往粉絲個人頁',
                                     placements: ['bottom', 'left', 'right', 'top'],
                                     scrollBlock: 'center',
@@ -1593,8 +1593,8 @@
                     } else if (demoCtx && demoCtx.mode === 'creator-preview') {
                         setTimeout(() => {
                             startDemoGuide([
-                                { target: '.vt-hero', text: '👀 這裡是專屬於你的舞台預覽！粉絲們看到的就是這幅充滿魅力的畫面喔。', buttonText: '太好看了！' },
-                                { target: '#milestones', text: '🚀 你精心策劃的「里程碑」都會在這裡閃閃發光，等著粉絲一起來達成！', buttonText: '了解！' }
+                                { target: '.vt-hero', text: '👀 這裡是專屬於你的頁面預覽！粉絲們看到的就是這幅畫面喔。', buttonText: '了解！' },
+                                { target: '#milestones', text: '🚀 你精心策劃的「里程碑」都會在這裡，等著粉絲一起來達成！', buttonText: '了解！' }
                             ]);
                         }, 1200);
                     }
