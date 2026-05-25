@@ -31,12 +31,11 @@ const DEMO_KEYS = {
 };
 const DEMO_VTUBER_PROFILE_URL = 'vtuber_profile.html?id=ryusei&mode=fan';
 const DEMO_VTUBER_MAP = {
-  demo: { handle: 'demo', displayName: 'SAKURA NOVA', avatarUrl: 'image/head.jpg' },
-  ryusei: { handle: 'ryusei', displayName: '流星 Ryusei', avatarUrl: 'image/v_head_ryusei.jpg' },
+  ryusei: { handle: 'ryusei', displayName: '川雲爪日', avatarUrl: 'image/v_head_ryusei.jpg' },
   baifu: { handle: 'baifu', displayName: '拜風', avatarUrl: 'image/v_head_ryusei.jpg' }
 };
 const DEMO_MILESTONE_TITLES = {
-  milestone_3d_stage: '邁向全新 3D 舞台',
+  milestone_3d_stage: '川雲爪日',
   milestone_orig_song: '挑戰!全新原創曲製作',
   milestone_live: '線上演唱會準備'
 };
@@ -95,10 +94,10 @@ function ensureDemoProfile() {
       {
         id: 'demo_badge_1',
         badgeUrl: 'image/badge.webp',
-        name: '首位應援',
-        milestoneTitle: '邁向全新 3D 舞台',
+        name: '帝國子民',
+        milestoneTitle: '帝國起源vol2',
         vtuberId: 'demo',
-        vtuberName: 'SAKURA NOVA',
+        vtuberName: '川雲爪日',
         contribution: 1500,
         awardedAt: '2026-05-01',
         style: 'bg-pink-light',
@@ -106,11 +105,11 @@ function ensureDemoProfile() {
       },
       {
         id: 'demo_badge_2',
-        badgeUrl: 'image/badge.webp',
+        badgeUrl: 'image/badge2.png',
         name: '共演夥伴',
         milestoneTitle: '線上演唱會準備',
         vtuberId: 'ryusei',
-        vtuberName: '流星 Ryusei',
+        vtuberName: '川雲爪日',
         contribution: 900,
         awardedAt: '2026-04-18',
         style: 'bg-blue-light',
