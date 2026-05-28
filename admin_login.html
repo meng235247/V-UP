@@ -165,40 +165,14 @@
 </head>
 
 <body>
-
-    <div class="admin-auth-box">
-        <div class="auth-header">
-            <i class="fas fa-shield-alt shield-icon"></i>
-            <h1>V-Up! 營運平台</h1>
-            <p>AUTHORIZED PERSONNEL ONLY</p>
-        </div>
-
-        <form onsubmit="event.preventDefault(); window.location.href='admin_dashboard.html';">
-            <div class="input-group">
-                <label>員工編號 / Employee ID</label>
-                <input type="text" class="input-field" placeholder="VUP-ADM-..." required autofocus>
-            </div>
-
-            <div class="input-group">
-                <label>存取密碼 / Access Key</label>
-                <input type="password" class="input-field" placeholder="••••••••" required>
-            </div>
-
-            <div class="input-group">
-                <label>2FA 驗證碼 / Auth Token</label>
-                <input type="text" class="input-field" placeholder="6-digit code" maxlength="6" required>
-            </div>
-
-            <button type="submit" class="btn-login">
-                <i class="fas fa-fingerprint"></i> 驗證登入
-            </button>
-        </form>
-
-        <div class="system-notice">
-            <i class="fas fa-exclamation-triangle"></i> 此為內部營運系統，全程記錄登入 IP 與操作行為。未經授權之存取將面臨法律訴追。若需客服協助，請聯繫 IT 部門。
-        </div>
-    </div>
-
+    <!-- ADMIN PORTAL TEMPORARILY DISABLED -->
+    <script>
+        // Admin portal is currently disabled. Redirect all visitors immediately.
+        window.location.replace('/');
+    </script>
+    <noscript>
+        <meta http-equiv="refresh" content="0;url=/">
+    </noscript>
 </body>
 
 </html>

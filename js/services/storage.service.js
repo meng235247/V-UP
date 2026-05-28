@@ -1,4 +1,5 @@
 import { storage } from '../firebase-config.js';
+import { auth } from '../firebase-config.js';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const UPLOAD_SERVER = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_UPLOAD_SERVER_URL) ? import.meta.env.VITE_UPLOAD_SERVER_URL : 'http://127.0.0.1:5176';
@@ -83,10 +84,13 @@ async function uploadFileLocal(file) {
 
 /**
  * 上傳到 Firebase Storage (線上環境)
+ * 路徑：uploads/{uid}/timestamp_filename（需要登入才能上傳）
  */
 async function uploadFileFirebase(file) {
-  // 建立唯一路徑：uploads/timestamp_filename
-  const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
+  const user = auth.currentUser;
+  if (!user) throw new Error('請先登入才能上傳檔案');
+  // 用戶 UID 子目錄隔離，防止不同用戶互相覆蓋
+  const storageRef = ref(storage, `uploads/${user.uid}/${Date.now()}_${file.name}`);
   const snapshot = await uploadBytes(storageRef, file, buildUploadMetadata(file));
   const downloadURL = await getDownloadURL(snapshot.ref);
   return downloadURL;

@@ -5,6 +5,10 @@ service firebase.storage {
       return request.auth != null;
     }
 
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
     function isAllowedContentType() {
       return request.resource.contentType.matches('image/(jpeg|jpg|png|webp)')
         || request.resource.contentType.matches('audio/(mpeg|mp3)')
@@ -15,16 +19,25 @@ service firebase.storage {
       return request.resource.size < (mb * 1024 * 1024);
     }
 
-    match /uploads/{allPaths=**} {
-      allow get: if true;
-      allow list: if false;
-      allow write: if signedIn() && isAllowedContentType() && maxSize(5);
+    // ------------------------------------------------------------------
+    // uploads/{uid}/... — 一般用戶上傳區
+    // 公開讀取（Firebase Storage 下載 URL 包含 access token，不易被枚舉）
+    // 只有本人才能寫入自己的 UID 子目錄，防止互相覆蓋
+    // ------------------------------------------------------------------
+    match /uploads/{uid}/{allPaths=**} {
+      allow get: if true;          // 任何人可讀（含未登入訪客查看圖片）
+      allow list: if false;        // 禁止列舉目錄（隱藏路徑結構）
+      allow write: if isOwner(uid) && isAllowedContentType() && maxSize(5);
     }
 
+    // ------------------------------------------------------------------
+    // vtubers/{uid}/... — VTuber 個人素材區（橫幅、頭貼等）
+    // 公開讀取；只有對應 UID 的 VTuber 才能上傳
+    // ------------------------------------------------------------------
     match /vtubers/{uid}/{allPaths=**} {
-      allow get: if true;
-      allow list: if false;
-      allow write: if signedIn() && request.auth.uid == uid && isAllowedContentType() && maxSize(5);
+      allow get: if true;          // 公開讀取
+      allow list: if false;        // 禁止列舉
+      allow write: if isOwner(uid) && isAllowedContentType() && maxSize(5);
     }
   }
 }
