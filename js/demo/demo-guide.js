@@ -76,28 +76,40 @@ export function startDemoGuide(steps = []) {
   }
 
   /**
-   * KEY FIX: Find the first element matching the selector that is
-   * actually rendered with non-zero dimensions (i.e. visible/in-DOM).
-   * Skips elements inside hidden containers (getBoundingClientRect returns zeros).
+   * Poll for a visible (non-zero bounding rect) element matching the selector.
+   * Retries up to `timeoutMs` milliseconds with `intervalMs` between attempts.
+   * This prevents tooltip misplacement when Firebase data loads slowly (e.g. shikuu).
    */
-  function findVisibleTarget(selector) {
-    var elements = document.querySelectorAll(selector);
-    for (var i = 0; i < elements.length; i++) {
-      var el = elements[i];
-      var r = el.getBoundingClientRect();
-      // An element with actual dimensions is renderable
-      if (r.width > 0 && r.height > 0) {
-        console.log('[DemoGuide] findVisibleTarget found visible element:', el, 'rect:', JSON.stringify(r));
-        return el;
+  function waitForVisibleTarget(selector, timeoutMs, intervalMs) {
+    timeoutMs  = timeoutMs  || 8000;
+    intervalMs = intervalMs || 200;
+    return new Promise(function(resolve) {
+      var deadline = Date.now() + timeoutMs;
+
+      function attempt() {
+        var elements = document.querySelectorAll(selector);
+        for (var i = 0; i < elements.length; i++) {
+          var el = elements[i];
+          var r  = el.getBoundingClientRect();
+          if (r.width > 0 && r.height > 0) {
+            console.log('[DemoGuide] waitForVisibleTarget found:', el, 'rect:', JSON.stringify(r));
+            resolve(el);
+            return;
+          }
+        }
+        if (Date.now() < deadline) {
+          setTimeout(attempt, intervalMs);
+        } else {
+          // Timeout: use first match even if zero-size, or null
+          var first = elements.length > 0 ? elements[0] : null;
+          console.warn('[DemoGuide] waitForVisibleTarget timed out for selector:', selector,
+                       first ? '— using first match (zero-size)' : '— no element found');
+          resolve(first);
+        }
       }
-    }
-    // Fallback: return first element even if zero-size
-    if (elements.length > 0) {
-      console.warn('[DemoGuide] No visible target found for selector:', selector, '— using first match (zero-size)');
-      return elements[0];
-    }
-    console.warn('[DemoGuide] No element found for selector:', selector);
-    return null;
+
+      attempt();
+    });
   }
 
   /**
@@ -200,8 +212,9 @@ export function startDemoGuide(steps = []) {
     if (step.waitAfterEventMs) await wait(step.waitAfterEventMs);
     await waitForCelebrationClose();
 
-    // Find the first VISIBLE (non-zero-size) element matching the selector
-    var target = findVisibleTarget(step.target);
+    // Wait for a VISIBLE (non-zero-size) element matching the selector.
+    // Uses polling to handle slow Firebase loads (e.g. shikuu's milestones loading after 2s+).
+    var target = await waitForVisibleTarget(step.target, step.targetTimeoutMs || 8000);
     if (!target) { next(); return; }
 
     // Scroll target to center of viewport and wait for scroll to finish
