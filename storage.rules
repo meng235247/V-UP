@@ -1,11 +1,30 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAllowedContentType() {
+      return request.resource.contentType.matches('image/(jpeg|jpg|png|webp)')
+        || request.resource.contentType.matches('audio/(mpeg|mp3)')
+        || request.resource.contentType == 'video/mp4';
+    }
+
+    function maxSize(mb) {
+      return request.resource.size < (mb * 1024 * 1024);
+    }
+
     match /uploads/{allPaths=**} {
-      // 允許任何人讀取上傳的圖片 (為了讓公開頁面能顯示)
-      allow read: if true;
-      // 僅限登入使用者上傳
-      allow write: if request.auth != null;
+      allow get: if true;
+      allow list: if false;
+      allow write: if signedIn() && isAllowedContentType() && maxSize(5);
+    }
+
+    match /vtubers/{uid}/{allPaths=**} {
+      allow get: if true;
+      allow list: if false;
+      allow write: if signedIn() && request.auth.uid == uid && isAllowedContentType() && maxSize(5);
     }
   }
 }

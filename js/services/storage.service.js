@@ -3,6 +3,54 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 const UPLOAD_SERVER = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_UPLOAD_SERVER_URL) ? import.meta.env.VITE_UPLOAD_SERVER_URL : 'http://127.0.0.1:5176';
 const USE_EMULATOR = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR === 'true');
+const VTUBER_BANNER_NAMES = ['banner.jpg', 'banner.jpeg', 'banner.png', 'banner.webp'];
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp',
+  'audio/mpeg',
+  'audio/mp3',
+  'video/mp4'
+]);
+const IMAGE_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/jpg',
+  'image/png',
+  'image/webp'
+]);
+
+function normalizeMimeType(type) {
+  return String(type || '').toLowerCase();
+}
+
+function assertValidFile(file, options = {}) {
+  const { imagesOnly = false } = options;
+  if (!file) throw new Error('未選擇檔案');
+  const size = Number(file.size || 0);
+  if (size <= 0) throw new Error('檔案內容為空');
+  if (size > MAX_UPLOAD_BYTES) throw new Error('檔案大小不可超過 5MB');
+
+  const type = normalizeMimeType(file.type);
+  if (!type) throw new Error('無法辨識檔案格式');
+
+  const allowedSet = imagesOnly ? IMAGE_MIME_TYPES : ALLOWED_MIME_TYPES;
+  if (!allowedSet.has(type)) {
+    if (imagesOnly) {
+      throw new Error('僅支援圖片檔 (JPG/PNG/WEBP)');
+    }
+    throw new Error('僅支援 JPG/PNG/WEBP/MP3/MP4');
+  }
+}
+
+function buildUploadMetadata(file) {
+  const metadata = {
+    cacheControl: 'public, max-age=3600'
+  };
+  if (file && file.type) metadata.contentType = file.type;
+  return metadata;
+}
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
@@ -39,13 +87,61 @@ async function uploadFileLocal(file) {
 async function uploadFileFirebase(file) {
   // 建立唯一路徑：uploads/timestamp_filename
   const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-  const snapshot = await uploadBytes(storageRef, file);
+  const snapshot = await uploadBytes(storageRef, file, buildUploadMetadata(file));
   const downloadURL = await getDownloadURL(snapshot.ref);
   return downloadURL;
 }
 
+function getFileExtension(filename = '') {
+  const parts = String(filename).split('.');
+  if (parts.length < 2) return '';
+  return parts.pop().toLowerCase();
+}
+
+function normalizeImageExtension(ext = '') {
+  const safe = ['jpg', 'jpeg', 'png', 'webp'];
+  return safe.includes(ext) ? ext : 'jpg';
+}
+
+async function uploadFileFirebaseToPath(file, storagePath) {
+  const storageRef = ref(storage, storagePath);
+  const snapshot = await uploadBytes(storageRef, file, buildUploadMetadata(file));
+  return getDownloadURL(snapshot.ref);
+}
+
+async function uploadVtuberBanner(uid, file) {
+  if (!uid) throw new Error('Missing vtuber uid');
+  if (!file) throw new Error('Missing banner file');
+  assertValidFile(file, { imagesOnly: true });
+  const ext = normalizeImageExtension(getFileExtension(file.name));
+  const path = `vtubers/${uid}/banner.${ext}`;
+  if (USE_EMULATOR) {
+    console.log('[StorageService] Using local upload server for banner');
+    return uploadFileLocal(file);
+  }
+  console.log('[StorageService] Using Firebase Storage banner path', path);
+  return uploadFileFirebaseToPath(file, path);
+}
+
+async function getVtuberBannerUrl(uid) {
+  if (!uid || USE_EMULATOR) return null;
+  for (const name of VTUBER_BANNER_NAMES) {
+    const path = `vtubers/${uid}/${name}`;
+    try {
+      return await getDownloadURL(ref(storage, path));
+    } catch (err) {
+      if (err && err.code === 'storage/object-not-found') {
+        continue;
+      }
+      console.warn('[StorageService] banner lookup failed:', path, err);
+    }
+  }
+  return null;
+}
+
 export const storageService = {
   uploadFile: async (file) => {
+    assertValidFile(file);
     // 根據環境變數決定使用哪種上傳方式
     if (USE_EMULATOR) {
       console.log('[StorageService] Using local upload server');
@@ -54,5 +150,7 @@ export const storageService = {
       console.log('[StorageService] Using Firebase Storage');
       return uploadFileFirebase(file);
     }
-  }
+  },
+  uploadVtuberBanner: async (uid, file) => uploadVtuberBanner(uid, file),
+  getVtuberBannerUrl: async (uid) => getVtuberBannerUrl(uid)
 };
