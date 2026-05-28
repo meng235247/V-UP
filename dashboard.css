@@ -488,8 +488,8 @@ button {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 32px 0 24px;
-    margin-bottom: 32px;
+    padding: 14px 0 12px;
+    margin-bottom: 16px;
     border-bottom: 1px solid var(--border);
     animation: fadeInUp 0.5s ease both;
 }
@@ -499,6 +499,13 @@ button {
     margin-bottom: 4px;
     color: var(--text-main);
     font-weight: 900;
+    line-height: 1.2;
+}
+
+/* Subtitle hidden on mobile — save vertical space */
+#page-title-desc {
+    font-size: 0.88rem;
+    margin: 0;
 }
 
 .topbar-actions {
@@ -646,19 +653,22 @@ button {
     }
     
     .section-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 12px;
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
     }
 
     .section-header h2 {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
+        flex: 1;
+        min-width: 0;
     }
 
     .section-header .btn-primary, 
     .section-header .text-link {
-        width: 100%;
-        justify-content: center;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
 
     #navbar-user-info {
@@ -679,24 +689,113 @@ button {
         grid-template-columns: 1fr !important;
         gap: 16px;
     }
+
+    /* 手機版剪去副標題，節省垂直空間 */
+    #page-title-desc {
+        display: none;
+    }
+
+    /* data-card 手機版縮小：2欄迭你卡磁 */
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px;
+    }
+
+    /* data-card 在 2-欄模式下編小 */
+    .data-card {
+        padding: 14px 12px;
+        gap: 10px;
+        border-radius: 14px;
+    }
+
+    .data-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+    }
+
+    .data-label {
+        font-size: 0.72rem;
+        margin-bottom: 3px;
+        white-space: normal;
+        line-height: 1.2;
+    }
+
+    .data-value {
+        font-size: 1.2rem;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .trend {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+    }
+
+    /* 對於 span-2/3 列表區塊，手機版占滿 2 欄 */
+    .span-2, .span-3 {
+        grid-column: span 2 !important;
+    }
+
+    .dashboard-section {
+        padding: 16px 14px;
+        margin-bottom: 14px;
+    }
 }
 
+/* ---- 手機版按鈕優化：480px 以下移除 FAB 模式避免與里程碑按鈕重疊 ---- */
 @media (max-width: 480px) {
-    .topbar-actions .btn-primary {
-        position: fixed;
-        bottom: 24px;
-        right: 24px;
-        border-radius: 50%;
-        width: 56px;
-        height: 56px;
-        padding: 0;
-        z-index: 90;
-        box-shadow: 0 8px 24px var(--primary-glow);
+    .main-content {
+        padding: 8px;
     }
-    
+
+    .topbar-actions .btn-primary {
+        /* 手機版保持正常按鈕樣式，不轉為 FAB */
+        position: static;
+        border-radius: 10px;
+        width: auto;
+        height: auto;
+        padding: 7px 10px;
+        z-index: auto;
+        box-shadow: none;
+    }
+
     .topbar-actions .btn-primary i {
         margin: 0;
-        font-size: 1.2rem;
+        font-size: 1rem;
+    }
+
+    .topbar-actions .btn-primary span {
+        display: none;
+    }
+
+    .page-title h1 {
+        font-size: 0.98rem;
+    }
+
+    /* 480px 以下： data-card 改回單欄進一步對齊 */
+    .data-card {
+        padding: 12px 10px;
+    }
+
+    .dashboard-section {
+        padding: 14px 10px;
+        margin-bottom: 10px;
+    }
+
+    /* 手機 modal：底部 sheet 式，border-radius 上弧 */
+    .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    .modal-content {
+        border-radius: 20px 20px 0 0 !important;
+        padding: 20px 14px 28px !important;
+        max-height: 90vh !important;
+        width: 100% !important;
+        animation: none;
     }
 }
 
@@ -782,12 +881,12 @@ button {
 /* ---- Dashboard Sections ---- */
 .dashboard-section {
     background: var(--bg-card);
-    padding: 32px;
+    padding: 28px;
     border-radius: var(--radius-lg);
     border: 1px solid var(--border);
     box-shadow: var(--shadow-md);
     animation: cardIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
 }
 
 .upload-zone:hover {
@@ -1074,12 +1173,21 @@ button {
 @media (max-width: 900px) {
     .modal-body.modal-grid {
         grid-template-columns: 1fr;
-        max-height: 56vh;
+        max-height: 60vh;
+        overflow-y: auto;
     }
 
     .modal-content {
-        padding: 20px;
-        border-radius: 14px;
+        padding: 20px 16px;
+        border-radius: 16px;
+        /* 避免第一背景後手機的樣式緊貼瀏覽器限制區 */
+        max-height: 88vh;
+        overflow-y: auto;
+    }
+
+    .modal-overlay {
+        padding: 16px 12px;
+        align-items: flex-end;
     }
 }
 
