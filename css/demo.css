@@ -80,7 +80,7 @@
 .demo-banner-right {
   display: flex;
   align-items: center;
-  margin-right: 60px;
+  /* 移除硬編 margin-right，改由 flex gap 控制 */
 }
 
 .demo-note {
@@ -273,7 +273,6 @@ body.demo-dashboard-mode #btn-view-public {
 }
 
 @keyframes demoPulse {
-
   0%,
   100% {
     outline-color: #FF85B2;
@@ -286,144 +285,129 @@ body.demo-dashboard-mode #btn-view-public {
   }
 }
 
+/* =========================================
+   手機版 RWD（整合為單一乾淨的 media query）
+   ========================================= */
 @media (max-width: 768px) {
+  /* Banner：深色背景，保持 flex row 排版以避免被文字撐高 */
   #demo-banner {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    z-index: 9999;
     background: rgba(30, 41, 59, 0.95);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
     color: #F8FAFC;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    font-family: "Inter", sans-serif;
   }
 
+  /* Banner 內容：縮小 padding，保持單行 */
   .demo-banner-inner {
-    max-width: 1280px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 24px;
-    gap: 16px;
+    padding: 7px 12px;
+    gap: 8px;
+    flex-wrap: nowrap;
   }
 
+  /* 左側 */
   .demo-banner-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-shrink: 0;
   }
 
   .demo-badge {
-    background: linear-gradient(135deg, #FF6B9E, #FF85B2);
-    color: white;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    box-shadow: 0 2px 8px rgba(255, 107, 158, 0.3);
+    padding: 3px 8px;
+    font-size: 0.7rem;
+    white-space: nowrap;
   }
 
+  /* 標題截斷防止換行 */
   .demo-title {
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.82rem;
+    font-weight: 700;
     color: #F8FAFC;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90px;
   }
 
+  /* 中間積分 pill */
   .demo-banner-center {
     flex: 1;
-    display: flex;
     justify-content: center;
+    min-width: 0;
   }
 
   .demo-points-pill {
+    padding: 3px 10px;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: #70DDF1;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 4px 16px;
-    border-radius: 99px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    color: #70DDF1;
+    white-space: nowrap;
   }
 
   .demo-points-pill strong {
-    color: #FFF;
+    color: #fff;
     font-weight: 800;
-    font-size: 1.05rem;
+    font-size: 0.9rem;
   }
 
+  /* 右側：隱藏說明文字，節省空間 */
   .demo-banner-right {
-    display: flex;
-    align-items: center;
+    flex-shrink: 0;
   }
 
   .demo-note {
-    font-size: 0.85rem;
-    color: #94A3B8;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    display: none;
   }
-}
 
-@media (max-width: 768px) {
-  #demo-banner {
-    font-size: 0.85rem;
-    padding: 12px 16px;
-    flex-direction: column;
-    text-align: center;
-    gap: 8px;
+  /* banner 高度固定 44px，避免被內容撐高 */
+  :root {
+    --demo-banner-height: 44px;
   }
 
   body.demo-has-banner {
-    padding-top: var(--demo-banner-height, 80px);
+    padding-top: 44px;
   }
 
   body.demo-dashboard-mode .dashboard-layout {
-    margin-top: var(--demo-banner-height, 80px);
+    margin-top: 44px;
   }
 
   body.demo-dashboard-mode .sidebar {
-    top: var(--demo-banner-height, 80px);
-    height: calc(100vh - var(--demo-banner-height, 80px));
+    top: 44px;
+    height: calc(100vh - 44px);
+  }
+
+  /* Modal：加上足夠邊距避免緊貼瀏覽器上下欄 */
+  .demo-modal-overlay {
+    padding: 20px 16px;
+    align-items: center;
   }
 
   .demo-modal-card {
-    padding: 24px;
+    padding: 24px 20px;
     border-radius: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
   }
 
+  /* Guide tip */
   .demo-guide-tip {
     width: calc(100vw - 32px);
-    /* Slightly more margin on tiny screens */
-    padding: 16px;
-    /* Less padding so text fits better */
+    padding: 16px 18px;
     border-radius: 16px;
   }
 
   .demo-guide-tip p {
-    font-size: 0.9rem;
+    font-size: 0.88rem;
+    line-height: 1.65;
     margin: 0 0 12px;
   }
 
   .demo-guide-actions .demo-btn {
-    padding: 6px 14px;
-    font-size: 0.8rem;
+    padding: 8px 16px;
+    font-size: 0.82rem;
   }
 }
 
-/* Fan profile nav button �X elev
-ted above demo guide overlay during guide step 5 */
+/* Fan profile nav button elevated above demo guide overlay during guide step 5 */
 #btn-fan-profile.demo-highlight {
   position: relative;
   z-index: 10000 !important;

@@ -1300,30 +1300,48 @@ footer {
         margin-top: 0;
     }
 
+    /* Hero */
     .hero-title {
-        font-size: 1.85rem !important;
-        line-height: 1.3;
+        font-size: 2rem !important;
+        line-height: 1.25;
+        letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
     }
 
     .hero {
-        padding: 4rem 20px 3rem;
+        padding: 4rem 16px 3rem;
     }
 
+    .hero-content .btn {
+        font-size: 0.95rem;
+        padding: 0.8rem 2rem;
+    }
+
+    /* Navbar: 保持 logo 與 theme toggle 同行，連結獨立一行橫向滾動 */
     .nav-container {
-        flex-direction: column;
-        gap: 0.75rem;
-        padding-top: 1rem;
-        padding-bottom: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0;
+        padding: 0.65rem 16px 0;
+        justify-content: space-between;
+        align-items: center;
     }
 
+    /* nav-links 佔整行橫向滾動 */
     .nav-links {
+        order: 3;
         width: 100%;
-        gap: 1rem;
+        gap: 0.75rem;
         overflow-x: auto;
         white-space: nowrap;
         justify-content: flex-start;
-        padding-bottom: 0.5rem;
+        padding: 0.5rem 0 0.6rem;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        flex-shrink: 0;
     }
 
     .nav-links::-webkit-scrollbar {
@@ -1331,9 +1349,11 @@ footer {
     }
 
     .nav-item {
-        font-size: 0.85rem;
+        font-size: 0.82rem;
+        flex-shrink: 0;
     }
 
+    /* Grid 影響 */
     .vtuber-grid {
         grid-template-columns: 1fr;
     }
@@ -1341,4 +1361,54 @@ footer {
     .why-grid {
         grid-template-columns: 1fr;
     }
-}
+
+    /* 標題層級 */
+    .section-intro h2 {
+        font-size: 1.8rem;
+    }
+
+    .news-title {
+        font-size: 1.8rem;
+    }
+
+    /* News item: 改為可換行，避免被擠壓 */
+    .news-item {
+        flex-wrap: wrap;
+        gap: 0.6rem;
+        padding: 0.9rem 1rem;
+        align-items: flex-start;
+    }
+
+    .news-date {
+        min-width: auto;
+        font-size: 0.78rem;
+    }
+
+    .news-text {
+        font-size: 0.88rem;
+        line-height: 1.55;
+        width: 100%;
+    }
+
+    .news-link-icon {
+        display: none;
+    }
+
+    /* Stats bar */
+    .stats-bar-inner {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    /* Footer */
+    .footer-inner {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+
+    .footer-bottom {
+        flex-direction: column;
+        gap: 0.5rem;
+        text-align: center;
+    }
+}

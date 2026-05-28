@@ -960,7 +960,24 @@
                     startDemoGuide([
                         { target: '[data-tab=\"milestones\"]', text: '✨ 歡迎來到創作者編輯中心！第一步，讓我們先切換到「里程碑管理」。', buttonText: '好喔！' },
                         { target: '#topbar-add-milestone', text: '🎯 點擊這裡，立刻許下你的第一個願望！告訴粉絲們你想集資的夢想吧！', buttonText: '馬上建立！' },
-                        { target: '#btn-view-public', text: '🎉 準備就緒！點擊這裡預覽粉絲眼中的專屬頁面。也可以先試看看修改其他各項設定喔!', buttonText: '出發！' }
+                        {
+                            target: '#btn-view-public',
+                            text: '🎉 準備就緒！點擊這裡預覽粉絲眼中的專屬頁面。也可以先試看看修改其他各項設定喔!',
+                            buttonText: '出發！',
+                            beforeShow: function() {
+                                if (window.innerWidth <= 900) {
+                                    const sidebar = document.getElementById('dashboard-sidebar');
+                                    const overlay = document.getElementById('sidebar-overlay');
+                                    if (sidebar && !sidebar.classList.contains('open')) {
+                                        sidebar.classList.add('open');
+                                        if (overlay) overlay.classList.add('active');
+                                    }
+                                    return new Promise(function(resolve) { setTimeout(resolve, 380); });
+                                }
+                            },
+                            placements: ['top', 'right', 'left', 'bottom'],
+                            scrollBlock: 'end'
+                        }
                     ]);
                 }, 1300);
             }
