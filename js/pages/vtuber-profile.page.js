@@ -2,6 +2,7 @@ import PostsService from '../services/posts.service.js';
 import { doc, getDoc, getDocs, collection, query, where } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from '../firebase-config.js';
+import { storageService } from '../services/storage.service.js';
 
 const MEDIA_ICON_CLASS = {
   image: 'fa-regular fa-image',
@@ -85,6 +86,16 @@ async function resolveUserAvatarUrl(uid, fallbackUrl) {
     return fallbackUrl;
   }
   userAvatarCache.set(uid, false);
+  return null;
+}
+
+async function resolveStorageBannerUrl(uid) {
+  if (!uid) return null;
+  try {
+    return await storageService.getVtuberBannerUrl(uid);
+  } catch (err) {
+    console.warn('[VtuberProfilePage] resolveStorageBannerUrl failed:', err);
+  }
   return null;
 }
 
@@ -349,6 +360,14 @@ const VtuberProfilePage = {
 
       const bannerEl = document.getElementById('vtuber-banner') || document.querySelector('.vt-hero-image img');
       if (bannerEl && vtuber.bannerUrl) bannerEl.src = vtuber.bannerUrl;
+      if (bannerEl && !vtuber.bannerUrl) {
+        const uid = vtuber.uid || vtuber.id || null;
+        resolveStorageBannerUrl(uid).then((url) => {
+          if (!url) return;
+          vtuber.bannerUrl = url;
+          bannerEl.src = url;
+        });
+      }
 
       // Apply theme colors (map saved colorPrimary/colorSecondary into CSS variables)
       const root = document.documentElement;

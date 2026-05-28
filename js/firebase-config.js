@@ -4,6 +4,7 @@ import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 // Firebase configuration using environment variables from Vite
 const firebaseConfig = {
@@ -31,6 +32,8 @@ try {
     const isBrowser = (typeof window !== 'undefined' && typeof window.location !== 'undefined');
     const host = isBrowser ? window.location.hostname : null;
     const envFlag = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_USE_EMULATOR);
+    const appCheckSiteKey = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_APPCHECK_SITE_KEY) || '';
+    const appCheckDebug = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_APPCHECK_DEBUG === 'true');
     const localOverride = isBrowser ? localStorage.getItem('useEmulator') : null;
     const localForceOn = localOverride === 'true';
     const localForceOff = localOverride === 'false';
@@ -44,6 +47,23 @@ try {
     // 但是如果 .env 裡面明確寫了 false，就強制連上雲端，無視 localhost
     if (!localForceOn && !localForceOff && envFlag === 'false') {
         useEmulator = false;
+    }
+
+    if (isBrowser && appCheckSiteKey) {
+        if (appCheckDebug && typeof self !== 'undefined') {
+            self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+        }
+        try {
+            initializeAppCheck(app, {
+                provider: new ReCaptchaV3Provider(appCheckSiteKey),
+                isTokenAutoRefreshEnabled: true
+            });
+            console.info('[firebase-config] app check enabled');
+        } catch (err) {
+            console.warn('[firebase-config] app check init skipped:', err && err.message ? err.message : err);
+        }
+    } else if (isBrowser) {
+        console.info('[firebase-config] app check not configured');
     }
 
     if (useEmulator) {

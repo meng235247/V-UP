@@ -36,6 +36,7 @@
     "vite": "^8.0.8"
   },
   "devDependencies": {
+    "firebase-admin": "^13.10.0",
     "firebase-tools": "^15.15.0",
     "vite-plugin-static-copy": "^4.1.0"
   }
