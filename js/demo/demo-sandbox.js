@@ -100,7 +100,7 @@ function showDemoBanner(text, withPoints = false) {
     document.body.prepend(banner);
   }
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
-  const pointsHtml = withPoints 
+  const pointsHtml = withPoints
     ? `<div class="demo-banner-center"></div>
        <div class="demo-banner-right">
          <span class="demo-note"><i class="fa-solid fa-circle-info"></i> 僅本機模擬，無真實金流</span>
@@ -400,7 +400,7 @@ function patchFanMilestonesService(MilestonesService) {
     const myKey = DEMO_FAN_PROFILE.uid;
     const myAmount = map[myKey] ? map[myKey].totalAmount : 0;
     callback(ranks, myAmount);
-    return () => {};
+    return () => { };
   };
 
   MilestonesService.__demoFanPatched = true;
@@ -485,7 +485,7 @@ function patchCreatorPreviewServices({ vtuberService, MilestonesService, PostsSe
           achievedAt: m.achievedAtMs ? fakeTs(m.achievedAtMs) : null
         }));
       callback(rows);
-      return () => {};
+      return () => { };
     };
 
     MilestonesService.getPublicMilestones = async () =>
@@ -517,7 +517,7 @@ function patchCreatorPreviewServices({ vtuberService, MilestonesService, PostsSe
         });
       const ranks = Object.values(map).sort((a, b) => b.totalAmount - a.totalAmount).slice(0, lim);
       callback(ranks, 0);
-      return () => {};
+      return () => { };
     };
 
     MilestonesService.__demoCreatorPreviewPatched = true;
@@ -762,16 +762,16 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
       const list = readCreatorMilestones().map((m) =>
         m.id === milestoneId
           ? (() => {
-              const badgeUrl = milestone.badgeUrl !== undefined ? milestone.badgeUrl : m.badgeUrl || null;
-              return {
-                ...m,
-                ...milestone,
-                targetAmount: Number(milestone.goal || milestone.targetAmount || m.targetAmount || 0),
-                badgeUrl: badgeUrl,
-                badgeDataUrl: badgeUrl && String(badgeUrl).startsWith('data:') ? badgeUrl : (m.badgeDataUrl || null),
-                updatedAtMs: now
-              };
-            })()
+            const badgeUrl = milestone.badgeUrl !== undefined ? milestone.badgeUrl : m.badgeUrl || null;
+            return {
+              ...m,
+              ...milestone,
+              targetAmount: Number(milestone.goal || milestone.targetAmount || m.targetAmount || 0),
+              badgeUrl: badgeUrl,
+              badgeDataUrl: badgeUrl && String(badgeUrl).startsWith('data:') ? badgeUrl : (m.badgeDataUrl || null),
+              updatedAtMs: now
+            };
+          })()
           : m
       );
       saveCreatorMilestones(list);
@@ -800,7 +800,7 @@ function patchCreatorServices({ vtuberService, MilestonesService, PostsService, 
           .filter((m) => ['published', 'active', 'achieved', 'archived'].includes(m.status))
           .map((m) => ({ ...m, createdAt: fakeTs(m.createdAtMs), updatedAt: fakeTs(m.updatedAtMs || m.createdAtMs) }))
       );
-      return () => {};
+      return () => { };
     };
 
     MilestonesService.__demoCreatorPatched = true;
@@ -893,7 +893,8 @@ function showEmailGate() {
     wrap.innerHTML = `
       <div class="demo-modal-card demo-email-gate-card">
         <h3>VTuber 創作者 Demo</h3>
-        <p>留下 Email 可在正式版上線時優先收到通知。你也可以先跳過。</p>
+        <p>留下 Email 可在正式版上線時優先收到通知。</p>
+        <p style="color: #EF4444; text-align: center; font-size: 13.5px; margin-top: -4px;">建議使用電腦版</p>
         <input id="demo-email-input" class="demo-email-input" type="email" placeholder="you@example.com" />
         <div class="demo-modal-actions">
           <button id="demo-email-submit" class="demo-btn demo-btn-primary">送出 Email 並進入</button>

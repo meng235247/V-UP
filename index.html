@@ -168,16 +168,6 @@
             flex-shrink: 0;
         }
 
-        /* 穩健版：用 min-height + justify-content 取代脆弱的 margin-top:40px hack
-           不管在任何 DPR 或字體渲染環境，name row 底部永遠跟平齊 avatar 底部 */
-        .v-card-name-row {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;  /* 底部對齊文字 */
-            min-height: 58px;           /* 跟桌面版 avatar 高度一致 */
-            padding-bottom: 2px;
-        }
-
         .v-card-name-row h3 {
             font-size: 0.98rem;
             font-weight: 800;
@@ -185,7 +175,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            margin-top: 0; /* 移除 hack，改由 min-height 控制對齊 */
+            margin-top: 40px;
         }
 
         .v-card-followers {
@@ -653,12 +643,6 @@
         }
 
         @media (max-width:768px) {
-            html,
-            body {
-                -webkit-text-size-adjust: 100%;
-                text-size-adjust: 100%;
-            }
-
             .how-grid {
                 grid-template-columns: 1fr;
             }
@@ -666,333 +650,7 @@
             .hero-cta-group {
                 flex-direction: column;
                 align-items: center;
-                gap: 0.75rem;
-            }
-
-            .hero-title {
-                font-size: clamp(2rem, 7vw, 2.45rem) !important;
-                line-height: 1.15;
-                letter-spacing: -0.4px;
-                text-wrap: balance;
-                line-break: strict;
-            }
-
-            .hero-content > div[style*="flex-direction:column"] {
-                gap: 0.4rem !important;
-            }
-
-            .hero-content > div[style*="margin-bottom:2.5rem"] {
-                margin-bottom: 1.6rem !important;
-            }
-
-            /* ===== 真實設備修正：cascade 順序問題 =====
-               index.html <style> 的 base 規則比 styles.css 的
-               @media 晚載入，需在此用 !important 確保手機版生效 */
-
-            /* Avatar 強制 52px（base 是 58px） */
-            .v-card-body .v-card-avatar {
-                width: 52px !important;
-                height: 52px !important;
-            }
-
-            /* avatar wrap margin 配合 52px */
-            .v-card-avatar-wrap {
-                margin-top: -20px !important;
-            }
-
-            /* VTuber name row：min-height 配合 52px avatar */
-            .v-card-name-row {
-                min-height: 52px;
-                justify-content: flex-end;
-            }
-
-            .v-card-name-row h3 {
-                margin-top: 0 !important;
-                font-size: 0.93rem;
-                line-height: 1.3;
-            }
-
-            /* 全域 h2 手機版字體上限（用 !important 蓋過 inline style） */
-            h2[style],
-            h2 {
-                font-size: clamp(1.5rem, 5.5vw, 1.85rem) !important;
-                line-height: 1.25 !important;
-                text-wrap: balance;
-                letter-spacing: -0.2px;
-            }
-
-            .section-label {
-                font-size: 0.7rem;
-                letter-spacing: 1.2px;
-            }
-
-            /* discover header 字體縮小 */
-            .discover-header h2 {
-                font-size: 1.6rem !important;
-                line-height: 1.25;
-                max-width: 22rem;
-                margin-left: auto;
-                margin-right: auto;
-                text-wrap: balance;
-            }
-
-            /* discover header p 字體調整 */
-            .discover-header p {
-                font-size: 0.9rem;
-                line-height: 1.55;
-                max-width: 22rem;
-                margin: 0 auto;
-            }
-
-            /* How section h2 */
-            .how-section h2 {
-                font-size: 1.7rem !important;
-            }
-
-            /* Demo CTA h2 */
-            .demo-cta-section h2 {
-                font-size: 1.7rem !important;
-            }
-
-            /* Feedback h2 */
-            .feedback-section h2,
-            [id="feedback"] h2 {
-                font-size: 1.65rem !important;
-            }
-
-            /* Feedback p：縮小字體 + 隱藏 <br> 避免孤行 */
-            .feedback-section p,
-            [id="feedback"] p {
-                font-size: 0.9rem !important;
-                line-height: 1.65 !important;
-                margin-bottom: 1.75rem !important;
-            }
-
-            /* <br> 在 feedback 段落隱藏，讓文字在窄螢幕自然換行 */
-            .feedback-section p br,
-            #feedback p br {
-                display: none;
-            }
-
-            /* Why section h2 */
-            .why-section h2 {
-                font-size: 1.7rem !important;
-            }
-
-            /* why-split 改為單列 */
-            .why-split {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            /* hero pill badge */
-            .hero-pill {
-                font-size: 0.78rem !important;
-                padding: 5px 14px !important;
-            }
-
-            /* hero dual subtitle */
-            .hero-content > div p {
-                font-size: 0.86rem !important;
-                line-height: 1.55;
-                color: rgba(255, 255, 255, 0.72) !important;
-                line-break: strict;
-                max-width: 26rem;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .hero-content > p {
-                display: none;
-            }
-
-            #comparison,
-            #faq {
-                padding: 3.75rem 16px 4rem !important;
-            }
-
-            .discover-section,
-            .demo-cta-section {
-                padding-top: 3.75rem;
-                padding-bottom: 4rem;
-            }
-
-            #comparison .text-center p,
-            .how-section .text-center p,
-            .why-section .text-center p,
-            #faq .text-center p,
-            .demo-cta-section p {
-                font-size: 0.92rem !important;
-                line-height: 1.6;
-                max-width: 24rem;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            #comparison table {
-                font-size: 0.86rem !important;
-                table-layout: fixed;
-            }
-
-            #comparison table td,
-            #comparison table th {
-                padding: 0.7rem 0.7rem !important;
-                line-height: 1.4;
-                line-break: strict;
-            }
-
-            #comparison table th:first-child,
-            #comparison table td:first-child {
-                width: 26% !important;
-            }
-
-            #comparison table th:nth-child(2),
-            #comparison table td:nth-child(2),
-            #comparison table th:nth-child(3),
-            #comparison table td:nth-child(3) {
-                width: 37% !important;
-            }
-
-            /* Demo cards full-width */
-            .demo-card {
-                width: 100%;
-                max-width: 100%;
-            }
-
-            .demo-card p br {
-                display: none;
-            }
-
-            .v-card-body {
-                padding: 0 1rem 1rem;
-                gap: 0.45rem;
-            }
-
-            .v-card {
-                max-width: 360px;
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .v-card-followers {
-                font-size: 0.78rem;
-                line-height: 1.4;
-                margin-bottom: 0.35rem;
-                text-wrap: balance;
-            }
-
-            .v-card-tags {
-                row-gap: 0.35rem;
-                margin-bottom: 0;
-            }
-
-            .tag {
-                font-size: 0.68rem;
-                padding: 2px 7px;
-            }
-
-            .v-card-milestone {
-                font-size: 0.78rem;
-                line-height: 1.45;
-                margin-bottom: 0;
-                text-wrap: balance;
-                line-break: strict;
-            }
-
-            .v-card-body > div[style*="font-style:italic"] {
-                font-size: 0.76rem !important;
-                line-height: 1.45 !important;
-                text-wrap: balance;
-                line-break: strict;
-            }
-
-            .v-card-progress-header {
-                font-size: 0.72rem;
-                line-height: 1.2;
-                gap: 0.5rem;
-                font-variant-numeric: tabular-nums;
-            }
-
-            .v-card-progress-header .raised,
-            .v-card-progress-header .pct {
-                white-space: nowrap;
-            }
-
-            .v-card-cta {
-                font-size: 0.82rem;
-                padding: 0.6rem 0.9rem;
-            }
-
-            /* 防止 Hero 按鈕在手機版折成兩行 */
-            .btn-hero-creator,
-            .btn-hero-fan {
-                font-size: clamp(0.8rem, 3.8vw, 0.88rem) !important;
-                padding: 0.75rem 1rem !important;
-                white-space: nowrap !important;
-                word-break: keep-all !important;
-                display: inline-flex !important;
-                align-items: center;
-                justify-content: center;
-            }
-
-            /* Why section p */
-            .why-section > .container > p {
-                font-size: 0.9rem !important;
-                margin-bottom: 2rem;
-            }
-
-            /* FAQ summary */
-            details summary {
-                font-size: 0.95rem !important;
-                line-height: 1.35;
-            }
-
-            #faq details summary {
-                display: grid !important;
-                grid-template-columns: minmax(0, 1fr) auto;
-                align-items: start !important;
-                gap: 0.65rem;
-                line-break: strict;
-            }
-
-            #faq details summary i {
-                margin-top: 0.2rem;
-                justify-self: end;
-                flex-shrink: 0;
-            }
-
-            #faq details p {
-                font-size: 0.88rem !important;
-                line-height: 1.6;
-                line-break: strict;
-            }
-
-            /* Section 通用 padding 縮小 */
-            .how-section,
-            .news-section {
-                padding-top: 3.5rem;
-                padding-bottom: 3.5rem;
-                padding-left: 16px;
-                padding-right: 16px;
-            }
-
-            /* Feedback 區塊：修正手機版按鈕折行問題 */
-            .feedback-section {
-                padding: 3rem 12px !important;
-            }
-
-            /* 內層儲存卡片：縮小內距避免按鈕被撠壓 */
-            .feedback-section > .container {
-                padding: 2.5rem 1.25rem !important;
-            }
-
-            /* 回饋表單按鈕：不讓字折行 */
-            .feedback-section a.btn,
-            #feedback a.btn {
-                font-size: 0.93rem !important;
-                padding: 0.85rem 1.5rem !important;
-                white-space: nowrap !important;
-                word-break: keep-all !important;
+                gap: 1rem;
             }
         }
 
@@ -1106,196 +764,6 @@
         .h-item i {
             font-size: 1.1rem;
         }
-
-        /* =============================================
-           手機版漢堡選單系統
-           ============================================= */
-        /* 漢堡按鈕 — 透過 CSS 在 nav-container 後偽造，
-           實際用 JS 在 nav-container 內動態注入 */
-        .hamburger-btn {
-            display: none;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1.5px solid var(--border-color);
-            background: var(--bg-surface);
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-        .hamburger-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-
-        /* 手機版 drawer 選單 */
-        .mobile-nav-drawer {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 200;
-            pointer-events: none;
-        }
-        .mobile-nav-drawer.open {
-            display: block;
-            pointer-events: auto;
-        }
-        .mobile-nav-backdrop {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.45);
-            backdrop-filter: blur(4px);
-            animation: fadeIn 0.2s ease both;
-        }
-        .mobile-nav-panel {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: min(280px, 85vw);
-            height: 100%;
-            background: var(--bg-surface);
-            border-left: 1px solid var(--border-color);
-            box-shadow: -8px 0 30px rgba(0,0,0,0.12);
-            display: flex;
-            flex-direction: column;
-            padding: 1.5rem 1.25rem;
-            gap: 0;
-            animation: slideInRight 0.25s cubic-bezier(0.4,0,0.2,1) both;
-        }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to   { transform: translateX(0); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
-        }
-        .mobile-nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.75rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .mobile-nav-brand {
-            font-size: 1.4rem;
-            font-family: 'Baloo 2', sans-serif;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .mobile-nav-close {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1.5px solid var(--border-color);
-            background: var(--bg-subtle);
-            color: var(--text-muted);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .mobile-nav-close:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-        }
-        .mobile-nav-links {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-            flex: 1;
-        }
-        .mobile-nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.85rem 1rem;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 1rem;
-            color: var(--text-main);
-            text-decoration: none;
-            transition: background 0.2s, color 0.2s;
-        }
-        .mobile-nav-link:hover,
-        .mobile-nav-link.active {
-            background: var(--primary-light);
-            color: var(--primary);
-        }
-        .mobile-nav-link i {
-            width: 20px;
-            text-align: center;
-            color: var(--primary);
-            font-size: 0.95rem;
-        }
-        .mobile-nav-footer {
-            padding-top: 1.25rem;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-        .mobile-nav-cta {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            padding: 0.75rem 1rem;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            text-decoration: none;
-            background: var(--gradient-primary);
-            color: white;
-            box-shadow: var(--shadow-pink);
-            transition: all 0.2s;
-        }
-        .mobile-nav-cta:hover {
-            filter: brightness(1.08);
-            color: white;
-        }
-        .mobile-theme-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 0.25rem;
-        }
-        .mobile-theme-label {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            font-weight: 600;
-        }
-
-        /* 手機版 @media — 顯示漢堡按鈕、隱藏 nav-links */
-        @media (max-width: 768px) {
-            .hamburger-btn {
-                display: flex;
-            }
-            /* nav-links 在手機版完全隱藏（改由 drawer 取代） */
-            .nav-links {
-                display: none !important;
-            }
-            /* nav-container 回到單行排列 */
-            .nav-container {
-                flex-wrap: nowrap;
-                padding: 0.75rem 16px;
-                align-items: center;
-                justify-content: space-between;
-            }
-        }
     </style>
     <script type="module" src="./js/firebase-config.js"></script>
 </head>
@@ -1349,7 +817,7 @@
             <div
                 style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2.5rem;animation:fadeInUp 0.8s 0.15s ease both;">
                 <p style="font-size:1rem;color:rgba(255,255,255,0.78);font-weight:500;margin:0;">
-                    <span style="color:#f9a8d4;font-weight:700;">✦ VTuber 創作者：</span>讓每一份應援解鎖下一個階段的篇章
+                    <span style="color:#f9a8d4;font-weight:700;">✦ VTuber 創作者：</span>設定里程碑，讓每一份應援解鎖下一個階段的篇章
                 </p>
                 <p style="font-size:1rem;color:rgba(255,255,255,0.78);font-weight:500;margin:0;" id="front-sub">
                     <span style="color:#70ddf1;font-weight:700;">✦ 粉絲：</span>不只是打賞，而是點亮他/她前方的道路
@@ -1378,15 +846,14 @@
         style="background:var(--bg-surface);padding:5rem 20px;border-top:1px solid var(--border-color);transition:background 0.3s;">
         <div class="container" style="max-width:960px;">
             <div class="text-center" style="margin-bottom:3rem;">
-                <span class="section-label">WHY V-UP?</span>
+                <span class="section-label">WHY NOT SUPERCHAT?</span>
                 <h2 style="font-size:2.2rem;font-weight:900;margin-bottom:0.6rem;color:var(--text-main);">
-                    想讓應援更有意義嗎？<br>
+                    你知道嗎？<br>
+                    <span
+                        style="background:var(--gradient-primary);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">同樣是應援，為什麼不給推更多？</span>
                 </h2>
-                <div
-                    style="height:6px;width:160px;background:var(--gradient-primary);margin:0 auto 1.5rem;border-radius:2px;">
-                </div>
                 <p style="color:var(--text-muted);font-size:1rem;max-width:540px;margin:0 auto;">
-                    為什麼要選擇V-UP!?</p>
+                    YouTube SC 創作者僅能拿到 7 成收益。在 V-UP! 則能實拿 9 成，讓你的每一份支持都能讓你的推離夢想更近一步！</p>
             </div>
 
             <!-- Comparison table -->
@@ -1514,9 +981,9 @@
     <section class="why-section" id="why">
         <div class="container">
             <div class="text-center" style="margin-bottom:3rem;">
-                <span class="why-label">WHAT CAN V-UP DO?</span>
-                <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">V-UP能做到什麼？ </h2>
-                <p>不只是工具、讓每一份支持都成為成長的一部分</p>
+                <span class="why-label">WHY V-UP?</span>
+                <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">為什麼選擇 V-UP! </h2>
+                <p>不只是工具——是讓每一份支持都成為你故事的一部分</p>
             </div>
             <div class="why-split">
                 <!-- Creator column -->
@@ -1572,7 +1039,10 @@
                 <a href="dashboard.html?mode=demo" class="demo-card">
                     <div class="demo-card-icon creator-icon"><i class="fas fa-star"></i></div>
                     <h3>VTuber 創作者後台體驗</h3>
-                    <p>「我要怎麼設定里程碑？後台好不好用？」<br>點進去看看。AI 發想 + 進度管理 + 贊助紀錄，一次全看。</p>
+                    <p>「如何設定里程碑，後台好不好用？」<br><span
+                            style="font-size: 12px; color: #EF4444; margin-top: 4px; display: inline-block;">建議使用電腦版</span>
+
+                    </p>
                     <span class="demo-card-btn creator-btn"><i class="fas fa-rocket"></i> 試玩創作者後台</span>
                 </a>
                 <a href="vtuber_profile.html?id=ryusei&mode=fan" class="demo-card">
@@ -1608,13 +1078,14 @@
                                 <h3>川雲爪日</h3>
                             </div>
                         </div>
-                        <div class="v-card-followers">迷因型(?) VTuber · 出道 1 年半 </div>
+                        <div class="v-card-followers">繪師型 VTuber · 出道 1 年半 </div>
                         <div class="v-card-tags">
                             <span class="tag"><i class="fas fa-pen-nib"></i> 繪圖</span>
                             <span class="tag t-blue-sub">原創動畫</span>
+                            <span class="tag t-blue">國畫</span>
                         </div>
                         <div class="v-card-milestone"><i class="fas fa-film" style="color:var(--primary);"></i>
-                            爪日帝國動畫第二集 製作費應援中</div>
+                            爪日帝國動畫第二集 製作費應援中 🎬</div>
                         <!-- Story quote -->
                         <div
                             style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--primary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
@@ -1622,7 +1093,7 @@
                         </div>
                         <div class="v-card-progress-wrap">
                             <div class="v-card-progress-header">
-                                <span class="raised">42,000 / 100,000 </span>
+                                <span class="raised">42,000 / 100,000 V點</span>
                                 <span class="pct">42%</span>
                             </div>
                             <div class="v-card-progress">
@@ -1634,93 +1105,64 @@
                 </a>
 
                 <!-- Card 2 — 拜風 -->
-                <a href="vtuber_profile.html?id=bifeng-vtype&mode=fan" class="v-card" data-cat="music hot">
+                <a href="vtuber_profile.html?id=ryusei&mode=fan" class="v-card" data-cat="music hot">
                     <div class="v-card-banner">
-                        <div class="v-card-banner-bg" style="background-image: url('image/banner_s.jpg');"></div>
-                        <div class="v-card-banner-overlay"></div>
+                        <div class="v-card-banner-bg"
+                            style="background:linear-gradient(135deg,#1a0533 0%,#2d1456 50%,#0f2744 100%);"></div>
                         <div class="v-card-banner-overlay"></div>
                         <div class="category-badge"><i class="fas fa-music"></i> 歌手</div>
+                        <div class="live-badge" style="background:linear-gradient(90deg,#a855f7,#ec4899);"><span
+                                class="dot"></span> NEW</div>
                     </div>
                     <div class="v-card-body">
                         <div class="v-card-avatar-wrap">
-                            <img src="image/banner_s.jpg" alt="拜風" class="v-card-avatar">
+                            <div class="v-card-avatar"
+                                style="background:linear-gradient(135deg,#7c3aed,#db2777);display:flex;align-items:center;justify-content:center;font-size:1.4rem;color:white;">
+                                🎤</div>
                             <div class="v-card-name-row">
                                 <h3>拜風</h3>
                             </div>
                         </div>
-                        <div class="v-card-followers">創作型 VTuber · 出道籌備中新人 </div>
+                        <div class="v-card-followers">歌手型 VTuber · 出道 2 個月新人 </div>
                         <div class="v-card-tags">
-                            <span class="tag"><i class="fas fa-microphone"></i> 繪師</span>
+                            <span class="tag"><i class="fas fa-microphone"></i> 歌手</span>
                             <span class="tag t-blue-sub">新人</span>
+                            <span class="tag t-blue">原創曲</span>
                         </div>
                         <div class="v-card-milestone"><i class="fas fa-music" style="color:var(--primary);"></i>
-                            原創故事漫畫啟動中</div>
+                            第一首 Original 曲錄製費 🎵 剛啟動</div>
                         <!-- Story quote -->
                         <div
                             style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--secondary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
-                            「如果你也在觀望一個剛出道的新星——值不值得，不是等他/她紅了才知道。是你決定的。」
+                            「如果你也在觀望一個剛出道的小 V——他/她值不值得，不是等他/她紅了才知道。是你決定的。」
                         </div>
                         <div class="v-card-progress-wrap">
                             <div class="v-card-progress-header">
-                                <span class="raised">3,000 / 60,000 </span>
+                                <span class="raised">3,000 / 60,000 V點</span>
                                 <span class="pct">5%</span>
                             </div>
                             <div class="v-card-progress">
                                 <div class="v-card-progress-fill" style="width:5%;"></div>
                             </div>
                         </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持拜風的原創作品→</div>
+                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持拜風的第一首歌 →</div>
                     </div>
                 </a>
 
-                <!-- Card 3 — Shikuu -->
-                <a href="vtuber_profile.html?id=shikuu&mode=fan" class="v-card" data-cat="game hot">
-                    <div class="v-card-banner">
-                        <div class="v-card-banner-bg" style="background-image: url('image/banner_paper_board_s.jpg');">
-                        </div>
-                        <div class="v-card-banner-overlay"></div>
-                        <div class="category-badge"><i class="fas fa-gamepad"></i> 雜談實況</div>
-
-                    </div>
-                    <div class="v-card-body">
-                        <div class="v-card-avatar-wrap">
-                            <img src="image/S__3997717_s.jpg" alt="shikuu" class="v-card-avatar">
-                            <div class="v-card-name-row">
-                                <h3>司空拓桀</h3>
-                            </div>
-                        </div>
-                        <div class="v-card-followers">擅長手作的蛇蛇，也歡迎大家投稿開箱遊戲</div>
-                        <div class="v-card-tags">
-                            <span class="tag"><i class="fas fa-gamepad"></i> 雜談</span>
-                            <span class="tag t-blue-sub">實況</span>
-                        </div>
-                        <div class="v-card-milestone"><i class="fas fa-laptop" style="color:var(--primary);"></i>
-                            升級創作設備準備中</div>
-                        <!-- Story quote -->
-                        <div
-                            style="font-size:0.78rem;color:var(--text-muted);font-style:italic;border-left:2px solid var(--secondary);padding-left:0.65rem;margin-bottom:0.6rem;line-height:1.5;">
-                            「想更快與大家見面，也會準備小回禮給贊助的大家！」
-                        </div>
-                        <div class="v-card-progress-wrap">
-                            <div class="v-card-progress-header">
-                                <span class="raised">12,000 / 50,000 </span>
-                                <span class="pct">24%</span>
-                            </div>
-                            <div class="v-card-progress">
-                                <div class="v-card-progress-fill" style="width:24%;"></div>
-                            </div>
-                        </div>
-                        <div class="v-card-cta"><i class="fas fa-heart"></i> 支持司空拓桀實現 →</div>
-                    </div>
+                <!-- Card 3 (Placeholder) -->
+                <a href="#demo-section" class="v-card-placeholder">
+                    <i class="fas fa-sparkles"></i>
+                    <h3>下一個明星就是你</h3>
+                    <p>你也是在尋找舞台的創作者嗎？<br>立即加入 V-Up! 綻放計畫，讓每一份支持化為你實現夢想的助力</p>
                 </a>
             </div>
 
             <!-- VTuber 來訓中占位 -->
             <div
                 style="margin-top:3rem;padding:2.5rem 2rem;border:1.5px dashed var(--border-color);border-radius:var(--radius-lg);text-align:center;opacity:0.7;">
-                <p style="font-size:1.2rem;font-weight:800;color:var(--text-main);margin-bottom:0.4rem;">你也是在尋找舞台的創作者嗎？
+                <p style="font-size:1.2rem;font-weight:800;color:var(--text-main);margin-bottom:0.4rem;">歡迎實際體驗創作者後台
                 </p>
-                <p style="font-size:0.88rem;color:var(--text-muted);">立即加入 V-Up! 綻放計畫，讓每一份支持化為你實現夢想的助力<a
+                <p style="font-size:0.88rem;color:var(--text-muted);">除了粉絲視角，你也可以切換成 VTuber 的身份，看看後台如何運作。<a
                         href="#demo-section" style="color:var(--primary);font-weight:700;"> 立刻前往創作者後台 →</a></p>
             </div>
         </div>
@@ -1745,7 +1187,7 @@
                 style="color: rgba(255,255,255,0.9); font-size: 1.15rem; margin-bottom: 2.5rem; line-height: 1.7; position: relative; z-index: 1;">
                 我們正在打造以「里程碑目標」為核心、讓 VTuber 與粉絲攜手解鎖夢想的共創應援平台。<br>你的每一個建議、甚至批評，都將成為我們、V-UP! 成長的養分。
             </p>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeomdhRIZWReLqSHoXzjIExpQnUu5y77avwa3MFUFVuEEvjVA/viewform" target="_blank" rel="noopener noreferrer" class="btn"
+            <a href="javascript:void(0)" class="btn"
                 style="background: white; color: var(--primary); font-size: 1.1rem; padding: 1rem 3rem; border-radius: 99px; font-weight: 800; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; z-index: 1; text-decoration: none;">
                 <i class="fas fa-paper-plane"></i> 填寫試玩回饋表單
             </a>
@@ -1766,7 +1208,7 @@
                     open>
                     <summary
                         style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-                        Q：錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down"
+                        Q：我付款後，錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down"
                             style="color:var(--primary);font-size:0.8rem;"></i></summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
                         是的。我們使用台灣最大第三方支付綠界科技處理款項。付款後扣除 7% 平台費與 3% 金流費，其餘款項直接進入 VTuber 的帳戶。你可以在「應援紀錄」中確認每筆交易狀態。</p>
@@ -1789,13 +1231,13 @@
                         Q：這和超級留言有什麼差別？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i>
                     </summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
-                        超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。</p>
+                        超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。而且 VTuber 能多拿 20%+。</p>
                 </details>
                 <details
                     style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
                     <summary
                         style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-                        Q：VTuber 怎麼加入？有門檻嗎？<i class="fas fa-chevron-down"
+                        Q：VTuber 怎麼加入？有什麼門檻嗎？<i class="fas fa-chevron-down"
                             style="color:var(--primary);font-size:0.8rem;"></i></summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
                         目前平台處於概念體驗階段，正在邀請第一批合作創作者。如果你是 VTuber，可以直接點下方按鈕試用創作者後台，或聯繫我們了解入駐方式。</p>
@@ -1859,93 +1301,7 @@
             root.dataset.theme = next;
             localStorage.setItem('vup-theme', next);
             document.getElementById('theme-icon').className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-            // 同步 mobile drawer 內的 theme icon
-            const mIcon = document.getElementById('mobile-theme-icon');
-            if (mIcon) mIcon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
         }
-
-        // ── 漢堡選單 ──
-        (function () {
-            function initHamburger() {
-                const navContainer = document.querySelector('.nav-container');
-                if (!navContainer) return;
-
-                // 注入漢堡按鈕（在 nav-container 內）
-                const hamburger = document.createElement('button');
-                hamburger.className = 'hamburger-btn';
-                hamburger.setAttribute('aria-label', '開啟選單');
-                hamburger.innerHTML = '<i class="fas fa-bars"></i>';
-                navContainer.appendChild(hamburger);
-
-                // 建立 drawer
-                const currentTheme = localStorage.getItem('vup-theme') || '';
-                const themeIconClass = currentTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-                const drawer = document.createElement('div');
-                drawer.className = 'mobile-nav-drawer';
-                drawer.id = 'mobile-nav-drawer';
-                drawer.innerHTML = `
-                    <div class="mobile-nav-backdrop" id="mobile-nav-backdrop"></div>
-                    <div class="mobile-nav-panel">
-                        <div class="mobile-nav-header">
-                            <span class="mobile-nav-brand">V-UP!</span>
-                            <button class="mobile-nav-close" id="mobile-nav-close" aria-label="關閉選單">
-                                <i class="fas fa-xmark"></i>
-                            </button>
-                        </div>
-                        <nav class="mobile-nav-links">
-                            <a href="#discover" class="mobile-nav-link active">
-                                <i class="fas fa-compass"></i> 探索 VTuber
-                            </a>
-                            <a href="#why" class="mobile-nav-link">
-                                <i class="fas fa-star"></i> 平台特色
-                            </a>
-                            <a href="#how" class="mobile-nav-link">
-                                <i class="fas fa-circle-question"></i> 如何贊助
-                            </a>
-                            <a href="#faq" class="mobile-nav-link">
-                                <i class="fas fa-comments"></i> 常見問題
-                            </a>
-                        </nav>
-                        <div class="mobile-nav-footer">
-                            <div class="mobile-theme-row">
-                                <span class="mobile-theme-label">深淺色模式</span>
-                                <button class="theme-toggle" style="margin:0;" onclick="toggleTheme()" title="切換深淺模式">
-                                    <i class="${themeIconClass}" id="mobile-theme-icon"></i>
-                                </button>
-                            </div>
-                            <a href="auth.html" class="mobile-nav-cta">
-                                <i class="fas fa-user-circle"></i> 登入 / 註冊
-                            </a>
-                        </div>
-                    </div>
-                `;
-                document.body.appendChild(drawer);
-
-                function openDrawer() {
-                    drawer.classList.add('open');
-                    document.body.style.overflow = 'hidden';
-                }
-                function closeDrawer() {
-                    drawer.classList.remove('open');
-                    document.body.style.overflow = '';
-                }
-
-                hamburger.addEventListener('click', openDrawer);
-                document.getElementById('mobile-nav-close').addEventListener('click', closeDrawer);
-                document.getElementById('mobile-nav-backdrop').addEventListener('click', closeDrawer);
-
-                // 點任何連結後關閉
-                drawer.querySelectorAll('.mobile-nav-link').forEach(link => {
-                    link.addEventListener('click', closeDrawer);
-                });
-            }
-
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initHamburger);
-            } else {
-                initHamburger();
-            }
-        })();
 
         // ── How It Works tab switcher ──
         function switchHowTab(tab, btn) {
