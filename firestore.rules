@@ -290,6 +290,15 @@ service cloud.firestore {
     }
 
     // ----------------------------
+    // collected_emails
+    // - allow anyone to create an email record for demo
+    // ----------------------------
+    match /collected_emails/{docId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ----------------------------
     // Fallback deny
     // ----------------------------
     match /{document=**} {

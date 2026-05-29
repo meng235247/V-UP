@@ -1,3 +1,6 @@
+import { db } from '../firebase-config.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+
 const DEMO_KEYS = {
   points: 'vup_demo_points',
   role: 'vup_demo_role',
@@ -905,12 +908,32 @@ function showEmailGate() {
       resolve(payload);
     };
 
-    wrap.querySelector('#demo-email-submit')?.addEventListener('click', () => {
+    wrap.querySelector('#demo-email-submit')?.addEventListener('click', async () => {
       const email = (wrap.querySelector('#demo-email-input')?.value || '').trim();
       if (!email) {
         alert('請先輸入 Email，或按「先跳過」。');
         return;
       }
+
+      const submitBtn = wrap.querySelector('#demo-email-submit');
+      const originalText = submitBtn.innerText;
+      submitBtn.innerText = '處理中...';
+      submitBtn.disabled = true;
+
+      try {
+        const emailsRef = collection(db, 'collected_emails');
+        await addDoc(emailsRef, {
+          email: email,
+          source: 'vtuber_demo',
+          createdAt: serverTimestamp()
+        });
+      } catch (err) {
+        console.error('Failed to save email:', err);
+      } finally {
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+      }
+
       localStorage.setItem(DEMO_KEYS.creatorEmail, email);
       localStorage.removeItem(DEMO_KEYS.creatorSkippedEmail);
       trackDemoEvent('email_gate_submitted', { role: 'creator' });

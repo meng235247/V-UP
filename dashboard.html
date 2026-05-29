@@ -108,11 +108,15 @@
                         </button>
                         <div class="dropdown-menu" id="bell-menu"
                             style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); width: 320px; z-index: 1000; padding: 12px; text-align: left;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
-                                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                            <div
+                                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+                                <h4
+                                    style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
                                     <i class="fas fa-bell" style="color: var(--primary);"></i> 通知中心
                                 </h4>
-                                <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; cursor: pointer;" onclick="markAllNotificationsAsRead()">全部標記為已讀</span>
+                                <span
+                                    style="font-size: 0.75rem; color: var(--primary); font-weight: 700; cursor: pointer;"
+                                    onclick="markAllNotificationsAsRead()">全部標記為已讀</span>
                             </div>
                             <ul id="bell-list"
                                 style="list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
@@ -210,7 +214,7 @@
                             <div style="text-align:center; padding:20px; color:var(--text-muted);">載入中...</div>
                         </div>
                         <button class="btn-outline full-width" id="send-thanks-btn" style="margin-top:15px;">
-                            <i class="fas fa-envelope"></i> 發送感謝信函 (批次)
+                            <i class="fas fa-envelope"></i> 發送感謝信函
                         </button>
                     </section>
                 </div>
