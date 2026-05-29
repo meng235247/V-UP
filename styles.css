@@ -1374,17 +1374,18 @@ footer {
         height: 52px;
     }
 
-    /* 名字 row：移除桌面版 margin-top hack，改用 flex 對齊 */
+    /* 手機版 avatar = 52px，min-height 跨環境一致對齊 */
     .v-card-name-row {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        padding-top: 0;
+        justify-content: flex-end;
+        min-height: 52px;
+        padding-bottom: 2px;
     }
 
     .v-card-name-row h3 {
         font-size: 0.95rem;
-        margin-top: 0;          /* 清除 desktop 的 margin-top: 40px */
+        margin-top: 0 !important;   /* 絕對不能有 40px，改由 min-height 控制 */
         line-height: 1.3;
     }
 
