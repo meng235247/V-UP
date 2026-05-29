@@ -101,10 +101,25 @@
                     <button class="theme-toggle" id="theme-btn" title="深淺色模式" onclick="toggleTheme()">
                         <i class="fas fa-moon" id="theme-icon"></i>
                     </button>
-                    <button class="btn-icon" id="bell-btn" title="通知">
-                        <i class="fas fa-bell"></i>
-                        <span class="badge">3</span>
-                    </button>
+                    <div class="notification-dropdown" style="position: relative;">
+                        <button class="btn-icon" id="bell-btn" title="通知">
+                            <i class="fas fa-bell"></i>
+                            <span class="badge" id="bell-unread-badge">3</span>
+                        </button>
+                        <div class="dropdown-menu" id="bell-menu"
+                            style="display: none; position: absolute; top: calc(100% + 8px); right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow-lg); width: 320px; z-index: 1000; padding: 12px; text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid var(--border-subtle); padding-bottom: 8px;">
+                                <h4 style="margin: 0; font-size: 0.95rem; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 6px;">
+                                    <i class="fas fa-bell" style="color: var(--primary);"></i> 通知中心
+                                </h4>
+                                <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; cursor: pointer;" onclick="markAllNotificationsAsRead()">全部標記為已讀</span>
+                            </div>
+                            <ul id="bell-list"
+                                style="list-style: none; padding: 0; margin: 0; max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+                                <!-- Dynamically rendered by renderCreatorNotifications() -->
+                            </ul>
+                        </div>
+                    </div>
                     <button class="btn-primary" onclick="openNewMilestoneModal()" id="topbar-add-milestone">
                         <i class="fas fa-plus"></i> <span>新增里程碑</span>
                     </button>
@@ -299,8 +314,8 @@
                             </div>
                             <div class="form-group" style="margin-bottom: 0;">
                                 <label style="display:block;margin-bottom:8px;font-weight:bold;">媒體附件 </label>
-                                <input type="file" id="vt-post-attachment" accept="image/*,video/*,audio/*" class="form-control"
-                                    style="padding:8px;" multiple>
+                                <input type="file" id="vt-post-attachment" accept="image/*,video/*,audio/*"
+                                    class="form-control" style="padding:8px;" multiple>
                             </div>
                         </div>
 
@@ -317,8 +332,6 @@
                             <button class="btn-outline" type="button" onclick="clearPostComposer()">清空</button>
                             <button id="vt-post-save-btn" class="btn-primary" type="button"
                                 onclick="savePostDraft()">儲存草稿</button>
-                            <button id="vt-post-publish-btn" class="btn-primary" type="button"
-                                onclick="saveAndPublishPost()"><i class="fas fa-paper-plane"></i> 立即發布</button>
                         </div>
                     </div>
                 </div>
@@ -370,7 +383,7 @@
                                         <i class="fas fa-cloud-upload-alt"
                                             style="font-size: 2.5rem; color: var(--primary); margin-bottom: 12px;"></i>
                                         <p style="font-weight: 700; margin-bottom: 4px;">點擊或拖放圖片至此</p>
-                                        <p class="text-muted" style="font-size: 0.85rem;">建議尺寸: 1920x480 (4:1), 最大 5MB
+                                        <p class="text-muted" style="font-size: 0.85rem;">建議尺寸: 480x340 (24:17), 最大 5MB
                                         </p>
                                         <input type="file" id="vt-banner-input" accept="image/*" style="display: none;">
                                     </div>
@@ -383,7 +396,7 @@
                                 </div>
                                 <div style="width: 100%; max-width: 300px;">
                                     <div
-                                        style="aspect-ratio: 16/6; border-radius: 12px; overflow: hidden; background: var(--bg-dark); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: var(--shadow-sm);">
+                                        style="aspect-ratio: 480/340; border-radius: 12px; overflow: hidden; background: var(--bg-dark); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; position: relative; box-shadow: var(--shadow-sm);">
                                         <img id="vt-banner-preview" src="" alt="Banner 預覽"
                                             style="width: 100%; height: 100%; object-fit: cover; display: none;">
                                         <div id="vt-banner-placeholder" class="text-muted"
@@ -663,6 +676,19 @@
                                     style="max-width:72px; max-height:72px; display:none;">
                                 <span id="ms-badge-placeholder" class="text-muted" style="font-size:0.85rem;">無</span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid" style="margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>徽章名稱</label>
+                            <input type="text" id="ms-badge-name" placeholder="例如：帝國子民" class="form-control">
+                        </div>
+
+                        <div class="form-group">
+                            <label>徽章說明</label>
+                            <textarea id="ms-badge-desc" rows="1" class="form-control"
+                                placeholder="向粉絲說明這枚徽章的意義..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -964,7 +990,7 @@
                             target: '#btn-view-public',
                             text: '🎉 準備就緒！點擊這裡預覽粉絲眼中的專屬頁面。也可以先試看看修改其他各項設定喔!',
                             buttonText: '出發！',
-                            beforeShow: function() {
+                            beforeShow: function () {
                                 if (window.innerWidth <= 900) {
                                     const sidebar = document.getElementById('dashboard-sidebar');
                                     const overlay = document.getElementById('sidebar-overlay');
@@ -972,7 +998,7 @@
                                         sidebar.classList.add('open');
                                         if (overlay) overlay.classList.add('active');
                                     }
-                                    return new Promise(function(resolve) { setTimeout(resolve, 380); });
+                                    return new Promise(function (resolve) { setTimeout(resolve, 380); });
                                 }
                             },
                             placements: ['top', 'right', 'left', 'bottom'],

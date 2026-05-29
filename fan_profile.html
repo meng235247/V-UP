@@ -120,14 +120,14 @@
                                 <div class="icon-wrap bg-pink-light text-pink"><i class="fa-regular fa-clock"></i></div>
                                 <div class="stat-text">
                                     <span class="lbl">最長應援時間</span>
-                                    <span class="val" id="stat-longest-day">1,240 <small>day</small></span>
+                                    <span class="val" id="stat-longest-day">365 <small>day</small></span>
                                 </div>
                             </li>
                             <li>
                                 <div class="icon-wrap bg-blue-light text-blue"><i class="fa-solid fa-users"></i></div>
                                 <div class="stat-text">
                                     <span class="lbl">支持VTuber人數</span>
-                                    <span class="val" id="stat-vtuber-count">42 <small>位</small></span>
+                                    <span class="val" id="stat-vtuber-count">3 <small>位</small></span>
                                 </div>
                             </li>
                             <li>
@@ -143,7 +143,7 @@
                                 </div>
                                 <div class="stat-text">
                                     <span class="lbl">徽章獲得數</span>
-                                    <span class="val" id="stat-badge-count">14</span>
+                                    <span class="val" id="stat-badge-count">3</span>
                                 </div>
                             </li>
                         </ul>
@@ -426,24 +426,8 @@
         <div class="review-modal-card" style="max-width:400px; text-align:center;" onclick="event.stopPropagation()">
             <button class="btn-close-modal" onclick="closeShareModal()"><i class="fa-solid fa-xmark"></i></button>
             <h2 style="margin-bottom: 20px; font-weight: 800; color: var(--text-main);">您的專屬分享</h2>
-            <div
-                style="background: #F3F4F6; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between;">
-                <span id="share-url"
-                    style="color: var(--text-muted); font-size: 0.85rem; word-break: break-all;">https://v-up.com/fan/happy-plate</span>
-                <button
-                    style="background: var(--text-main); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 700;"
-                    onclick="copyShareUrl()">複製</button>
-            </div>
-            <div style="display: flex; justify-content: center; gap: 15px;">
-                <button class="btn-social"
-                    style="background: #1DA1F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
-                        class="fa-brands fa-twitter"></i></button>
-                <button class="btn-social"
-                    style="background: #00C300; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
-                        class="fa-brands fa-line"></i></button>
-                <button class="btn-social"
-                    style="background: #1877F2; color: white; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer;"><i
-                        class="fa-brands fa-facebook-f"></i></button>
+            <div style="padding: 20px 10px; color: var(--text-muted); font-size: 1rem; font-weight: 500;">
+                個人專屬應援履歷分享 敬請期待
             </div>
         </div>
     </div>
@@ -503,7 +487,8 @@
                     style="grid-column: 1 / -1; background: linear-gradient(90deg, var(--bg-pink-light), var(--bg-blue-light)); padding:15px; border-radius:12px; display:flex; justify-content: space-between; align-items:center;">
                     <div>
                         <div style="font-size:0.75rem; font-weight:700; color:var(--text-muted);">成就解鎖來源</div>
-                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">帝國起源vol2</div>
+                        <div style="font-size:0.95rem; font-weight:800; color:var(--text-main);" id="brm-origin">
+                            帝國起源vol2</div>
                     </div>
                     <a id="brm-vtuber-link" href="vtuber_profile.html"
                         style="background: white; border: 1px solid #E5E7EB; padding: 8px 16px; border-radius: 20px; font-weight: 700; font-size: 0.8rem; cursor: pointer; color:var(--text-main); text-decoration:none; display:flex; align-items:center; gap:6px;">前往
@@ -916,7 +901,7 @@
          * renderSupportList(topSupported)
          * TODO: Replace MOCK_TOP_SUPPORTED with fetch result from /api/user/stats
          */
-        function renderSupportList(topSupported) {
+        window.renderSupportList = function(topSupported) {
             const list = document.getElementById('stat-top-supported');
             if (!list) return;
             list.innerHTML = '';
@@ -1020,11 +1005,14 @@
             const vtLinkEl = document.getElementById('brm-vtuber-link');
             if (vtLinkEl) {
                 const demoUrl = getDemoVtuberProfileUrl();
-                if (demoUrl) {
-                    vtLinkEl.href = `${demoUrl}#achieved`;
+                const isDemo = new URLSearchParams(window.location.search).get('mode') === 'fan' || new URLSearchParams(window.location.search).get('mode') === 'demo';
+                const demoQuery = isDemo ? '&mode=fan' : '';
+
+                if (vtuberId) {
+                    vtLinkEl.href = `vtuber_profile.html?id=${vtuberId}${demoQuery}#milestones`;
                     vtLinkEl.style.display = 'flex';
-                } else if (vtuberId) {
-                    vtLinkEl.href = `vtuber_profile.html?id=${vtuberId}#achieved`;
+                } else if (demoUrl) {
+                    vtLinkEl.href = `${demoUrl.replace('#achieved', '')}#milestones`;
                     vtLinkEl.style.display = 'flex';
                 } else {
                     vtLinkEl.style.display = 'none';

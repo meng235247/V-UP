@@ -492,6 +492,8 @@ button {
     margin-bottom: 16px;
     border-bottom: 1px solid var(--border);
     animation: fadeInUp 0.5s ease both;
+    position: relative;
+    z-index: 1000;
 }
 
 .page-title h1 {
@@ -1111,6 +1113,16 @@ button {
     max-width: 920px;
     box-shadow: 0 25px 60px rgba(0, 0, 0, 0.2);
     animation: fadeInUp 0.3s ease both;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+}
+
+.modal-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
 }
 
 /* Modal two-column grid and helpers */
@@ -1118,8 +1130,6 @@ button {
     display: grid;
     grid-template-columns: 1fr 320px;
     gap: 24px;
-    max-height: 72vh;
-    overflow: hidden;
 }
 
 .modal-col {
@@ -1127,12 +1137,10 @@ button {
 }
 
 .modal-col-main {
-    overflow-y: auto;
     padding-right: 6px;
 }
 
 .modal-col-side {
-    overflow-y: auto;
     padding-left: 6px;
 }
 
@@ -1173,16 +1181,12 @@ button {
 @media (max-width: 900px) {
     .modal-body.modal-grid {
         grid-template-columns: 1fr;
-        max-height: 60vh;
-        overflow-y: auto;
     }
 
     .modal-content {
         padding: 20px 16px;
         border-radius: 16px;
-        /* 避免第一背景後手機的樣式緊貼瀏覽器限制區 */
         max-height: 88vh;
-        overflow-y: auto;
     }
 
     .modal-overlay {
