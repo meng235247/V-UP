@@ -26,8 +26,8 @@ const DEMO_FAN_PROFILE = {
   displayName: 'Demo Supporter',
   photoURL: 'image/ighead_b.jpg'
 };
-const FORM_URL_FAN = '#';
-const FORM_URL_CREATOR = '#';
+const FORM_URL_FAN = 'https://docs.google.com/forms/d/e/1FAIpQLSeomdhRIZWReLqSHoXzjIExpQnUu5y77avwa3MFUFVuEEvjVA/viewform';
+const FORM_URL_CREATOR = 'https://docs.google.com/forms/d/e/1FAIpQLSeomdhRIZWReLqSHoXzjIExpQnUu5y77avwa3MFUFVuEEvjVA/viewform';
 
 function readJSON(key, fallback) {
   try {
