@@ -653,6 +653,11 @@
         }
 
         @media (max-width:768px) {
+            html {
+                -webkit-text-size-adjust: 100%;
+                text-size-adjust: 100%;
+            }
+
             .how-grid {
                 grid-template-columns: 1fr;
             }
@@ -661,6 +666,11 @@
                 flex-direction: column;
                 align-items: center;
                 gap: 0.75rem;
+            }
+
+            .hero-title {
+                line-height: 1.18;
+                text-wrap: balance;
             }
 
             /* ===== 真實設備修正：cascade 順序問題 =====
@@ -695,16 +705,31 @@
             h2 {
                 font-size: clamp(1.5rem, 5.5vw, 1.85rem) !important;
                 line-height: 1.25 !important;
+                text-wrap: balance;
+                letter-spacing: -0.2px;
+            }
+
+            .section-label {
+                font-size: 0.7rem;
+                letter-spacing: 1.2px;
             }
 
             /* discover header 字體縮小 */
             .discover-header h2 {
-                font-size: 1.65rem !important;
+                font-size: 1.6rem !important;
+                line-height: 1.25;
+                max-width: 22rem;
+                margin-left: auto;
+                margin-right: auto;
+                text-wrap: balance;
             }
 
             /* discover header p 字體調整 */
             .discover-header p {
                 font-size: 0.9rem;
+                line-height: 1.55;
+                max-width: 22rem;
+                margin: 0 auto;
             }
 
             /* How section h2 */
@@ -757,12 +782,95 @@
             /* hero dual subtitle */
             .hero-content > div p {
                 font-size: 0.9rem !important;
+                line-height: 1.6;
+                max-width: 26rem;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #comparison,
+            #faq {
+                padding: 3.75rem 16px 4rem !important;
+            }
+
+            .discover-section,
+            .demo-cta-section {
+                padding-top: 3.75rem;
+                padding-bottom: 4rem;
+            }
+
+            #comparison .text-center p,
+            .how-section .text-center p,
+            .why-section .text-center p,
+            #faq .text-center p,
+            .demo-cta-section p {
+                font-size: 0.92rem !important;
+                line-height: 1.6;
+                max-width: 24rem;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #comparison table {
+                font-size: 0.86rem !important;
+            }
+
+            #comparison table td,
+            #comparison table th {
+                padding: 0.7rem 0.7rem !important;
+                line-height: 1.4;
             }
 
             /* Demo cards full-width */
             .demo-card {
                 width: 100%;
                 max-width: 100%;
+            }
+
+            .v-card-body {
+                padding: 0 1rem 1rem;
+            }
+
+            .v-card-followers {
+                font-size: 0.78rem;
+                line-height: 1.4;
+                margin-bottom: 0.35rem;
+            }
+
+            .v-card-tags {
+                row-gap: 0.35rem;
+            }
+
+            .tag {
+                font-size: 0.68rem;
+                padding: 2px 7px;
+            }
+
+            .v-card-milestone {
+                font-size: 0.78rem;
+                line-height: 1.45;
+                margin-bottom: 0.5rem;
+            }
+
+            .v-card-body > div[style*="font-style:italic"] {
+                font-size: 0.76rem !important;
+                line-height: 1.45 !important;
+            }
+
+            .v-card-progress-header {
+                font-size: 0.72rem;
+                line-height: 1.2;
+                gap: 0.5rem;
+            }
+
+            .v-card-progress-header .raised,
+            .v-card-progress-header .pct {
+                white-space: nowrap;
+            }
+
+            .v-card-cta {
+                font-size: 0.82rem;
+                padding: 0.6rem 0.9rem;
             }
 
             /* 防止 Hero 按鈕在手機版折成兩行 */
@@ -786,6 +894,7 @@
             /* FAQ summary */
             details summary {
                 font-size: 0.95rem !important;
+                line-height: 1.35;
             }
 
             /* Section 通用 padding 縮小 */
