@@ -168,6 +168,16 @@
             flex-shrink: 0;
         }
 
+        /* 穩健版：用 min-height + justify-content 取代脆弱的 margin-top:40px hack
+           不管在任何 DPR 或字體渲染環境，name row 底部永遠跟平齊 avatar 底部 */
+        .v-card-name-row {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;  /* 底部對齊文字 */
+            min-height: 58px;           /* 跟桌面版 avatar 高度一致 */
+            padding-bottom: 2px;
+        }
+
         .v-card-name-row h3 {
             font-size: 0.98rem;
             font-weight: 800;
@@ -175,7 +185,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            margin-top: 40px;
+            margin-top: 0; /* 移除 hack，改由 min-height 控制對齊 */
         }
 
         .v-card-followers {
@@ -653,9 +663,14 @@
                 gap: 0.75rem;
             }
 
-            /* VTuber 卡片：修正 margin-top: 40px 在手機版造成的錯位 */
+            /* VTuber 卡片：手機版 min-height 跟手機版 avatar 高度對齊 (52px) */
+            .v-card-name-row {
+                min-height: 52px; /* 手機版 avatar = 52px */
+                justify-content: flex-end;
+            }
+
             .v-card-name-row h3 {
-                margin-top: 0;
+                margin-top: 0 !important; /* 絕對不能有 40px */
                 font-size: 0.93rem;
                 line-height: 1.3;
             }
@@ -756,6 +771,25 @@
                 padding-bottom: 3.5rem;
                 padding-left: 16px;
                 padding-right: 16px;
+            }
+
+            /* Feedback 區塊：修正手機版按鈕折行問題 */
+            .feedback-section {
+                padding: 3rem 12px !important;
+            }
+
+            /* 內層儲存卡片：縮小內距避免按鈕被撠壓 */
+            .feedback-section > .container {
+                padding: 2.5rem 1.25rem !important;
+            }
+
+            /* 回饋表單按鈕：不讓字折行 */
+            .feedback-section a.btn,
+            #feedback a.btn {
+                font-size: 0.93rem !important;
+                padding: 0.85rem 1.5rem !important;
+                white-space: nowrap !important;
+                word-break: keep-all !important;
             }
         }
 
