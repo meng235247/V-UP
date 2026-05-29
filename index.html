@@ -670,8 +670,19 @@
             }
 
             .hero-title {
-                line-height: 1.18;
+                font-size: clamp(2rem, 7vw, 2.45rem) !important;
+                line-height: 1.15;
+                letter-spacing: -0.4px;
                 text-wrap: balance;
+                line-break: strict;
+            }
+
+            .hero-content > div[style*="flex-direction:column"] {
+                gap: 0.4rem !important;
+            }
+
+            .hero-content > div[style*="margin-bottom:2.5rem"] {
+                margin-bottom: 1.6rem !important;
             }
 
             /* ===== 真實設備修正：cascade 順序問題 =====
@@ -782,11 +793,17 @@
 
             /* hero dual subtitle */
             .hero-content > div p {
-                font-size: 0.9rem !important;
-                line-height: 1.6;
+                font-size: 0.86rem !important;
+                line-height: 1.55;
+                color: rgba(255, 255, 255, 0.72) !important;
+                line-break: strict;
                 max-width: 26rem;
                 margin-left: auto;
                 margin-right: auto;
+            }
+
+            .hero-content > p {
+                display: none;
             }
 
             #comparison,
@@ -814,18 +831,36 @@
 
             #comparison table {
                 font-size: 0.86rem !important;
+                table-layout: fixed;
             }
 
             #comparison table td,
             #comparison table th {
                 padding: 0.7rem 0.7rem !important;
                 line-height: 1.4;
+                line-break: strict;
+            }
+
+            #comparison table th:first-child,
+            #comparison table td:first-child {
+                width: 26% !important;
+            }
+
+            #comparison table th:nth-child(2),
+            #comparison table td:nth-child(2),
+            #comparison table th:nth-child(3),
+            #comparison table td:nth-child(3) {
+                width: 37% !important;
             }
 
             /* Demo cards full-width */
             .demo-card {
                 width: 100%;
                 max-width: 100%;
+            }
+
+            .demo-card p br {
+                display: none;
             }
 
             .v-card-body {
@@ -861,12 +896,14 @@
                 line-height: 1.45;
                 margin-bottom: 0;
                 text-wrap: balance;
+                line-break: strict;
             }
 
             .v-card-body > div[style*="font-style:italic"] {
                 font-size: 0.76rem !important;
                 line-height: 1.45 !important;
                 text-wrap: balance;
+                line-break: strict;
             }
 
             .v-card-progress-header {
@@ -908,6 +945,26 @@
             details summary {
                 font-size: 0.95rem !important;
                 line-height: 1.35;
+            }
+
+            #faq details summary {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) auto;
+                align-items: start !important;
+                gap: 0.65rem;
+                line-break: strict;
+            }
+
+            #faq details summary i {
+                margin-top: 0.2rem;
+                justify-self: end;
+                flex-shrink: 0;
+            }
+
+            #faq details p {
+                font-size: 0.88rem !important;
+                line-height: 1.6;
+                line-break: strict;
             }
 
             /* Section 通用 padding 縮小 */
@@ -1292,7 +1349,7 @@
             <div
                 style="display:flex;flex-direction:column;gap:0.6rem;margin-bottom:2.5rem;animation:fadeInUp 0.8s 0.15s ease both;">
                 <p style="font-size:1rem;color:rgba(255,255,255,0.78);font-weight:500;margin:0;">
-                    <span style="color:#f9a8d4;font-weight:700;">✦ VTuber 創作者：</span>設定里程碑，讓每一份應援解鎖下一個階段的篇章
+                    <span style="color:#f9a8d4;font-weight:700;">✦ VTuber 創作者：</span>讓每一份應援解鎖下一個階段的篇章
                 </p>
                 <p style="font-size:1rem;color:rgba(255,255,255,0.78);font-weight:500;margin:0;" id="front-sub">
                     <span style="color:#70ddf1;font-weight:700;">✦ 粉絲：</span>不只是打賞，而是點亮他/她前方的道路
@@ -1459,7 +1516,7 @@
             <div class="text-center" style="margin-bottom:3rem;">
                 <span class="why-label">WHAT CAN V-UP DO?</span>
                 <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">V-UP能做到什麼？ </h2>
-                <p>不只是工具——是讓每一份支持都成為你故事的一部分</p>
+                <p>不只是工具、讓每一份支持都成為成長的一部分</p>
             </div>
             <div class="why-split">
                 <!-- Creator column -->
@@ -1709,7 +1766,7 @@
                     open>
                     <summary
                         style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-                        Q：我付款後，錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down"
+                        Q：錢真的到 VTuber 手裡嗎？<i class="fas fa-chevron-down"
                             style="color:var(--primary);font-size:0.8rem;"></i></summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
                         是的。我們使用台灣最大第三方支付綠界科技處理款項。付款後扣除 7% 平台費與 3% 金流費，其餘款項直接進入 VTuber 的帳戶。你可以在「應援紀錄」中確認每筆交易狀態。</p>
@@ -1732,13 +1789,13 @@
                         Q：這和超級留言有什麼差別？<i class="fas fa-chevron-down" style="color:var(--primary);font-size:0.8rem;"></i>
                     </summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
-                        超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。而且 VTuber 能多拿 20%+。</p>
+                        超級留言在你丟出去的那一刻就結束了。V-UP! 的應援是「目標導向」的——你看得到進度、你的名字留下來、VTuber 完成企劃後你有限定回禮。</p>
                 </details>
                 <details
                     style="background:var(--bg-surface);border:1px solid var(--border-color);border-radius:14px;padding:1.25rem 1.5rem;cursor:pointer;">
                     <summary
                         style="font-weight:800;font-size:1rem;color:var(--text-main);list-style:none;display:flex;justify-content:space-between;align-items:center;">
-                        Q：VTuber 怎麼加入？有什麼門檻嗎？<i class="fas fa-chevron-down"
+                        Q：VTuber 怎麼加入？有門檻嗎？<i class="fas fa-chevron-down"
                             style="color:var(--primary);font-size:0.8rem;"></i></summary>
                     <p style="margin-top:0.75rem;color:var(--text-muted);font-size:0.9rem;line-height:1.7;">
                         目前平台處於概念體驗階段，正在邀請第一批合作創作者。如果你是 VTuber，可以直接點下方按鈕試用創作者後台，或聯繫我們了解入駐方式。</p>
