@@ -17,6 +17,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   font-family: "Inter", sans-serif;
+  box-sizing: border-box;
 }
 
 .demo-banner-inner {
@@ -26,6 +27,7 @@
   align-items: center;
   padding: 8px 30px;
   gap: 16px;
+  box-sizing: border-box;
 }
 
 .demo-banner-left {
@@ -289,10 +291,12 @@ body.demo-dashboard-mode #btn-view-public {
    手機版 RWD（整合為單一乾淨的 media query）
    ========================================= */
 @media (max-width: 768px) {
-  /* Banner：深色背景，保持 flex row 排版以避免被文字撐高 */
+  /* Banner：白底背景，與電腦版一致，保持 flex row 排版以避免被文字撐高 */
   #demo-banner {
-    background: rgba(30, 41, 59, 0.95);
-    color: #F8FAFC;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #475569;
   }
 
   /* Banner 內容：縮小 padding，保持單行 */
@@ -318,7 +322,7 @@ body.demo-dashboard-mode #btn-view-public {
   .demo-title {
     font-size: 0.82rem;
     font-weight: 700;
-    color: #F8FAFC;
+    color: #475569;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -336,14 +340,12 @@ body.demo-dashboard-mode #btn-view-public {
     padding: 3px 10px;
     gap: 5px;
     font-size: 0.78rem;
-    color: #70DDF1;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #458995;
     white-space: nowrap;
   }
 
   .demo-points-pill strong {
-    color: #fff;
+    color: #458995;
     font-weight: 800;
     font-size: 0.9rem;
   }

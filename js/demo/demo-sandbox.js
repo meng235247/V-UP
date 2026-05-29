@@ -21,7 +21,7 @@ const DEMO_DEFAULT_BADGE = 'image/badge.webp';
 const DEMO_FAN_PROFILE = {
   uid: 'demo_fan_local',
   displayName: 'Demo Supporter',
-  photoURL: 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter'
+  photoURL: 'image/ighead_b.jpg'
 };
 const FORM_URL_FAN = '#';
 const FORM_URL_CREATOR = '#';
@@ -98,9 +98,7 @@ function showDemoBanner(text, withPoints = false) {
   }
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
   const pointsHtml = withPoints 
-    ? `<div class="demo-banner-center">
-         <div class="demo-points-pill" id="demo-points-display">V點：<strong>${points}</strong></div>
-       </div>
+    ? `<div class="demo-banner-center"></div>
        <div class="demo-banner-right">
          <span class="demo-note"><i class="fa-solid fa-circle-info"></i> 僅本機模擬，無真實金流</span>
        </div>`
@@ -127,7 +125,7 @@ function updateDemoPointsDisplay() {
   const el = document.getElementById('demo-points-display');
   if (!el) return;
   const points = Number(localStorage.getItem(DEMO_KEYS.points) || String(DEMO_INITIAL_POINTS));
-  el.innerHTML = `V點：<strong>${points}</strong>`;
+  el.innerHTML = `<strong>${points}</strong>`;
 }
 
 function syncDemoBannerMetrics() {

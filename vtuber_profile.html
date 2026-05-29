@@ -84,8 +84,8 @@
                             <div class="ms-top-header" style="flex-wrap: wrap;">
                                 <div class="ms-joint-collab" style="flex-basis: 80%; margin-bottom: 8px;">
                                     <div class="collab-avatars">
-                                        <img src="image/head.jpg" alt="vtuber">
-                                        <img src="image/v_head_ryusei.jpg" alt="vtuber2">
+                                        <img id="static-collab-avatar-1" src="image/head.jpg" alt="vtuber">
+                                        <img id="static-collab-avatar-2" src="image/banner_s.jpg" alt="vtuber2">
                                     </div>
                                     <div class="collab-text">
                                         <span class="vt-name-sakura">vtuber</span> 和 <span
@@ -559,7 +559,7 @@
                 <a href="#">聯繫我們</a>
                 <a href="#">常見問題</a>
             </div>
-            <p id="footer-copyright">© 2024 vtuber 數位展演版權所有</p>
+            <p id="footer-copyright">© 2024 vtuber 版權所有</p>
         </footer>
 
         <!-- ===== Celebration Overlay (hidden, triggered by JS) ===== -->
@@ -595,9 +595,9 @@
             <div class="post-modal-card">
                 <!-- Author strip -->
                 <div class="pmc-author">
-                    <img src="image/v_head_ryusei.jpg" class="pmc-avatar" alt="vtuber">
+                    <img src="image/v_head_ryusei.jpg" class="pmc-avatar" id="pmc-author-avatar" alt="vtuber">
                     <div class="pmc-author-info">
-                        <span class="pmc-name">vtuber</span>
+                        <span class="pmc-name" id="pmc-author-name">vtuber</span>
                         <span class="pmc-time" id="pmc-time"></span>
                     </div>
                     <button class="pmc-close" onclick="closePostModal(null)" aria-label="關閉">
@@ -609,6 +609,9 @@
                 <!-- Image (optional) -->
                 <div class="pmc-image-wrap" id="pmc-image-wrap">
                     <img id="pmc-image" src="" alt="貼文圖片">
+                    <button class="pmc-zoom-btn" onclick="zoomMedia('image')" aria-label="放大圖片">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
                 </div>
                 <!-- Audio player (optional) -->
                 <div class="pmc-audio-wrap" id="pmc-audio-wrap">
@@ -622,6 +625,9 @@
                     <video id="pmc-video" controls>
                         <source id="pmc-video-src" src="" type="video/mp4">
                     </video>
+                    <button class="pmc-zoom-btn" onclick="zoomMedia('video')" aria-label="放大影片">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i>
+                    </button>
                 </div>
                 <!-- Body -->
                 <p class="pmc-body" id="pmc-body"></p>
@@ -779,14 +785,28 @@
             </div>
         </div>
 
+        <!-- ===== Media Viewer Modal (Lightbox) ===== -->
+        <div class="media-viewer-overlay" id="media-viewer" onclick="closeMediaViewer(event)">
+            <div class="media-viewer-container">
+                <button class="mvc-close" onclick="closeMediaViewer(null)" aria-label="關閉">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <img id="mvc-image" src="" alt="放大圖片">
+                <video id="mvc-video" controls autoplay></video>
+            </div>
+        </div>
+
         <script>
             /* =====================================================
                POST MODAL
             ===================================================== */
-            function openPostModal(title, time, iconType, body, imageUrl, mediaType, mediaUrl) {
+            function openPostModal(title, time, iconType, body, imageUrl, mediaType, mediaUrl, authorName, authorAvatar) {
                 document.getElementById('pmc-title').textContent = title;
                 document.getElementById('pmc-time').textContent = time;
                 document.getElementById('pmc-body').textContent = body;
+
+                if (authorName) document.getElementById('pmc-author-name').textContent = authorName;
+                if (authorAvatar) document.getElementById('pmc-author-avatar').src = authorAvatar;
 
                 // Image
                 const imageWrap = document.getElementById('pmc-image-wrap');
@@ -838,6 +858,64 @@
                 const video = document.getElementById('pmc-video');
                 if (audio) audio.pause();
                 if (video) video.pause();
+            }
+
+            function zoomMedia(type) {
+                const viewer = document.getElementById('media-viewer');
+                const mvcImage = document.getElementById('mvc-image');
+                const mvcVideo = document.getElementById('mvc-video');
+                
+                if (type === 'image') {
+                    const pmcImage = document.getElementById('pmc-image');
+                    if (pmcImage && pmcImage.src) {
+                        mvcImage.src = pmcImage.src;
+                        mvcImage.classList.add('active');
+                        mvcVideo.classList.remove('active');
+                        mvcVideo.src = '';
+                    }
+                } else if (type === 'video') {
+                    const pmcVideoSrc = document.getElementById('pmc-video-src');
+                    if (pmcVideoSrc && pmcVideoSrc.src) {
+                        mvcVideo.src = pmcVideoSrc.src;
+                        mvcVideo.load();
+                        mvcVideo.classList.add('active');
+                        mvcImage.classList.remove('active');
+                        mvcImage.src = '';
+                    }
+                }
+                
+                viewer.classList.add('open');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMediaViewer(event) {
+                if (event && event.target !== document.getElementById('media-viewer') && !event.target.closest('.mvc-close')) return;
+                
+                const viewer = document.getElementById('media-viewer');
+                const mvcImage = document.getElementById('mvc-image');
+                const mvcVideo = document.getElementById('mvc-video');
+                
+                viewer.classList.remove('open');
+                
+                if (mvcVideo) {
+                    mvcVideo.pause();
+                    mvcVideo.src = '';
+                }
+                if (mvcImage) {
+                    mvcImage.src = '';
+                }
+                
+                const postModal = document.getElementById('post-modal');
+                const reviewModal = document.getElementById('review-modal');
+                const paymentModal = document.getElementById('payment-modal');
+                
+                const anyModalOpen = (postModal && postModal.classList.contains('open')) ||
+                                     (reviewModal && reviewModal.classList.contains('open')) ||
+                                     (paymentModal && paymentModal.classList.contains('open'));
+                                     
+                if (!anyModalOpen) {
+                    document.body.style.overflow = '';
+                }
             }
 
             function toggleExcMore(id, btn) {
@@ -1582,7 +1660,7 @@
                                 },
                                 {
                                     target: '__demo_sentinel_nonexistent__',
-                                    beforeShow: function() {
+                                    beforeShow: function () {
                                         if (window.DemoSandbox && typeof window.DemoSandbox.showCompletionModal === 'function') {
                                             window.DemoSandbox.showCompletionModal('fan');
                                         }

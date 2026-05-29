@@ -79,40 +79,55 @@ function fileToDataUrl(file) {
 
 function ensureDemoProfile() {
   const cached = readJSON(DEMO_KEYS.profile, null);
-  if (cached) return cached;
+  if (cached) {
+    if (cached.photoURL && cached.photoURL.includes('dicebear.com')) {
+      cached.photoURL = 'image/ighead_b.jpg';
+    }
+    // Force update badges and supportedVtubers to ensure latest demo milestones and vtubers are used
+    if (!cached.badges || cached.badges.length !== 3 || cached.badges[0].vtuberId !== 'ryusei' || cached.badges[1].vtuberId !== 'bifeng-vtype' || !cached.supportedVtubers || cached.supportedVtubers.join(',') !== 'ryusei,bifeng-vtype,shikuu') {
+      cached.badges = [
+        { id: 'demo_badge_1', milestoneId: 'ypdoNbTiq4xHUdaWHM8e', vtuberId: 'ryusei', contribution: 1500, awardedAt: '2026-05-01', selected: true },
+        { id: 'demo_badge_2', milestoneId: '7ZaGgm6qzxxk44Ea55Hi', vtuberId: 'bifeng-vtype', contribution: 900, awardedAt: '2026-04-18', selected: true },
+        { id: 'demo_badge_3', milestoneId: 'jSWAPeWGQaGdlbOJ1c2S', vtuberId: 'shikuu', contribution: 300, awardedAt: '2026-04-10', selected: true }
+      ];
+      cached.supportedVtubers = ['ryusei', 'bifeng-vtype', 'shikuu'];
+    }
+    writeJSON(DEMO_KEYS.profile, cached);
+    return cached;
+  }
 
   const seed = {
     uid: DEMO_FAN_UID,
     displayName: 'Demo Supporter',
-    photoURL: 'https://api.dicebear.com/7.x/notionists/svg?seed=demo-supporter',
+    photoURL: 'image/ighead_b.jpg',
     email: 'demo.fan@local',
     tagline: 'Demo 模式粉絲檔案',
     themeColorPrimary: '#ec4899',
     themeColorSecondary: '#0ea5e9',
-    supportedVtubers: ['demo', 'ryusei'],
+    supportedVtubers: ['ryusei', 'bifeng-vtype', 'shikuu'],
     badges: [
       {
         id: 'demo_badge_1',
-        badgeUrl: 'image/badge.webp',
-        name: '帝國子民',
-        milestoneTitle: '帝國起源vol2',
-        vtuberId: 'demo',
-        vtuberName: '川雲爪日',
+        milestoneId: 'ypdoNbTiq4xHUdaWHM8e',
+        vtuberId: 'ryusei',
         contribution: 1500,
         awardedAt: '2026-05-01',
-        style: 'bg-pink-light',
         selected: true
       },
       {
         id: 'demo_badge_2',
-        badgeUrl: 'image/badge2.png',
-        name: '共演夥伴',
-        milestoneTitle: '線上演唱會準備',
-        vtuberId: 'ryusei',
-        vtuberName: '川雲爪日',
+        milestoneId: '7ZaGgm6qzxxk44Ea55Hi',
+        vtuberId: 'bifeng-vtype',
         contribution: 900,
         awardedAt: '2026-04-18',
-        style: 'bg-blue-light',
+        selected: true
+      },
+      {
+        id: 'demo_badge_3',
+        milestoneId: 'jSWAPeWGQaGdlbOJ1c2S',
+        vtuberId: 'shikuu',
+        contribution: 300,
+        awardedAt: '2026-04-10',
         selected: true
       }
     ],
@@ -130,33 +145,35 @@ function ensureDemoProfile() {
 
 function ensureDemoTransactionsSeed() {
   const cached = readJSON(DEMO_KEYS.fanTransactions, null);
-  if (Array.isArray(cached) && cached.length) return cached;
+  if (Array.isArray(cached) && cached.length === 3 && cached[0].vtuberId === 'ryusei' && cached[1].vtuberId === 'bifeng-vtype') {
+    return cached;
+  }
 
   const now = Date.now();
   const seed = [
     {
       id: 'demo_tx_seed_1',
-      vtuberId: 'demo',
-      milestoneId: 'milestone_3d_stage',
-      milestoneTitle: '邁向全新 3D 舞台',
-      amount: 500,
+      vtuberId: 'ryusei',
+      milestoneId: 'ypdoNbTiq4xHUdaWHM8e',
+      milestoneTitle: '帝國起源',
+      amount: 1500,
       status: 'success',
       createdAtMs: now - 1000 * 60 * 60 * 24 * 3
     },
     {
       id: 'demo_tx_seed_2',
-      vtuberId: 'ryusei',
-      milestoneId: 'milestone_live',
-      milestoneTitle: '線上演唱會準備',
-      amount: 1200,
+      vtuberId: 'bifeng-vtype',
+      milestoneId: '7ZaGgm6qzxxk44Ea55Hi',
+      milestoneTitle: '生命綻放',
+      amount: 900,
       status: 'success',
       createdAtMs: now - 1000 * 60 * 60 * 24 * 8
     },
     {
       id: 'demo_tx_seed_3',
-      vtuberId: 'demo',
-      milestoneId: 'milestone_orig_song',
-      milestoneTitle: '挑戰!全新原創曲製作',
+      vtuberId: 'shikuu',
+      milestoneId: 'jSWAPeWGQaGdlbOJ1c2S',
+      milestoneTitle: '努力的蛇',
       amount: 300,
       status: 'success',
       createdAtMs: now - 1000 * 60 * 60 * 24 * 14
@@ -300,7 +317,16 @@ function runDemoBadgesTour() {
  */
 function renderHero(user, userDocData) {
   const displayName = userDocData?.displayName || user.displayName || '未命名粉絲';
-  const photoURL    = userDocData?.photoURL    || user.photoURL    || 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix';
+  let photoURL = userDocData?.photoURL || user.photoURL;
+  if (isFanProfileDemoMode()) {
+    if (!photoURL || photoURL.includes('dicebear.com')) {
+      photoURL = 'image/ighead_b.jpg';
+    }
+  } else {
+    if (!photoURL) {
+      photoURL = 'https://api.dicebear.com/7.x/notionists/svg?seed=Felix';
+    }
+  }
 
   // 名稱：多個 .fan-name 元素
   document.querySelectorAll('.fan-name').forEach(nameEl => {
@@ -425,35 +451,52 @@ async function updateBadgesAndTitlesFromFirebase(fanUid, firestoreBadges = [], f
         } catch (e) { console.warn('Failed to fetch contribution from transactions', e); }
       }
 
+      let bName = b.name || b.badgeName || null;
+      let bDesc = b.desc || b.description || null;
+      let bImgSrc = b.badgeUrl || b.imageUrl || null;
+
+      // 如果有 milestoneId，直接從里程碑文件獲取缺失的資料（包含 badgeUrl 和正確的 vtuberId）
+      if (b.milestoneId && (!mTitle || !bName || !bDesc || !bImgSrc || !resolvedVtuberId)) {
+        try {
+          const mDoc = await getDoc(doc(db, 'milestones', b.milestoneId));
+          if (mDoc.exists()) {
+            const mData = mDoc.data();
+            if (!mTitle) mTitle = mData.title || b.milestoneId;
+            if (!bName) bName = mData.badgeName;
+            if (!bDesc) bDesc = mData.badgeDesc;
+            if (!bImgSrc) bImgSrc = mData.badgeUrl || mData.imageUrl || mData.badgeImage || mData.image || null;
+            // 優先使用 milestone 內的 vtuberId
+            if (mData.vtuberId) resolvedVtuberId = mData.vtuberId;
+          }
+        } catch (e) { console.warn('Failed to fetch milestone details', e); }
+      }
+
       // 取得 VTuber 顯示名稱
       if (resolvedVtuberId && !vtName) {
         try {
-          const vDoc = await getDoc(doc(db, 'vtubers', resolvedVtuberId));
+          let profileUid = resolvedVtuberId;
+          // 嘗試從 handles 集合中反查 UID，以防 vtuberId 存的其實是 handle
+          const handleDoc = await getDoc(doc(db, 'handles', resolvedVtuberId));
+          if (handleDoc.exists() && handleDoc.data().uid) {
+            profileUid = handleDoc.data().uid;
+          }
+          
+          const vDoc = await getDoc(doc(db, 'vtubers', profileUid));
           if (vDoc.exists()) {
             vtName = vDoc.data().displayName || vDoc.data().name || resolvedVtuberId;
           }
         } catch (e) { console.warn('Failed to fetch vtuberName', e); }
       }
 
-      // 如果從交易紀錄中仍找不到里程碑標題，且知道 vtuberId，則直接從里程碑文件獲取
-      if (resolvedVtuberId && b.milestoneId && !mTitle) {
-        try {
-          const mDoc = await getDoc(doc(db, 'vtubers', resolvedVtuberId, 'milestones', b.milestoneId));
-          if (mDoc.exists()) {
-            mTitle = mDoc.data().title || b.milestoneId;
-          }
-        } catch (e) { console.warn('Failed to fetch milestoneTitle', e); }
-      }
-
       return {
         id: b.id || `fb_badge_${i}`,
-        imgSrc: b.badgeUrl || b.imageUrl || null,
-        iconClass: b.icon || (!b.badgeUrl && !b.imageUrl ? 'fa-solid fa-medal' : null),
+        imgSrc: bImgSrc,
+        iconClass: b.icon || (!bImgSrc ? 'fa-solid fa-medal' : null),
         style: b.style || 'bg-pink-light',
-        title: b.name || b.badgeName || '預設徽章',
+        title: bName || '預設徽章',
         origin: mTitle || '贊助成就',
         date: b.awardedAt ? (new Date(b.awardedAt).toLocaleDateString('zh-TW')) : (b.earnedAt ? (b.earnedAt.toDate ? b.earnedAt.toDate().toLocaleDateString('zh-TW') : b.earnedAt) : '最近'),
-        desc: b.desc || b.description || '感謝您一直以來的支持！',
+        desc: bDesc || '感謝您一直以來的支持！',
         contribution: contrib.toString(),
         selected: b.selected !== false,
         vtuberId: resolvedVtuberId || null,
@@ -561,9 +604,13 @@ async function renderSupportedVtubers(vtuberIds = []) {
       <img src="${v.avatar}" alt="${v.name}" class="w-full h-auto"
            onerror="this.src='image/v_head_ryusei.jpg'">
       <span class="v-name">${v.name}</span>
-      <a href="${isFanProfileDemoMode() ? DEMO_VTUBER_PROFILE_URL : `vtuber_profile.html?id=${v.handle}`}" class="v-link">前往專頁</a>
+      <a href="vtuber_profile.html?id=${v.handle}${isFanProfileDemoMode() ? '&mode=fan' : ''}" class="v-link">前往專頁</a>
     </div>
   `).join('');
+
+  if (window.renderSupportList) {
+    window.renderSupportList(cards.map(c => ({ name: c.name, avatarUrl: c.avatar })));
+  }
 }
 
 /**
@@ -574,7 +621,14 @@ async function resolveVtuberNames(txList) {
   await Promise.all(ids.map(async (id) => {
     if (vtuberNameCache[id]) return;
     try {
-      const snap = await getDoc(doc(db, 'vtubers', id));
+      let profileUid = id;
+      // 嘗試從 handles 集合中反查 UID，以防 vtuberId 存的其實是 handle
+      const handleDoc = await getDoc(doc(db, 'handles', id));
+      if (handleDoc.exists() && handleDoc.data().uid) {
+        profileUid = handleDoc.data().uid;
+      }
+
+      const snap = await getDoc(doc(db, 'vtubers', profileUid));
       if (snap.exists()) {
         const data = snap.data();
         vtuberNameCache[id] = data.displayName || data.name || id;
@@ -663,7 +717,9 @@ async function initFanProfileDemo() {
   }
 
   const txList = buildDemoTransactions();
+  await resolveVtuberNames(txList);
   txList.forEach((tx) => {
+    if (vtuberNameCache[tx.vtuberId]) return;
     const meta = tx.vtuberId ? DEMO_VTUBER_MAP[tx.vtuberId] : null;
     if (meta && meta.displayName) vtuberNameCache[tx.vtuberId] = meta.displayName;
   });

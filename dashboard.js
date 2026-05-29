@@ -48,11 +48,144 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Notification bell
     const bell = document.getElementById('bell-btn');
-    if (bell) {
-        bell.addEventListener('click', () => {
-            showToast('您有 3 則未讀通知：新增贊助 ×2、里程碑達成 ×1', 'info');
+    const bellMenu = document.getElementById('bell-menu');
+    const bellList = document.getElementById('bell-list');
+    const bellBadge = document.getElementById('bell-unread-badge');
+
+    // Creator Mock Notifications
+    let creatorNotifications = [
+        {
+            id: 'cnotif-1',
+            type: 'donation',
+            icon: '💰',
+            title: '收到新的支持贊助！',
+            body: '粉絲「快樂的盤子」剛剛贊助了您的專案「3D化募資計畫」 1,500 點！',
+            time: '5 分鐘前',
+            tab: 'crm',
+            unread: true
+        },
+        {
+            id: 'cnotif-2',
+            type: 'milestone',
+            icon: '🎉',
+            title: '里程碑順利達成！',
+            body: '恭喜！您的里程碑「首支原創單曲製作」募資進度已突破 100%！',
+            time: '2 小時前',
+            tab: 'milestones',
+            unread: true
+        },
+        {
+            id: 'cnotif-3',
+            type: 'badge',
+            icon: '💎',
+            title: '粉絲解鎖限定徽章！',
+            body: '核心粉絲「草莓大福」已順利解鎖並配戴您的「帝國一等兵」限定徽章。',
+            time: '5 小時前',
+            tab: 'crm',
+            unread: true
+        }
+    ];
+
+    function renderCreatorNotifications() {
+        if (!bellList) return;
+        bellList.innerHTML = '';
+
+        if (creatorNotifications.length === 0) {
+            bellList.innerHTML = `<li style="padding: 24px; text-align: center; color: var(--text-light); font-size: 0.85rem;">尚無任何通知</li>`;
+            if (bellBadge) bellBadge.style.display = 'none';
+            return;
+        }
+
+        const unreadCount = creatorNotifications.filter(n => n.unread).length;
+        if (bellBadge) {
+            if (unreadCount > 0) {
+                bellBadge.textContent = unreadCount;
+                bellBadge.style.display = 'flex';
+            } else {
+                bellBadge.style.display = 'none';
+            }
+        }
+
+        creatorNotifications.forEach(n => {
+            const li = document.createElement('li');
+            li.style.cssText = `
+                padding: 10px;
+                border-radius: 8px;
+                display: flex;
+                gap: 10px;
+                align-items: flex-start;
+                cursor: pointer;
+                transition: all 0.2s;
+                border-bottom: 1px solid var(--border-subtle);
+                position: relative;
+                background: ${n.unread ? 'var(--primary-light)' : 'transparent'};
+            `;
+
+            li.onmouseover = () => {
+                li.style.background = 'var(--surface-hover)';
+            };
+            li.onmouseout = () => {
+                li.style.background = n.unread ? 'var(--primary-light)' : 'transparent';
+            };
+
+            li.innerHTML = `
+                <div style="font-size: 1.4rem; padding: 4px; display: flex; align-items: center; justify-content: center; background: var(--bg-dark); border-radius: 8px; width: 36px; height: 36px; flex-shrink: 0; box-shadow: var(--shadow-sm);">
+                    ${n.icon}
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 2px; display: flex; align-items: center; gap: 6px;">
+                        ${n.title}
+                        ${n.unread ? '<span style="width: 6px; height: 6px; background: var(--primary); border-radius: 50%;"></span>' : ''}
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.3; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                        ${n.body}
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-light); margin-top: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>${n.time}</span>
+                        <span style="font-weight: 600; color: var(--primary); font-size: 0.65rem;">點擊查看</span>
+                    </div>
+                </div>
+            `;
+
+            li.addEventListener('click', (e) => {
+                e.stopPropagation();
+                n.unread = false;
+                renderCreatorNotifications();
+                if (n.tab) {
+                    const navEl = document.querySelector(`.sidebar-nav .nav-item[data-tab="${n.tab}"]`);
+                    if (navEl) navEl.click();
+                }
+                if (bellMenu) bellMenu.style.display = 'none';
+                showToast(`已前往：${n.title}`, 'success');
+            });
+
+            bellList.appendChild(li);
         });
     }
+
+    if (bell && bellMenu) {
+        bell.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isOpen = bellMenu.style.display === 'block';
+            bellMenu.style.display = isOpen ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!bellMenu.contains(e.target) && e.target !== bell) {
+                bellMenu.style.display = 'none';
+            }
+        });
+    }
+
+    // Expose markAllNotificationsAsRead globally
+    window.markAllNotificationsAsRead = () => {
+        creatorNotifications.forEach(n => n.unread = false);
+        renderCreatorNotifications();
+        showToast('所有通知已標記為已讀', 'success');
+    };
+
+    // Initialize notifications
+    renderCreatorNotifications();
 
     // Table action buttons — edit
     document.querySelectorAll('.btn-table-action.edit').forEach(btn => {
@@ -472,6 +605,8 @@ window.openEditMilestone = async function(id) {
         }
 
         // badge preview
+        const msBadgeName = document.getElementById('ms-badge-name'); if (msBadgeName) msBadgeName.value = m.badgeName || '';
+        const msBadgeDesc = document.getElementById('ms-badge-desc'); if (msBadgeDesc) msBadgeDesc.value = m.badgeDesc || '';
         if (m.badgeDataUrl) {
             const badgePreview = document.getElementById('ms-badge-preview');
             const badgePlaceholder = document.getElementById('ms-badge-placeholder');
@@ -500,6 +635,8 @@ function openNewMilestoneModal() {
     const msTitle = document.getElementById('ms-title'); if (msTitle) msTitle.value = '';
     const msGoal = document.getElementById('ms-goal'); if (msGoal) msGoal.value = '';
     const msDesc = document.getElementById('ms-desc'); if (msDesc) msDesc.value = '';
+    const msBadgeName = document.getElementById('ms-badge-name'); if (msBadgeName) msBadgeName.value = '';
+    const msBadgeDesc = document.getElementById('ms-badge-desc'); if (msBadgeDesc) msBadgeDesc.value = '';
     const msCollabToggle = document.getElementById('ms-collab-toggle'); if (msCollabToggle) { msCollabToggle.checked = false; const area = document.getElementById('ms-collab-area'); if (area) area.style.display='none'; }
     const collabList = document.getElementById('ms-collab-list'); if (collabList) collabList.innerHTML = '';
     const msFeatured = document.getElementById('ms-featured'); if (msFeatured) msFeatured.checked = false;
@@ -524,6 +661,8 @@ async function submitMilestone() {
         if (!title || !goal) { showToast('請填寫里程碑標題與目標點數', 'error'); return; }
 
         const desc = document.getElementById('ms-desc')?.value?.trim() || '';
+        const badgeName = document.getElementById('ms-badge-name')?.value?.trim() || '';
+        const badgeDesc = document.getElementById('ms-badge-desc')?.value?.trim() || '';
         const isCollab = !!document.getElementById('ms-collab-toggle')?.checked;
         const collabEls = document.querySelectorAll('#ms-collab-list .chip');
         const collaborators = Array.from(collabEls).map(c => c.dataset.uid);
@@ -565,7 +704,7 @@ async function submitMilestone() {
             }
         }
 
-        const milestone = { title, goal, desc, isCollab, collaborators, collaboratorsMeta, award, awardCount, featured, hidden, badgeUrl };
+        const milestone = { title, goal, desc, isCollab, collaborators, collaboratorsMeta, award, awardCount, featured, hidden, badgeUrl, badgeName, badgeDesc };
 
         try {
             if (window._editingMilestoneId) {
