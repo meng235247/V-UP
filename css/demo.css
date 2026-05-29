@@ -97,13 +97,12 @@ body.demo-has-banner {
   padding-top: var(--demo-banner-height, 48px);
 }
 
-/* Dashboard-only demo layout fixes (avoid banner pushing footer CTA out of viewport) */
 body.demo-dashboard-mode {
-  padding-top: 0;
+  padding-top: var(--demo-banner-height, 48px);
 }
 
 body.demo-dashboard-mode .dashboard-layout {
-  margin-top: var(--demo-banner-height, 48px);
+  margin-top: 0;
 }
 
 body.demo-dashboard-mode .sidebar {
@@ -364,12 +363,12 @@ body.demo-dashboard-mode #btn-view-public {
     --demo-banner-height: 44px;
   }
 
-  body.demo-has-banner {
+  body.demo-dashboard-mode {
     padding-top: 44px;
   }
 
   body.demo-dashboard-mode .dashboard-layout {
-    margin-top: 44px;
+    margin-top: 0;
   }
 
   body.demo-dashboard-mode .sidebar {

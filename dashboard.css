@@ -1972,3 +1972,250 @@ button {
     background: var(--bg-subtle);
     cursor: not-allowed;
 }
+
+/* =========================================
+   Mobile UX & Layout Refactor (Pro-Max 2.0)
+   ========================================= */
+@media (max-width: 900px) {
+    /* --- 1. Typography & Hierarchy (字體層級與留白優化) --- */
+    .page-title h1 {
+        font-size: 1.35rem !important; 
+        line-height: 1.3;
+        margin-bottom: 4px;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+    
+    #page-title-desc {
+        display: block !important; 
+        font-size: 0.85rem !important;
+        margin-bottom: 12px;
+        line-height: 1.4;
+        color: var(--text-muted) !important;
+    }
+
+    .section-header h2, .settings-group-header h3, .modal-header h3 {
+        font-size: 1.15rem !important;
+        line-height: 1.3;
+        white-space: normal !important;
+        word-break: break-word;
+    }
+
+    /* Prevent "我的里程碑" or flex-headers from wrapping characters vertically */
+    div[style*="justify-content:space-between"] {
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+    }
+
+    .data-value {
+        font-size: 1.35rem !important;
+    }
+    
+    .data-label {
+        font-size: 0.8rem !important;
+        white-space: normal !important;
+    }
+
+    /* --- 2. Button Layout & Squishing (按鈕防擠壓與重疊) --- */
+    button, .btn-primary, .btn-outline, .btn-danger, .btn-view-public, .demo-btn {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    .topbar-actions {
+        flex-wrap: wrap; 
+        justify-content: flex-start;
+        gap: 10px !important;
+        width: 100%;
+        margin-top: 8px;
+    }
+    
+    .topbar {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 16px 12px !important;
+        gap: 8px !important;
+    }
+    
+    .topbar-left {
+        width: 100%;
+    }
+
+    .modal-footer {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100%;
+        padding-top: 16px !important;
+    }
+    
+    .modal-footer button {
+        width: 100% !important;
+        margin: 0 !important;
+        justify-content: center !important;
+    }
+
+    /* --- 3. Table Layout Fix (防止表格被極度擠壓) --- */
+    .card-table-wrap {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding-bottom: 8px;
+    }
+    
+    .data-table {
+        min-width: 650px !important; 
+    }
+    
+    .data-table th, .data-table td {
+        white-space: nowrap !important;
+    }
+    
+    /* Let the title/progress bar inside the table breathe */
+    .table-item-title {
+        white-space: normal !important;
+        min-width: 200px;
+    }
+
+    /* --- 4. Spacing & Margin (留白與間距) --- */
+    .dashboard-section {
+        padding: 20px 14px !important;
+        margin-bottom: 14px !important;
+        border-radius: 16px !important;
+    }
+
+    .data-card {
+        padding: 16px 14px !important;
+        gap: 12px !important;
+        border-radius: 16px !important;
+    }
+    
+    .social-link-item {
+        padding: 14px !important;
+    }
+
+    .main-content {
+        padding: 10px !important;
+    }
+
+    /* --- 5. Modal Overlap Fix (里程碑發布視窗重疊徹底修復) --- */
+    .modal-content {
+        padding: 20px 16px !important;
+        border-radius: 20px 20px 0 0 !important;
+        max-height: 85vh !important;
+        margin: 0 !important;
+    }
+    
+    .modal-overlay {
+        align-items: flex-end !important;
+        padding: 0 !important;
+    }
+
+    /* Force block layout to prevent Flex/Grid calculation bugs on iOS/Safari */
+    .modal-body.modal-grid, 
+    .form-grid, 
+    .modal-col-main, 
+    .modal-col-side,
+    div[style*="grid-template-columns"] {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .modal-body {
+        padding-right: 4px !important;
+    }
+    
+    .modal-col-main, .modal-col-side {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    /* Since we changed to block, we add margin to simulate gap */
+    .modal-col-main {
+        margin-bottom: 16px !important;
+    }
+
+    .form-group {
+        display: flex !important;
+        flex-direction: column !important;
+        margin-bottom: 16px !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem !important;
+        line-height: 1.3 !important;
+        margin-bottom: 4px !important;
+        width: 100%;
+        white-space: normal !important;
+    }
+
+    .form-control {
+        padding: 10px 12px !important;
+        font-size: 0.95rem !important; 
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* --- 6. KPI Cards Dashboard Grid Fix --- */
+    .dashboard-grid {
+        display: grid !important;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)) !important;
+        gap: 12px !important;
+    }
+
+    /* --- 7. CRM Table Mobile Vertical Layout Fix --- */
+    #crm-table, #crm-table tbody, #crm-table tr, #crm-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    #crm-table thead {
+        display: none !important;
+    }
+
+    #crm-table tr {
+        margin-bottom: 16px !important;
+        border: 1px solid var(--border) !important;
+        border-radius: 12px !important;
+        padding: 12px !important;
+        background: var(--bg-surface) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+    }
+
+    #crm-table td {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        padding: 8px 0 !important;
+        border-bottom: 1px dashed var(--border) !important;
+        text-align: right !important;
+        white-space: normal !important;
+        min-height: unset !important;
+    }
+
+    #crm-table td:last-child {
+        border-bottom: none !important;
+    }
+
+    #crm-table td::before {
+        font-weight: 700 !important;
+        color: var(--text-muted) !important;
+        margin-right: 12px !important;
+        text-align: left !important;
+        flex-shrink: 0 !important;
+    }
+
+    #crm-table td:nth-child(1)::before { content: "粉絲名稱"; }
+    #crm-table td:nth-child(2)::before { content: "貢獻項目"; }
+    #crm-table td:nth-child(3)::before { content: "贊助金額"; }
+    #crm-table td:nth-child(4)::before { content: "贊助日期"; }
+    #crm-table td:nth-child(5)::before { content: "狀態"; }
+    #crm-table td:nth-child(6)::before { content: "留言"; }
+    
+    #crm-table {
+        min-width: 0 !important;
+    }
+}
