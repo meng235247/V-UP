@@ -989,7 +989,32 @@
                 setTimeout(() => {
                     startDemoGuide([
                         { target: '[data-tab=\"milestones\"]', text: '✨ 歡迎來到創作者編輯中心！第一步，讓我們先切換到「里程碑管理」。', buttonText: '好喔！' },
-                        { target: '#topbar-add-milestone', text: '🎯 點擊這裡，立刻許下你的第一個願望！告訴粉絲們你想集資的夢想吧！', buttonText: '馬上建立！' },
+                        {
+                            target: '[data-tab="milestones"]',
+                            text: '🎯 點擊這裡，立刻許下你的第一個願望！告訴粉絲們你想集資的夢想吧！',
+                            buttonText: '馬上建立！',
+                            beforeShow: function () {
+                                var isMobile = window.innerWidth <= 900;
+                                var sidebar = document.getElementById('dashboard-sidebar');
+                                var sidebarOverlay = document.getElementById('sidebar-overlay');
+
+                                // Step 1: On mobile, open the sidebar if it's not open yet
+                                if (isMobile && sidebar && !sidebar.classList.contains('open')) {
+                                    sidebar.classList.add('open');
+                                    if (sidebarOverlay) sidebarOverlay.classList.add('active');
+                                }
+
+                                // Step 2: Programmatically switch to milestones tab
+                                var milestoneTab = document.querySelector('.sidebar-nav .nav-item[data-tab="milestones"]');
+                                if (milestoneTab) {
+                                    milestoneTab.click();
+                                }
+
+                                // Step 3: Wait for sidebar animation (mobile) and tab render to settle
+                                var waitMs = isMobile ? 500 : 350;
+                                return new Promise(function (resolve) { setTimeout(resolve, waitMs); });
+                            }
+                        },
                         {
                             target: '#btn-view-public',
                             text: '🎉 準備就緒！點擊這裡預覽粉絲眼中的專屬頁面。也可以先試看看修改其他各項設定喔!',
