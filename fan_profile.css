@@ -8,6 +8,7 @@
 
 /* Import Inter Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
 :root {
     --bg-pink: #FFF0F7;
@@ -1153,6 +1154,16 @@ body.fan-body {
    Mobile RWD Adjustments (max-width: 768px)
    ========================================= */
 @media (max-width: 768px) {
+    body.fan-body {
+        font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        font-weight: 500;
+        line-height: 1.7;
+        text-rendering: optimizeLegibility;
+        font-synthesis: weight;
+        word-break: normal;
+        line-break: strict;
+    }
+
     .fan-container {
         padding: 0 12px;
         margin: 16px auto;
@@ -1162,6 +1173,25 @@ body.fan-body {
     .fan-card {
         padding: 20px 16px;
         border-radius: 20px;
+    }
+
+    .profile-header {
+        padding-bottom: 20px;
+        gap: 16px;
+    }
+
+    .profile-details-grid {
+        gap: 24px;
+        padding-top: 20px;
+    }
+
+    .profile-info-wrap {
+        gap: 16px;
+    }
+
+    .supporter-tag {
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
     }
 
     /* 導航: 隱藏絕對定位的中間連結，避免覆蓋其他元素 */
@@ -1196,6 +1226,18 @@ body.fan-body {
         padding: 10px 20px;
     }
 
+    .tagline-row {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .fan-tagline {
+        font-size: 0.95rem;
+        line-height: 1.45;
+        text-wrap: pretty;
+    }
+
     .titles-flex {
         flex-wrap: wrap;
         gap: 8px;
@@ -1204,6 +1246,40 @@ body.fan-body {
     .title-tag {
         font-size: 0.78rem;
         padding: 6px 12px;
+    }
+
+    .section-title {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        text-wrap: pretty;
+    }
+
+    .section-title.text-lg {
+        font-size: 1.1rem;
+    }
+
+    .section-sub {
+        font-size: 0.82rem;
+        line-height: 1.6;
+        margin: 8px 0 18px 0;
+        padding-bottom: 16px;
+        text-wrap: pretty;
+    }
+
+    .panel-header {
+        font-size: 0.9rem;
+    }
+
+    .stat-text .lbl {
+        font-size: 0.72rem;
+    }
+
+    .stat-text .val {
+        font-size: 1rem;
+    }
+
+    .support-list li {
+        font-size: 0.85rem;
     }
 
     /* Transaction Table - Stacked Layout */
@@ -1274,28 +1350,37 @@ body.fan-body {
 
     /* Modals: 加小邊距，避免緊貼瀏覽器上下欄 */
     .fan-modal-overlay {
-        padding: 16px 12px;
-        align-items: flex-end;
+        padding: 16px;
+        align-items: center;
     }
 
     .settings-card {
         flex-direction: column;
         height: auto;
-        max-height: 88vh;
-        width: 100% !important;
+        max-height: 82vh;
+        width: min(92vw, 520px) !important;
         max-width: none;
-        border-radius: 20px 20px 0 0;
-        margin: 0;
+        border-radius: 20px;
+        margin: 0 auto;
         display: flex;
         position: relative;
     }
 
+    .btn-close-modal {
+        top: 8px;
+        right: 10px;
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+        z-index: 20;
+    }
+
     .review-modal-card {
-        width: 100% !important;
+        width: min(92vw, 500px) !important;
         height: auto;
         max-height: 88vh;
-        border-radius: 20px 20px 0 0;
-        margin: 0;
+        border-radius: 20px;
+        margin: 0 auto;
         padding: 25px 20px;
         overflow-y: auto;
     }
@@ -1304,11 +1389,12 @@ body.fan-body {
         width: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-dark);
-        padding: 10px 12px;
+        padding: 42px 52px 10px 12px;
         flex-direction: row;
         overflow-x: auto;
         white-space: nowrap;
         flex-shrink: 0;
+        gap: 8px;
     }
 
     .settings-sidebar h3 {
@@ -1319,10 +1405,11 @@ body.fan-body {
         flex-shrink: 0;
         padding: 8px 12px;
         font-size: 0.82rem;
+        white-space: nowrap;
     }
 
     .settings-content {
-        padding: 20px 16px;
+        padding: 18px 16px 24px;
         overflow-y: auto;
     }
 
