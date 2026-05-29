@@ -3,6 +3,7 @@
    =========================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
 :root {
     --vt-pink: #FF85B2;
@@ -1196,9 +1197,9 @@ body {
     }
 
     .vt-hero-image {
-        width: 100%;
-        max-width: 400px;
+        width: min(92%, 420px);
         margin: 0 auto;
+        transform-origin: center;
     }
 
     .vt-hero-info {
@@ -1210,8 +1211,10 @@ body {
     }
 
     .vt-hero-bio {
-        margin: 0 auto 25px;
+        margin: 0 auto 22px;
         max-width: 100%;
+        font-size: 0.95rem;
+        line-height: 1.65;
     }
 
     .vt-socials {
@@ -1221,6 +1224,7 @@ body {
     /* Milestone Cards */
     .ms-card {
         flex-direction: column;
+        margin-bottom: 28px;
     }
 
     .ms-main {
@@ -1238,17 +1242,21 @@ body {
     }
 
     .ms-title {
-        font-size: 1.4rem;
+        font-size: 1.32rem;
     }
 
     .ms-desc {
         max-width: 100%;
+        font-size: 0.92rem;
+        line-height: 1.65;
     }
 
     .ms-top-header {
-        max-width: calc(100% - 100px);
+        max-width: 100%;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 8px 10px;
+        padding-right: 96px;
+        align-items: center;
     }
 
     /* Floating badge: shrink on mobile */
@@ -1286,6 +1294,16 @@ body {
 
 /* --- Mobile (≤ 600px) --- */
 @media (max-width: 600px) {
+
+    body {
+        font-family: 'Noto Sans TC', 'Inter', sans-serif;
+        font-weight: 500;
+        line-height: 1.7;
+        text-rendering: optimizeLegibility;
+        font-synthesis: weight;
+        word-break: normal;
+        line-break: strict;
+    }
 
     /* Global layout */
     .container {
@@ -1329,30 +1347,63 @@ body {
     }
 
     .vt-hero-subtitle {
-        font-size: 1.3rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        text-wrap: balance;
     }
 
     .vt-hero-title {
-        font-size: 2.2rem;
+        font-size: 2.05rem;
+        letter-spacing: -0.5px;
+        text-wrap: balance;
     }
 
     .vt-hero-image {
-        height: 220px;
+        width: min(90%, 320px);
+        height: 210px;
         margin: 0 auto;
         display: block;
+        transform: rotate(2deg);
+        transform-origin: center;
+    }
+
+    .vt-hero-bio {
+        font-size: 0.9rem;
+        line-height: 1.7;
+        font-weight: 500;
+        text-wrap: pretty;
+    }
+
+    .vt-socials {
+        gap: 10px;
+    }
+
+    .vt-social-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
 
     /* Milestone Cards */
+    .ms-card {
+        border-radius: 24px;
+    }
+
     .ms-main {
-        padding: 20px 16px;
+        padding: 18px 14px;
     }
 
     .ms-support-box {
-        padding: 20px 16px;
+        padding: 16px 14px;
+        border-radius: 20px;
+        margin-bottom: 18px;
     }
 
     .ms-title {
-        font-size: 1.2rem;
+        font-size: 1.05rem;
+        font-weight: 800;
+        line-height: 1.35;
+        text-wrap: balance;
     }
 
     .ms-status-badge {
@@ -1361,7 +1412,10 @@ body {
     }
 
     .ms-top-header {
-        max-width: calc(100% - 80px);
+        max-width: 100%;
+        padding-right: 76px;
+        align-items: center;
+        gap: 6px 8px;
     }
 
     .ms-floating-badge {
@@ -1375,26 +1429,39 @@ body {
 
     .ms-progress-labels {
         flex-direction: column;
-        gap: 2px;
+        gap: 4px;
+        font-size: 0.8rem;
+        line-height: 1.4;
     }
 
     .ms-progress-labels .current span {
-        font-size: 1.1rem;
+        font-size: 1rem;
+    }
+
+    .ms-progress-bar {
+        height: 12px;
     }
 
     .ms-payment-row {
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: 1fr;
         gap: 12px;
     }
 
+    .ms-exclusive {
+        margin-top: 12px;
+    }
+
     .ms-input {
-        padding: 13px 16px 13px 64px;
+        padding: 12px 14px 12px 56px;
+        font-size: 0.92rem;
     }
 
     .btn-support-now {
-        padding: 13px 24px;
+        padding: 12px 20px;
         min-width: unset;
         width: 100%;
+        font-size: 0.92rem;
     }
 
     /* Joint Collab badge */
@@ -1404,12 +1471,20 @@ body {
     }
 
     .collab-text {
-        font-size: 0.82rem;
+        font-size: 0.78rem;
+        line-height: 1.4;
+    }
+
+    .ms-desc {
+        font-size: 0.88rem;
+        line-height: 1.65;
+        font-weight: 500;
+        text-wrap: pretty;
     }
 
     /* Exclusive posts */
     .exc-post {
-        padding: 12px 14px;
+        padding: 10px 12px;
         gap: 10px;
     }
 
@@ -1419,25 +1494,48 @@ body {
     }
 
     .btn-read-more {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     .btn-view-all {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     .ms-exc-title {
-        font-size: 0.85rem;
+        font-size: 0.78rem;
+        letter-spacing: 0.5px;
+    }
+
+    .exc-text h4 {
+        font-size: 0.9rem;
+        line-height: 1.35;
+        white-space: normal;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .exc-text p {
+        font-size: 0.74rem;
+        font-weight: 600;
     }
 
     /* Ranking sidebar */
+    .ms-ranking {
+        padding: 16px 14px;
+    }
     .ranking-header h3 {
         font-size: 0.9rem;
     }
 
     .rank-item {
-        padding: 8px 12px;
-        gap: 10px;
+        padding: 8px 10px;
+        gap: 8px;
+        min-width: 168px;
+        scroll-snap-align: start;
+        flex: 0 0 168px;
     }
 
     .r-avatar {
@@ -1445,17 +1543,49 @@ body {
         height: 34px;
     }
 
+    .rank-list {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 14px;
+        padding: 2px 8px 10px;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-x: contain;
+    }
+
+    .rank-divider {
+        display: none;
+    }
+
     /* Achieved section */
     .achieved-header h2 {
-        font-size: 1.3rem;
+        font-size: 1.15rem;
+        text-wrap: balance;
+    }
+
+    .achieved-header p {
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 
     .achieved-card {
-        padding: 16px;
+        padding: 14px;
+    }
+
+    .ac-title {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        text-wrap: balance;
+    }
+
+    .ac-stats {
+        font-size: 0.7rem;
     }
 
     .btn-review {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
     }
 
     /* Timeline: hidden on mobile */
@@ -1478,9 +1608,31 @@ body {
         font-size: 0.8rem;
     }
 
+    #milestone-celebrate-overlay {
+        padding: 20px;
+        box-sizing: border-box;
+    }
+
+    #celebrate-popup {
+        min-width: 0 !important;
+        width: min(92vw, 340px);
+        padding: 28px 22px !important;
+        border-radius: 24px !important;
+        box-sizing: border-box;
+    }
+
+    #celebrate-title {
+        font-size: 1.2rem;
+    }
+
+    #celebrate-close-btn {
+        padding: 12px 26px;
+        font-size: 0.95rem;
+    }
+
     /* Post Modal 手機版：底部 sheet 式设計，避免緊貼瀏覽器上下欄 */
     .post-modal-overlay {
-        padding: 0 0 0 0;
+        padding: 0;
         align-items: flex-end;
     }
 
@@ -1496,12 +1648,13 @@ body {
 
     .pmc-title {
         margin: 10px 16px 8px;
-        font-size: 1rem;
+        font-size: 0.98rem;
     }
 
     .pmc-body {
         margin: 0 16px 16px;
-        font-size: 0.88rem;
+        font-size: 0.86rem;
+        line-height: 1.7;
     }
 
     .pmc-audio-wrap {
@@ -1522,7 +1675,13 @@ body {
     }
 
     .rmc-title {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
+    }
+
+    .rmc-desc {
+        font-size: 0.86rem;
+        line-height: 1.7;
+        font-weight: 500;
     }
 
     .rmc-stats {
@@ -1538,15 +1697,15 @@ body {
 
     /* Payment Modal 手機版：足夠邊距避免緊貼瀏覽器上下欄 */
     .payment-modal-overlay {
-        padding: 16px 12px;
+        padding: 24px 16px 18px;
         align-items: flex-end;
     }
 
     .payment-modal {
-        width: 100% !important;
-        border-radius: 24px 24px 0 0 !important;
-        padding: 20px 16px;
-        max-height: 88vh;
+        width: min(100%, 420px) !important;
+        border-radius: 22px !important;
+        padding: 18px 14px;
+        max-height:70vh;
         height: auto;
         overflow-y: auto;
     }
@@ -1556,7 +1715,7 @@ body {
     }
 
     .pm-header h2 {
-        font-size: 1.1rem;
+        font-size: 1rem;
         margin: 0;
     }
 
@@ -1590,8 +1749,8 @@ body {
     }
 
     .pm-btn {
-        padding: 13px;
-        font-size: 0.95rem;
+        padding: 12px;
+        font-size: 0.9rem;
     }
 
     .pm-textarea {
@@ -2408,8 +2567,10 @@ body {
     border-radius: 20px;
     width: 640px;
     max-width: 90vw;
+    max-height: 75vh;
     padding: 32px;
     box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    overflow-y: auto;
     transform: translateY(20px) scale(0.95);
     transition: transform 0.25s;
 }
