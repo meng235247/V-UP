@@ -893,7 +893,8 @@ function showEmailGate() {
     wrap.innerHTML = `
       <div class="demo-modal-card demo-email-gate-card">
         <h3>VTuber 創作者 Demo</h3>
-        <p>留下 Email 可在正式版上線時優先收到通知。你也可以先跳過。</p>
+        <p>留下 Email 可在正式版上線時優先收到通知。</p>
+        <p style="color: #EF4444; text-align: center; font-size: 13.5px; margin-top: -4px;">建議使用電腦版</p>
         <input id="demo-email-input" class="demo-email-input" type="email" placeholder="you@example.com" />
         <div class="demo-modal-actions">
           <button id="demo-email-submit" class="demo-btn demo-btn-primary">送出 Email 並進入</button>
