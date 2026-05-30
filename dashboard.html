@@ -892,6 +892,7 @@
             authService.getUserProfile = async () => demoProfile;
             authService.logout = async () => true;
             storageService.uploadFile = async (file) => fileToDataUrl(file);
+            storageService.uploadVtuberBanner = async (uid, file) => fileToDataUrl(file);
             const pubLink = document.getElementById('btn-view-public');
             if (pubLink) pubLink.href = `vtuber_profile.html?id=demo_creator_local&mode=creator-preview`;
         }
