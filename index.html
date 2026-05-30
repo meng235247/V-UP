@@ -72,8 +72,9 @@
 
         /* VTuber Card overrides for this page */
         .v-card {
-            display: flex;
-            flex-direction: column;
+            display: flex !important;
+            flex-direction: column !important;
+            text-align: left !important;
             text-decoration: none;
             color: inherit;
         }
@@ -142,11 +143,11 @@
         }
 
         .v-card-body {
-            padding: 0 1.1rem 1.1rem;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            text-align: left;
+            padding: 0 1.1rem 1.1rem !important;
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            text-align: left !important;
         }
 
         .v-card-avatar-wrap {
@@ -864,7 +865,7 @@
             }
 
             .v-card-body {
-                padding: 0 1rem 1rem;
+                padding: 0 1rem 1rem !important;
                 gap: 0.45rem;
             }
 
