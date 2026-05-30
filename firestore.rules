@@ -5,8 +5,17 @@ service cloud.firestore {
     // ----------------------------
     // Helpers
     // ----------------------------
+    function isAllowedVTuber() {
+      return request.auth != null && (
+        request.auth.uid == '1rSsnLKbbrOSIuu9r0V1KR0v9FH2' ||
+        request.auth.uid == 'A9LZXl3rsadyvPoxXYspfM6wPXD3' ||
+        request.auth.uid == 'FSoqazbSyzL7Aa3jjxZWhOx145b2'
+      );
+    }
+
     function isSignedIn() {
-      return request.auth != null;
+      // Demo phase: only whitelisted VTubers can be considered "signed in" for write operations
+      return isAllowedVTuber();
     }
 
     function userDoc(uid) {
@@ -252,15 +261,10 @@ service cloud.firestore {
                   || (resource.data.status == 'success');
 
       allow create: if
-            // signed-in user must provide their own fanUid
-            (isSignedIn()
-              && ('fanUid' in request.resource.data && request.auth.uid == request.resource.data.fanUid)
-            )
-            // guest: no fanUid field required, just validate amount and status
-            || (!isSignedIn()
-              && !('fanUid' in request.resource.data)
-            )
-            // shared validations for both paths
+            // Demo phase: ONLY allow whitelisted signed-in VTubers to create transactions (if they need to test it).
+            // Normal users/guests are blocked from writing real transactions.
+            isSignedIn()
+            && ('fanUid' in request.resource.data && request.auth.uid == request.resource.data.fanUid)
             && ('status' in request.resource.data && request.resource.data.status in ['pending', 'success'])
             && ('amount' in request.resource.data && (request.resource.data.amount is number && request.resource.data.amount > 0))
             && request.resource.data.keys().hasOnly([
