@@ -3,6 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAuthorized = sessionStorage.getItem('demoAdminAuth');
+        const mode = urlParams.get('mode');
+        const id = urlParams.get('id');
+        const isDemo = mode === 'demo' || mode === 'fan' || mode === 'creator-preview' || id === 'demo';
+
+        if (urlParams.get('key') === 'explosion0608') {
+            sessionStorage.setItem('demoAdminAuth', 'true');
+        } else if (!isAuthorized && !isDemo) {
+            window.location.replace('index.html');
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="V-Up! | vtuber 專頁">
     <title>vtuber | 陪伴他成長</title>

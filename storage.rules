@@ -1,8 +1,17 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
+    function isAllowedVTuber() {
+      return request.auth != null && (
+        request.auth.uid == '1rSsnLKbbrOSIuu9r0V1KR0v9FH2' ||
+        request.auth.uid == 'A9LZXl3rsadyvPoxXYspfM6wPXD3' ||
+        request.auth.uid == 'FSoqazbSyzL7Aa3jjxZWhOx145b2'
+      );
+    }
+
     function signedIn() {
-      return request.auth != null;
+      // Demo phase restrict: only whitelist can upload
+      return isAllowedVTuber();
     }
 
     function isOwner(uid) {

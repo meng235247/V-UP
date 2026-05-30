@@ -3,6 +3,18 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAuthorized = sessionStorage.getItem('demoAdminAuth');
+        const mode = urlParams.get('mode');
+        const isDemo = mode === 'demo';
+
+        if (urlParams.get('key') === 'explosion0608') {
+            sessionStorage.setItem('demoAdminAuth', 'true');
+        } else if (!isAuthorized && !isDemo) {
+            window.location.replace('index.html');
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V-Up! Creator Studio - 創作者專業後台</title>
     <link

@@ -3,6 +3,19 @@
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAuthorized = sessionStorage.getItem('demoAdminAuth');
+        const mode = urlParams.get('mode');
+        const id = urlParams.get('id');
+        const isDemo = mode === 'demo' || mode === 'fan' || mode === 'creator-preview' || id === 'demo';
+
+        if (urlParams.get('key') === 'explosion0608') {
+            sessionStorage.setItem('demoAdminAuth', 'true');
+        } else if (!isAuthorized && !isDemo) {
+            window.location.replace('index.html');
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V-Up! 粉絲個人頁面</title>
     <!-- FontAwesome -->

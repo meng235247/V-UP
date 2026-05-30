@@ -174,8 +174,10 @@
         .v-card-name-row {
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;  /* 底部對齊文字 */
-            min-height: 58px;           /* 跟桌面版 avatar 高度一致 */
+            justify-content: flex-end;
+            /* 底部對齊文字 */
+            min-height: 58px;
+            /* 跟桌面版 avatar 高度一致 */
             padding-bottom: 2px;
         }
 
@@ -186,7 +188,8 @@
             display: flex;
             align-items: center;
             gap: 4px;
-            margin-top: 0; /* 移除 hack，改由 min-height 控制對齊 */
+            margin-top: 0;
+            /* 移除 hack，改由 min-height 控制對齊 */
         }
 
         .v-card-followers {
@@ -654,6 +657,7 @@
         }
 
         @media (max-width:768px) {
+
             html,
             body {
                 -webkit-text-size-adjust: 100%;
@@ -678,11 +682,11 @@
                 line-break: strict;
             }
 
-            .hero-content > div[style*="flex-direction:column"] {
+            .hero-content>div[style*="flex-direction:column"] {
                 gap: 0.4rem !important;
             }
 
-            .hero-content > div[style*="margin-bottom:2.5rem"] {
+            .hero-content>div[style*="margin-bottom:2.5rem"] {
                 margin-bottom: 1.6rem !important;
             }
 
@@ -793,7 +797,7 @@
             }
 
             /* hero dual subtitle */
-            .hero-content > div p {
+            .hero-content>div p {
                 font-size: 0.86rem !important;
                 line-height: 1.55;
                 color: rgba(255, 255, 255, 0.72) !important;
@@ -803,7 +807,7 @@
                 margin-right: auto;
             }
 
-            .hero-content > p {
+            .hero-content>p {
                 display: none;
             }
 
@@ -900,7 +904,7 @@
                 line-break: strict;
             }
 
-            .v-card-body > div[style*="font-style:italic"] {
+            .v-card-body>div[style*="font-style:italic"] {
                 font-size: 0.76rem !important;
                 line-height: 1.45 !important;
                 text-wrap: balance;
@@ -937,7 +941,7 @@
             }
 
             /* Why section p */
-            .why-section > .container > p {
+            .why-section>.container>p {
                 font-size: 0.9rem !important;
                 margin-bottom: 2rem;
             }
@@ -983,7 +987,7 @@
             }
 
             /* 內層儲存卡片：縮小內距避免按鈕被撠壓 */
-            .feedback-section > .container {
+            .feedback-section>.container {
                 padding: 2.5rem 1.25rem !important;
             }
 
@@ -1128,6 +1132,7 @@
             transition: all 0.2s;
             flex-shrink: 0;
         }
+
         .hamburger-btn:hover {
             border-color: var(--primary);
             color: var(--primary);
@@ -1144,17 +1149,20 @@
             z-index: 200;
             pointer-events: none;
         }
+
         .mobile-nav-drawer.open {
             display: block;
             pointer-events: auto;
         }
+
         .mobile-nav-backdrop {
             position: absolute;
             inset: 0;
-            background: rgba(0,0,0,0.45);
+            background: rgba(0, 0, 0, 0.45);
             backdrop-filter: blur(4px);
             animation: fadeIn 0.2s ease both;
         }
+
         .mobile-nav-panel {
             position: absolute;
             top: 0;
@@ -1163,21 +1171,34 @@
             height: 100%;
             background: var(--bg-surface);
             border-left: 1px solid var(--border-color);
-            box-shadow: -8px 0 30px rgba(0,0,0,0.12);
+            box-shadow: -8px 0 30px rgba(0, 0, 0, 0.12);
             display: flex;
             flex-direction: column;
             padding: 1.5rem 1.25rem;
             gap: 0;
-            animation: slideInRight 0.25s cubic-bezier(0.4,0,0.2,1) both;
+            animation: slideInRight 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
         }
+
         @keyframes slideInRight {
-            from { transform: translateX(100%); }
-            to   { transform: translateX(0); }
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to   { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
+
         .mobile-nav-header {
             display: flex;
             justify-content: space-between;
@@ -1186,6 +1207,7 @@
             padding-bottom: 1rem;
             border-bottom: 1px solid var(--border-color);
         }
+
         .mobile-nav-brand {
             font-size: 1.4rem;
             font-family: 'Baloo 2', sans-serif;
@@ -1195,6 +1217,7 @@
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
+
         .mobile-nav-close {
             width: 32px;
             height: 32px;
@@ -1209,16 +1232,19 @@
             font-size: 0.85rem;
             transition: all 0.2s;
         }
+
         .mobile-nav-close:hover {
             border-color: var(--primary);
             color: var(--primary);
         }
+
         .mobile-nav-links {
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
             flex: 1;
         }
+
         .mobile-nav-link {
             display: flex;
             align-items: center;
@@ -1231,17 +1257,20 @@
             text-decoration: none;
             transition: background 0.2s, color 0.2s;
         }
+
         .mobile-nav-link:hover,
         .mobile-nav-link.active {
             background: var(--primary-light);
             color: var(--primary);
         }
+
         .mobile-nav-link i {
             width: 20px;
             text-align: center;
             color: var(--primary);
             font-size: 0.95rem;
         }
+
         .mobile-nav-footer {
             padding-top: 1.25rem;
             border-top: 1px solid var(--border-color);
@@ -1249,6 +1278,7 @@
             flex-direction: column;
             gap: 0.75rem;
         }
+
         .mobile-nav-cta {
             display: flex;
             align-items: center;
@@ -1264,16 +1294,19 @@
             box-shadow: var(--shadow-pink);
             transition: all 0.2s;
         }
+
         .mobile-nav-cta:hover {
             filter: brightness(1.08);
             color: white;
         }
+
         .mobile-theme-row {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 0.25rem;
         }
+
         .mobile-theme-label {
             font-size: 0.9rem;
             color: var(--text-muted);
@@ -1285,10 +1318,12 @@
             .hamburger-btn {
                 display: flex;
             }
+
             /* nav-links 在手機版完全隱藏（改由 drawer 取代） */
             .nav-links {
                 display: none !important;
             }
+
             /* nav-container 回到單行排列 */
             .nav-container {
                 flex-wrap: nowrap;
@@ -1573,7 +1608,7 @@
                 <a href="dashboard.html?mode=demo" class="demo-card">
                     <div class="demo-card-icon creator-icon"><i class="fas fa-star"></i></div>
                     <h3>VTuber 創作者後台體驗</h3>
-                    <p>「如何設定里程碑，後台好不好用？」<br><span
+                    <p>「如何設定里程碑，後台好不好用？」直接進入親身體驗看看<br><span
                             style="font-size: 12px; color: #EF4444; margin-top: 4px; display: inline-block;">建議使用電腦版</span>
                     </p>
                     <span class="demo-card-btn creator-btn"><i class="fas fa-rocket"></i> 試玩創作者後台</span>
@@ -1748,7 +1783,8 @@
                 style="color: rgba(255,255,255,0.9); font-size: 1.15rem; margin-bottom: 2.5rem; line-height: 1.7; position: relative; z-index: 1;">
                 我們正在打造以「里程碑目標」為核心、讓 VTuber 與粉絲攜手解鎖夢想的共創應援平台。<br>你的每一個建議、甚至批評，都將成為我們、V-UP! 成長的養分。
             </p>
-            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeomdhRIZWReLqSHoXzjIExpQnUu5y77avwa3MFUFVuEEvjVA/viewform" target="_blank" rel="noopener noreferrer" class="btn"
+            <a href="https://docs.google.com/forms/d/e/1FAIpQLSeomdhRIZWReLqSHoXzjIExpQnUu5y77avwa3MFUFVuEEvjVA/viewform"
+                target="_blank" rel="noopener noreferrer" class="btn"
                 style="background: white; color: var(--primary); font-size: 1.1rem; padding: 1rem 3rem; border-radius: 99px; font-weight: 800; display: inline-flex; align-items: center; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); position: relative; z-index: 1; text-decoration: none;">
                 <i class="fas fa-paper-plane"></i> 填寫試玩回饋表單
             </a>

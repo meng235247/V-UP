@@ -2,6 +2,16 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAuthorized = sessionStorage.getItem('demoAdminAuth');
+
+        if (urlParams.get('key') === 'explosion0608') {
+            sessionStorage.setItem('demoAdminAuth', 'true');
+        } else if (!isAuthorized) {
+            window.location.replace('index.html');
+        }
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>V-Up! 平台登入與註冊</title>
     <!-- Google Fonts -->
@@ -26,7 +36,7 @@
             <!-- Toggle Auth Mode -->
             <div class="auth-toggle">
                 <button class="toggle-btn active" id="btn-login" onclick="switchAuth('login')">登入</button>
-                <button class="toggle-btn" id="btn-register" onclick="switchAuth('register')">註冊</button>
+                <button class="toggle-btn" id="btn-register" onclick="switchAuth('register')" style="display: none;">註冊</button>
             </div>
 
             <!-- Login Form -->
@@ -69,7 +79,7 @@
             </form>
 
             <!-- Register Form -->
-            <form id="register-form" class="auth-form">
+            <form id="register-form" class="auth-form" style="display: none;">
                 <div class="auth-role-select">
                     <label class="role-option">
                         <input type="radio" name="role" value="fan" checked>
