@@ -5,11 +5,11 @@
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-DXW6HEK4Z0"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
 
-      gtag('config', 'G-DXW6HEK4Z0');
+        gtag('config', 'G-DXW6HEK4Z0');
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1368,13 +1368,30 @@
         }
 
         /* ── 卡片順序調整 ── */
-        .vtuber-grid > a:nth-child(1) { order: 1; } /* 手機版：川雲爪日維持在最上方 */
-        .vtuber-grid > a:nth-child(2) { order: 2; }
-        .vtuber-grid > a:nth-child(3) { order: 3; }
+        .vtuber-grid>a:nth-child(1) {
+            order: 1;
+        }
+
+        /* 手機版：川雲爪日維持在最上方 */
+        .vtuber-grid>a:nth-child(2) {
+            order: 2;
+        }
+
+        .vtuber-grid>a:nth-child(3) {
+            order: 3;
+        }
 
         @media (min-width: 769px) {
-            .vtuber-grid > a:nth-child(1) { order: 2; } /* 電腦版：川雲爪日排中間 */
-            .vtuber-grid > a:nth-child(2) { order: 1; } /* 電腦版：拜風排第一 */
+            .vtuber-grid>a:nth-child(1) {
+                order: 2;
+            }
+
+            /* 電腦版：川雲爪日排中間 */
+            .vtuber-grid>a:nth-child(2) {
+                order: 1;
+            }
+
+            /* 電腦版：拜風排第一 */
         }
     </style>
     <script type="module" src="./js/firebase-config.js"></script>
@@ -1405,9 +1422,9 @@
     <!-- CSS Marquee Announcement -->
     <div class="announcement-bar" id="front-marquee">
         <div class="announcement-inner">
-            <span><span class="font-vup">V-Up! 體驗試玩開放中！</span> ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦ </span> 試玩後留下你的想法，一起打造更好的平台！
+            <span><span class="font-vup">V-Up! 體驗試玩開放中！</span> ✦ 無需帳號，立刻試玩應援流程 ✦ </span> 試玩後留下你的想法，一起打造更好的平台！
             </span>
-            <span> <span class="font-vup">V-Up! 體驗試玩開放中！</span> ✦ 無需帳號、無需信用卡，立刻試玩應援流程 ✦</span> 試玩後留下你的想法，一起打造更好的平台！
+            <span> <span class="font-vup">V-Up! 體驗試玩開放中！</span> ✦ 無需帳號，立刻試玩應援流程 ✦</span> 試玩後留下你的想法，一起打造更好的平台！
             </span>
         </div>
     </div>
@@ -1453,7 +1470,7 @@
         </div>
     </header>
 
- <!-- ── [NEW] 痛點比較區：為什麼不用超級留言？ ── -->
+    <!-- ── [NEW] 痛點比較區：為什麼不用超級留言？ ── -->
     <section id="comparison"
         style="background:var(--bg-surface);padding:5rem 20px;border-top:1px solid var(--border-color);transition:background 0.3s;">
         <div class="container" style="max-width:960px;">
@@ -1594,49 +1611,49 @@
     <section class="why-section" id="why">
         <div class="container">
             <span class="why-label">WHAT CAN V-UP DO?</span>
-                <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">V-UP能做到什麼？ </h2>
-                <p>不只是工具、讓每一份支持都成為成長的一部分</p>
-            </div>
-            <div class="why-split">
-                <!-- Creator column -->
-                <div>
-                    <div class="why-col-title creator"><i class="fas fa-star"></i> 給 VTuber 創作者</div>
-                    <div class="why-card" style="margin-bottom:1rem;">
-                        <div class="why-icon cyan"><i class="fas fa-bullseye"></i></div>
-                        <h3>告別碎片化打賞</h3>
-                        <p>企劃有目標、收入有節奏。你不再被動等待，而是主動推進你的創作路線圖。</p>
-                    </div>
-                    <div class="why-card" style="margin-bottom:1rem;">
-                        <div class="why-icon blue"><i class="fas fa-users"></i></div>
-                        <h3>你的粉絲不是路過的旅客</h3>
-                        <p>他們是你旅程的共同參與者。每一個應援都是在支持你實現目標</p>
-                    </div>
-                    <div class="why-card">
-                        <div class="why-icon cyan"><i class="fas fa-robot"></i></div>
-                        <h3>更專注於夢想</h3>
-                        <p>同樣的應援金額，你能多做更多事。AI 企劃助理幫你出點子 !</p>
-                    </div>
+            <h2 style="font-size:2.4rem;margin-bottom:0.6rem;">V-UP能做到什麼？ </h2>
+            <p>不只是工具、讓每一份支持都成為成長的一部分</p>
+        </div>
+        <div class="why-split">
+            <!-- Creator column -->
+            <div>
+                <div class="why-col-title creator"><i class="fas fa-star"></i> 給 VTuber 創作者</div>
+                <div class="why-card" style="margin-bottom:1rem;">
+                    <div class="why-icon cyan"><i class="fas fa-bullseye"></i></div>
+                    <h3>告別碎片化打賞</h3>
+                    <p>企劃有目標、收入有節奏。你不再被動等待，而是主動推進你的創作路線圖。</p>
                 </div>
-                <!-- Fan column -->
-                <div>
-                    <div class="why-col-title fan"><i class="fas fa-heart"></i> 給 VTuber 的粉絲</div>
-                    <div class="why-card" style="margin-bottom:1rem;">
-                        <div class="why-icon blue"><i class="fas fa-arrow-trend-up"></i></div>
-                        <h3>你的應援不再「消失」</h3>
-                        <p>及時應援，進度條立刻更新，讓你知道，你為他/她的目標推動了多少。</p>
-                    </div>
-                    <div class="why-card" style="margin-bottom:1rem;">
-                        <div class="why-icon cyan"><i class="fas fa-medal"></i></div>
-                        <h3>記錄你與他/她共同達成的目標 </h3>
-                        <p>目標達成後你將解鎖限定成就。這不只是個人成就牆上的紀錄，更是這趟追夢旅程中，你為他/她點亮前方道路的證明。</p>
-                    </div>
-                    <div class="why-card">
-                        <div class="why-icon blue"><i class="fas fa-lock-open"></i></div>
-                        <h3>解鎖專屬限定回禮</h3>
-                        <p>應援後解鎖 VTuber 為支持者準備的獨家內容，這是只有你才能看到。</p>
-                    </div>
+                <div class="why-card" style="margin-bottom:1rem;">
+                    <div class="why-icon blue"><i class="fas fa-users"></i></div>
+                    <h3>你的粉絲不是路過的旅客</h3>
+                    <p>他們是你旅程的共同參與者。每一個應援都是在支持你實現目標</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon cyan"><i class="fas fa-robot"></i></div>
+                    <h3>更專注於夢想</h3>
+                    <p>同樣的應援金額，你能多做更多事。AI 企劃助理幫你出點子 !</p>
                 </div>
             </div>
+            <!-- Fan column -->
+            <div>
+                <div class="why-col-title fan"><i class="fas fa-heart"></i> 給 VTuber 的粉絲</div>
+                <div class="why-card" style="margin-bottom:1rem;">
+                    <div class="why-icon blue"><i class="fas fa-arrow-trend-up"></i></div>
+                    <h3>你的應援不再「消失」</h3>
+                    <p>及時應援，進度條立刻更新，讓你知道，你為他/她的目標推動了多少。</p>
+                </div>
+                <div class="why-card" style="margin-bottom:1rem;">
+                    <div class="why-icon cyan"><i class="fas fa-medal"></i></div>
+                    <h3>記錄你與他/她共同達成的目標 </h3>
+                    <p>目標達成後你將解鎖限定成就。這不只是個人成就牆上的紀錄，更是這趟追夢旅程中，你為他/她點亮前方道路的證明。</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon blue"><i class="fas fa-lock-open"></i></div>
+                    <h3>解鎖專屬限定回禮</h3>
+                    <p>應援後解鎖 VTuber 為支持者準備的獨家內容，這是只有你才能看到。</p>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -1646,7 +1663,7 @@
         <div class="container">
             <span class="section-label" style="-webkit-text-fill-color:rgba(244,114,182,0.8);">體驗看看</span>
             <h2>快速試玩</h2>
-            <p>無需註冊、無需信用卡—— 感受真實回饋</p>
+            <p>無需註冊、無真實金流，但有完整的流程體驗</p>
             <div class="demo-cards">
                 <a href="dashboard.html?mode=demo" class="demo-card">
                     <div class="demo-card-icon creator-icon"><i class="fas fa-star"></i></div>
@@ -1714,7 +1731,7 @@
                     </div>
                 </a>
 
-                               <!-- Card 2 — 拜風 -->
+                <!-- Card 2 — 拜風 -->
                 <a href="vtuber_profile.html?id=bifeng-vtype&mode=fan" class="v-card" data-cat="music hot">
                     <div class="v-card-banner">
                         <div class="v-card-banner-bg" style="background-image: url('image/banner_s.jpg');"></div>
